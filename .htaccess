@@ -1,0 +1,4 @@
+RewriteEngine on
+
+RewriteRule ^server/ [L,R=404,NC]
+RewriteRule ^[^\.]+$ index.php
