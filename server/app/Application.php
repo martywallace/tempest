@@ -3,18 +3,19 @@
 namespace app;
 
 use \tempest\base\Tempest;
-use \app\handlers\Page;
 
 
 class Application extends Tempest
 {
 
-	public function __construct()
+	protected function setup()
 	{
-		$page = new Page();
-		
-		header("Content-type: {$page->getMime()}");
-		echo $page->getOutput();
+		$routes = array(
+			"home" => "app.handlers.Home",
+			"about" => "app.handlers.Home"
+		);
+
+		$this->getRouter()->map($routes);
 	}
 	
 }

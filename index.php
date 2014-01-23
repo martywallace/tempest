@@ -1,6 +1,12 @@
 <?php
 
+// Tempest PHP framework.
+// Author: Marty Wallace.
+// https://github.com/MartyWallace/Tempest
+
+
 // Global constants.
+define('PATTERN_SLASHES', '/[\\\|\/]+/');
 define('GET', 'get');
 define('POST', 'post');
 define('MIME_TEXT', 'text/plain');
@@ -13,22 +19,53 @@ define('MIME_ZIP', 'application/zip');
 define('MIME_JPEG', 'image/jpeg');
 define('MIME_GIF', 'image/gif');
 define('MIME_PNG', 'image/png');
+define('SERVER_ROOT', normalize_path($_SERVER["DOCUMENT_ROOT"]));
+define('CLIENT_ROOT', normalize_path(str_replace(SERVER_ROOT, '', __DIR__), '/') . '/');
+define('APP_ROOT', normalize_path(SERVER_ROOT . CLIENT_ROOT));
 define('REQUEST_METHOD', strtolower($_SERVER["REQUEST_METHOD"]));
-define('REQUEST_URI', strtolower($_SERVER["REQUEST_URI"]));
-
+define('REQUEST_URI', str_replace(CLIENT_ROOT, '', $_SERVER["REQUEST_URI"]));
 
 
 /**
  * Attempt to import a file into the current context.
- * @param $file The file path, name and extension from the /server/ directory.
+ * @param $file The file path, name and extension from the "/server/" directory.
+ * @return True if the file was found, else false.
  */
 function import($file)
 {
-	// TODO: Does $base need to begin at $_SERVER["ROOT"]?
-	//		 experiment in different environments to check.
-	$base = 'server/';
+	$base = APP_ROOT . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR;
+	$applicationPath = "{$base}{$file}";
+	$vendorPath = "{$base}vendor" . DIRECTORY_SEPARATOR . "{$file}";
 
-	require_once "{$base}{$file}";
+	// Try normal path using full namespace first.
+	if(file_exists($applicationPath))
+	{
+		require_once $applicationPath;
+		return true;
+	}
+
+	// Look in "/server/vendor/" next.
+	if(file_exists($vendorPath))
+	{
+		require_once $vendorPath;
+		return true;
+	}
+
+	return false;
+}
+
+
+/**
+ * Normalize an input path.
+ * @param $path The path to normalize.
+ * @param $separator The path separator, normally DIRECTORY_SEPARATOR.
+ */
+function normalize_path($path, $separator = DIRECTORY_SEPARATOR)
+{
+	$base = preg_replace(PATTERN_SLASHES, $separator, $path);
+	$base = rtrim($base, $separator);
+
+	return $base;
 }
 
 
@@ -45,4 +82,4 @@ spl_autoload_register(function($class)
 
 
 // Initialize the core Application.
-new \app\Application();
+$application = new \app\Application();
