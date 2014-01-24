@@ -16,6 +16,7 @@ define('MIME_CSS', 'text/css');
 define('MIME_JSON', 'application/json');
 define('MIME_BINARY', 'application/octet-stream');
 define('MIME_ZIP', 'application/zip');
+define('MIME_PDF', 'application/pdf');
 define('MIME_JPEG', 'image/jpeg');
 define('MIME_GIF', 'image/gif');
 define('MIME_PNG', 'image/png');

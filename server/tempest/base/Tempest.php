@@ -3,6 +3,7 @@
 namespace tempest\base;
 
 use \tempest\routing\Router;
+use \tempest\routing\Response;
 
 
 class Tempest
@@ -32,21 +33,29 @@ class Tempest
 		}
 		else
 		{
-			// Matched a Route, construct Handler and prepare output.
-			$def = $this->route->getHandler();
+			// Matched a Route, construct Response and prepare output.
+			$def = $this->route->getResponse();
 			$def = '\\' . str_replace('.', '\\', $def);
 
 			if(class_exists($def))
 			{
-				$handler = new $def($this);
+				$response = new $def($this);
 
-				header("Content-type: {$handler->getMime()}");
-				echo $handler->getOutput();
+				if($response instanceof Response)
+				{
+					header("Content-type: {$response->getMime()}");
+					echo $response->getOutput();
+				}
+				else
+				{
+					// Constructed object was not a Response.
+					echo "{$this->route->getResponse()} is not a Response object.";
+				}
 			}
 			else
 			{
-				// Route was valid, but the Handler was not found.
-				echo "Handler {$this->route->getHandler()} not found.";
+				// Route was valid, but the Response class was not found.
+				echo "Response {$this->route->getResponse()} not found.";
 			}
 		}
 	}

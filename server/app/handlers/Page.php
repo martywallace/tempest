@@ -2,13 +2,13 @@
 
 namespace app\handlers;
 
-use \tempest\routing\Handler;
+use \tempest\routing\Response;
 
 
-class Page extends Handler
+class Page extends Response
 {
 
-	protected function get()
+	protected function send()
 	{
 		return 'hello';
 	}

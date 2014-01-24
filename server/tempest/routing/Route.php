@@ -7,17 +7,17 @@ class Route
 {
 
 	private $pattern;
-	private $handler;
+	private $response;
 
 
-	public function __construct($pattern, $handler)
+	public function __construct($pattern, $response)
 	{
 		$this->pattern = $pattern;
-		$this->handler = $handler;
+		$this->response = $response;
 	}
 
 
 	public function getPattern(){ return $this->pattern; }
-	public function getHandler(){ return $this->handler; }
+	public function getResponse(){ return $this->response; }
 
 }
