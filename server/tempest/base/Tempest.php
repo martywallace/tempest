@@ -16,6 +16,7 @@ class Tempest
 	public function __construct()
 	{
 		$this->router = new Router();
+
 		$this->setup();
 		$this->run();
 	}
@@ -64,7 +65,7 @@ class Tempest
 	protected function setup(){ /* Virtual */ }
 
 
-	protected function getRouter(){ return $this->router; }
-	protected function getRoute(){ return $this->route; }
+	public function getRouter(){ return $this->router; }
+	public function getRoute(){ return $this->route; }
 
 }

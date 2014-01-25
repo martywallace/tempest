@@ -3,16 +3,21 @@
 namespace tempest\routing;
 
 use \tempest\routing\Route;
+use \tempest\routing\Request;
+
 
 class Router
 {
 
 	private $default;
+	private $request;
 	private $routes = array();
 
 
 	public function map($map, $default = "home")
 	{
+		$this->request = new Request(strlen(REQUEST_URI) === 0 ? $default : REQUEST_URI);
+
 		foreach($map as $pattern => $handler)
 		{
 			$route = new Route($pattern, $handler);
@@ -34,20 +39,13 @@ class Router
 			return $this->default;
 		}
 
-		foreach($this->routes as $route)
-		{
-			$pattern = $route->getPattern();
-			if($pattern === REQUEST_URI)
-			{
-				return $route;
-			}
-		}
 
-		return null;
+		return $this->request->findMatch($this);
 	}
 
 
 	public function getDefault(){ return $this->default; }
+	public function getRequest(){ return $this->request; }
 	public function getRoutes(){ return $this->routes; }
 
 }

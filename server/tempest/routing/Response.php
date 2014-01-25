@@ -2,6 +2,8 @@
 
 namespace tempest\routing;
 
+use \tempest\routing\Request;
+
 
 class Response
 {
@@ -17,11 +19,11 @@ class Response
 
 
 	protected function setup(){ /* Virtual */ }
-	protected function send(){ /* Virtual */ }
+	protected function send(Request $request){ /* Virtual */ }
 
 
-	public function getMime(){ return $this->mime; }
-	public function getOutput(){ return $this->send(); }
 	public function getApp(){ return $this->app; }
+	public function getMime(){ return $this->mime; }
+	public function getOutput(){ return $this->send($this->app->getRouter()->getRequest()); }
 
 }

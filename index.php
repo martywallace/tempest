@@ -20,11 +20,11 @@ define('MIME_PDF', 'application/pdf');
 define('MIME_JPEG', 'image/jpeg');
 define('MIME_GIF', 'image/gif');
 define('MIME_PNG', 'image/png');
-define('SERVER_ROOT', normalize_path($_SERVER["DOCUMENT_ROOT"]));
-define('CLIENT_ROOT', normalize_path(str_replace(SERVER_ROOT, '', __DIR__), '/') . '/');
-define('APP_ROOT', normalize_path(SERVER_ROOT . CLIENT_ROOT));
+define('SERVER_ROOT', normalizePath($_SERVER["DOCUMENT_ROOT"]));
+define('CLIENT_ROOT', normalizePath(str_replace(SERVER_ROOT, '', __DIR__), '/') . '/');
+define('APP_ROOT', normalizePath(SERVER_ROOT . CLIENT_ROOT));
 define('REQUEST_METHOD', strtolower($_SERVER["REQUEST_METHOD"]));
-define('REQUEST_URI', str_replace(CLIENT_ROOT, '', $_SERVER["REQUEST_URI"]));
+define('REQUEST_URI', cleanUri(str_replace(CLIENT_ROOT, '', $_SERVER["REQUEST_URI"])));
 
 
 /**
@@ -61,10 +61,23 @@ function import($file)
  * @param $path The path to normalize.
  * @param $separator The path separator, normally DIRECTORY_SEPARATOR.
  */
-function normalize_path($path, $separator = DIRECTORY_SEPARATOR)
+function normalizePath($path, $separator = DIRECTORY_SEPARATOR)
 {
 	$base = preg_replace(PATTERN_SLASHES, $separator, $path);
 	$base = rtrim($base, $separator);
+
+	return $base;
+}
+
+
+/**
+ * Cleans up a URI string, removing duplicate slashes, query params and trailing hash params.
+ * @param $uri The input URI.
+ */
+function cleanUri($uri)
+{
+	$base = preg_replace(PATTERN_SLASHES, '/', $uri);
+	$base = preg_replace('/[#|\?].*$/', '', $base);
 
 	return $base;
 }
