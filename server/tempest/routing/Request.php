@@ -73,7 +73,6 @@ class Request extends Route
 
 			if($match !== null)
 			{
-				print_r($params);
 				$this->params = $params;
 				return $match;
 			}

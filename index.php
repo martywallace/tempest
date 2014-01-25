@@ -94,6 +94,5 @@ spl_autoload_register(function($class)
 });
 
 
-
 // Initialize the core Application.
 $application = new \app\Application();

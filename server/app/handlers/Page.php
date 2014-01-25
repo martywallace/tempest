@@ -8,9 +8,9 @@ use \tempest\routing\Response;
 class Page extends Response
 {
 
-	protected function send($request)
+	protected function respond($request)
 	{
-		return $request->get("hello");
+		return "Hello world!";
 	}
 
 }

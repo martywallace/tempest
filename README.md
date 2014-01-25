@@ -33,7 +33,7 @@ class Application extends \tempest\base\Tempest
 Routing &amp; Responses
 --
 
-The value of each item in the <code>$routes</code> array represents a class extending <code>\tempest\routing\Response</code>. Each <code>Response</code> has a <code>send()</code> method which will return the output for that request. When a request is made to the server, the keys in <code>$routes</code> are checked for a match. If there is a match between the request and a key, a <code>Response</code> object will be constructed and its <code>send()</code> method called.
+The value of each item in the <code>$routes</code> array represents a class extending <code>\tempest\routing\Response</code>. Each <code>Response</code> has a <code>respond()</code> method which will return the output for that request. When a request is made to the server, the keys in <code>$routes</code> are checked for a match. If there is a match between the request and a key, a <code>Response</code> object will be constructed and its <code>respond()</code> method called.
 
 In this example, the responses <code>Home</code> and <code>About</code> would be stored within <code>/server/app/pages/</code> and look something like this:
 
@@ -42,7 +42,7 @@ namespace app\pages;
 
 class Home extends \tempest\routing\Response
 {
-    protected function send($request)
+    protected function respond($request)
     {
         return "Hello world!";
     }
