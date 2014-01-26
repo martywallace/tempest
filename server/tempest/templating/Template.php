@@ -21,7 +21,7 @@ class Template
 
 	public function __toString()
 	{
-		return $this->content;
+		return $this->getContent();
 	}
 
 
@@ -58,13 +58,59 @@ class Template
 		// Insert data.
 		foreach($this->tokens as $token)
 		{
-			$find = $token->getMatch();
-			$prop = $token->getBody();
+			$body = $token->getBody();
+			$value = null;
 
-			if(property_exists($data, $prop))
+			if($token->getType() === Token::TYPE_RECURSIVE)
 			{
-				$output->setContent(str_replace($find, $data->$prop, $output->getContent()));
+				$base = $data;
+				foreach($body as $next)
+				{
+					if(is_array($base))
+					{
+						if(array_key_exists($next, $base)) $base = $base[$next];
+						else continue 2;
+					}
+
+					if(is_object($base))
+					{
+						$type = $token->getPartType($next);
+						if($type === Token::TYPE_PROPERTY)
+						{
+							if(property_exists($base, $next)) $base = $base->$next;
+							else continue 2;
+						}
+
+						if($type === Token::TYPE_METHOD)
+						{
+							$next = trim($next, '()');
+
+							if(method_exists($base, $next)) $base = call_user_method($next, $base);
+							else continue 2;
+						}
+					}
+
+					else
+					{
+						// Source object cannot contain properties.
+						continue 2;
+					}
+				}
+
+				$value = $base;
 			}
+
+			else if($token->getType() === Token::TYPE_PROPERTY && property_exists($data, $body)) $value = $data->$body;
+			else if($token->getType() === Token::TYPE_METHOD && method_exists($data, $body)) $value = call_user_method($body, $data);
+			else continue;
+
+			if($value === null) $value = 'null';
+			if($value === false) $value = 'false';
+			if($value === true) $value = 'true';
+			if(is_array($value)) $value = 'array';
+			if(is_object($value)) $value = 'object';
+
+			$output->setContent(str_replace($token->getMatch(), $value, $output->getContent()));
 		}
 
 		if($morph)
@@ -91,6 +137,6 @@ class Template
 	}
 
 
-	public function getContent(){ return $this->content; }
+	public function getContent(){ return $this->content === null ? '' : $this->content; }
 
 }
