@@ -41,7 +41,6 @@ class Tempest
 			if(class_exists($def))
 			{
 				$response = new $def($this);
-
 				if($response instanceof Response)
 				{
 					header("Content-type: {$response->getMime()}");
@@ -50,13 +49,13 @@ class Tempest
 				else
 				{
 					// Constructed object was not a Response.
-					echo "{$this->route->getResponse()} is not a Response object.";
+					echo "<code>{$this->route->getResponse()}</code> is not a Response object.";
 				}
 			}
 			else
 			{
 				// Route was valid, but the Response class was not found.
-				echo "Response {$this->route->getResponse()} not found.";
+				echo "Response <code>{$this->route->getResponse()}</code> not found.";
 			}
 		}
 	}

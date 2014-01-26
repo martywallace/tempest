@@ -5,7 +5,7 @@ namespace tempest\routing;
 use \tempest\routing\Request;
 
 
-class Response
+abstract class Response
 {
 
 	private $app;
@@ -15,6 +15,7 @@ class Response
 	public function __construct($app)
 	{
 		$this->app = $app;
+		$this->setup();
 	}
 
 
