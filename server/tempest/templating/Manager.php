@@ -9,6 +9,7 @@ class Manager
 {
 
 	private static $loaded = array();
+	private static $hooks = array();
 
 
 	public static function load($file)
@@ -28,6 +29,25 @@ class Manager
 		}
 
 		return "Template <code>$file</code> could not be loaded.";
+	}
+
+
+	public static function addHook($name, $callback)
+	{
+		self::$hooks[$name] = $callback;
+	}
+
+
+	public static function hasHook($name)
+	{
+		return array_key_exists($name, self::$hooks);
+	}
+
+
+	public static function applyHook($name, $value, $params = null)
+	{
+		$hook = self::$hooks[$name];
+		return $hook($value, $params);
 	}
 
 }

@@ -19,23 +19,15 @@ class Template
 	}
 
 
-	public function __toString()
-	{
-		return $this->getContent();
-	}
-
-
 	public function load($file)
 	{
 		$this->content = Manager::load($file);
-		$this->findTokens();
 	}
 
 
 	public function setContent($content)
 	{
 		$this->content = $content;
-		$this->findTokens();
 	}
 
 
@@ -46,6 +38,8 @@ class Template
 	 */
 	public function update($data, $morph = true)
 	{
+		$this->findTokens();
+
 		$output = new Template();
 		$output->setContent($this->getContent());
 
@@ -105,10 +99,10 @@ class Template
 			else continue;
 
 			if($value === null) $value = 'null';
-			if($value === false) $value = 'false';
-			if($value === true) $value = 'true';
-			if(is_array($value)) $value = 'array';
-			if(is_object($value)) $value = 'object';
+			else if($value === false) $value = 'false';
+			else if($value === true) $value = 'true';
+			else if(is_array($value)) $value = 'array';
+			else if(is_object($value)) $value = 'object';
 
 			$output->setContent(str_replace($token->getMatch(), $value, $output->getContent()));
 		}

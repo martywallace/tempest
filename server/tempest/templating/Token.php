@@ -6,7 +6,7 @@ namespace tempest\templating;
 class Token
 {
 
-	const PATTERN = '/\{{2}(?!\/)([^\}]+)\}{2}/';
+	const PATTERN = '/\{([^\}]+)\}/';
 
 	const TYPE_PROPERTY = 1;
 	const TYPE_METHOD = 2;
@@ -21,9 +21,9 @@ class Token
 	public function __construct($matches, $index)
 	{
 		$this->match = $matches[0][$index];
-		$this->body = $matches[1][$index];
+		$this->body = trim($matches[1][$index]);
 		$this->type = $this->getPartType($this->body);
-
+		
 		if($this->type === self::TYPE_RECURSIVE) $this->body = preg_split('/\.+/', $this->body);
 		if($this->type === self::TYPE_METHOD) $this->body = trim($this->body, '()');
 	}
