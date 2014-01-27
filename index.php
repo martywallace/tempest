@@ -1,5 +1,10 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
+
+session_start();
+
 // Tempest PHP framework.
 // Author: Marty Wallace.
 // https://github.com/MartyWallace/Tempest
@@ -46,10 +51,16 @@ function import($file)
 	}
 
 	// Look in "/server/vendor/" next.
-	if(file_exists($vendorPath))
+	else if(file_exists($vendorPath))
 	{
 		require_once $vendorPath;
 		return true;
+	}
+
+	else
+	{
+		// Class could not be loaded.
+		die("Class <code>$applicationPath</code> not found.");
 	}
 
 	return false;
@@ -86,7 +97,7 @@ function cleanUri($uri)
 // Autoloader.
 spl_autoload_register(function($class)
 {
-	$class = str_replace('\\', '/', $class);
+	$class = str_replace('\\', DIRECTORY_SEPARATOR, $class);
 	$path = "$class.php";
 
 	import($path);

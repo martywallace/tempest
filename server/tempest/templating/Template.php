@@ -21,13 +21,13 @@ class Template
 
 	public function load($file)
 	{
-		$this->content = Manager::load($file);
+		$this->content = $this->prepare(Manager::load($file));
 	}
 
 
 	public function setContent($content)
 	{
-		$this->content = $content;
+		$this->content = $this->prepare($content);
 	}
 
 
@@ -128,6 +128,12 @@ class Template
 			$token = new Token($matches, $i);
 			$this->tokens[] = $token;
 		}
+	}
+
+
+	private function prepare($input)
+	{
+		return str_replace('~/', CLIENT_ROOT, $input);
 	}
 
 
