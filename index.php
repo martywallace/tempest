@@ -1,13 +1,9 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', 'On');
-
-session_start();
-
 // Tempest PHP framework.
 // Author: Marty Wallace.
 // https://github.com/MartyWallace/Tempest
+session_start();
 
 
 // Global constants.

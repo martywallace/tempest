@@ -79,7 +79,7 @@ class Template
 						{
 							$next = trim($next, '()');
 
-							if(method_exists($base, $next)) $base = call_user_method($next, $base);
+							if(method_exists($base, $next)) $base = $base->$next();
 							else continue 2;
 						}
 					}
@@ -95,7 +95,7 @@ class Template
 			}
 
 			else if($token->getType() === Token::TYPE_PROPERTY && property_exists($data, $body)) $value = $data->$body;
-			else if($token->getType() === Token::TYPE_METHOD && method_exists($data, $body)) $value = call_user_method($body, $data);
+			else if($token->getType() === Token::TYPE_METHOD && method_exists($data, $body)) $value = $data->$body();
 			else continue;
 
 			if($value === null) $value = 'null';
