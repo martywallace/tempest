@@ -3,25 +3,15 @@
 namespace app\handlers;
 
 use \tempest\routing\Response;
-use \tempest\templating\Template;
+use \tempest\routing\Request;
 
 
 class Page extends Response
 {
 
-	protected function respond($request)
+	protected function respond(Request $request)
 	{
-		$template = new Template("template.html");
-		$template->update($this);
-
-		return $template->getContent();
-	}
-
-
-	public function getContent()
-	{
-		$template = new Template("home.html");
-		return $template->getContent();
+		return APP_ROOT . "<br>" . CLIENT_ROOT;
 	}
 
 }
