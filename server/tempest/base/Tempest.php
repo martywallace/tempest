@@ -49,7 +49,7 @@ class Tempest
 				else
 				{
 					// Constructed object was not a Response.
-					echo "<code>{$this->route->getResponse()}</code> is not a Response object.";
+					echo "<code>{$this->route->getResponse()}</code> must be an instance of <code>Response</code>.";
 				}
 			}
 			else

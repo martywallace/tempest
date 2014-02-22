@@ -11,7 +11,8 @@ class Application extends Tempest
 	protected function setup()
 	{
 		$routes = array(
-			"home" => "app.handlers.Page"
+			"home" => "app.handlers.Page",
+			"test/[x]" => "app.handlers.Page"
 		);
 
 		$this->getRouter()->map($routes);

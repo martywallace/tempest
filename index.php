@@ -11,6 +11,7 @@ define('PATTERN_SLASHES', '/[\\|\/]+/');
 
 define('GET', 'get');
 define('POST', 'post');
+define('NAMED', 'named');
 
 define('MIME_TEXT', 'text/plain');
 define('MIME_HTML', 'text/html');
@@ -54,6 +55,7 @@ function cleanUri($uri)
 {
 	$base = preg_replace(PATTERN_SLASHES, '/', $uri);
 	$base = preg_replace('/[#|\?].*$/', '', $base);
+	$base = rtrim($base, '/');
 
 	return $base;
 }

@@ -9,7 +9,7 @@ abstract class Response
 {
 
 	private $app;
-	protected $mime = MIME_HTML;
+	private $mime = MIME_HTML;
 
 
 	public function __construct($app)
@@ -21,6 +21,7 @@ abstract class Response
 
 	protected function setup(){ /* Virtual */ }
 	protected function respond(Request $request){ /* Virtual */ }
+	protected function setMime($value){ $this->mime = $value; }
 
 
 	public function getApp(){ return $this->app; }

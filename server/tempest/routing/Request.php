@@ -13,21 +13,16 @@ class Request extends Route
 	private $params = array();
 
 
-	public function post($field)
+	public function param($type, $name, $default = null)
 	{
-		return isset($_POST[$field]) ? $_POST[$field] : null;
-	}
+		switch($type)
+		{
+			case POST: return isset($_POST[$name]) ? $_POST[$name] : $default; break;
+			case GET: return isset($_GET[$name]) ? $_GET[$name] : $default; break;
+			case NAMED: return array_key_exists($name, $this->params) ? $this->params[$name] : $default; break;
+		}
 
-
-	public function get($field)
-	{
-		return isset($_GET[$field]) ? $_GET[$field] : null;
-	}
-
-
-	public function named($field)
-	{
-		return array_key_exists($field, $this->params) ? $this->params[$field] : null;
+		return null;
 	}
 
 
