@@ -8,6 +8,8 @@ session_start();
 
 // Global constants.
 define('PATTERN_SLASHES', '/[\\|\/]+/');
+define('PATTERN_NAMED_ROUTE_PART', '/^\[[^\]]+\]/');
+define('PATTERN_TPL_TOKEN', '/\{{2}\s?([\w]+)(\([\w\'\"\,]*\))*\s?\}{2}/');
 
 define('GET', 'get');
 define('POST', 'post');
@@ -29,6 +31,7 @@ define('APP_ROOT', normalizePath(__DIR__));
 define('CLIENT_ROOT', normalizePath(dirname($_SERVER["PHP_SELF"]), '/'));
 define('REQUEST_METHOD', strtolower($_SERVER["REQUEST_METHOD"]));
 define('REQUEST_URI', cleanUri(str_replace(CLIENT_ROOT, '', $_SERVER["REQUEST_URI"])));
+define('TEMPLATE_DIR', APP_ROOT . 'view' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
 
 
 /**
@@ -38,7 +41,7 @@ define('REQUEST_URI', cleanUri(str_replace(CLIENT_ROOT, '', $_SERVER["REQUEST_UR
  */
 function normalizePath($path, $separator = DIRECTORY_SEPARATOR)
 {
-	if(strlen($path) === 0 || $path === '/' || $path === '\\') return $separator;
+	if(strlen($path) === 0 || $path === '/' || $path === '\\' || $path === $separator) return $separator;
 
 	$base = preg_replace(PATTERN_SLASHES, $separator, $path);
 	$base = rtrim($base, $separator);

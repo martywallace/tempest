@@ -18,7 +18,7 @@ class RoutePart
 	{
 		$this->base = $base;
 
-		if(preg_match('/^\[[^\]]+\]/', $this->base))
+		if(preg_match(PATTERN_NAMED_ROUTE_PART, $this->base))
 		{
 			// Named parameter.
 			$this->base = trim($this->base, '[]');

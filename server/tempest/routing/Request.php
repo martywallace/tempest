@@ -4,7 +4,6 @@ namespace tempest\routing;
 
 use \tempest\routing\Router;
 use \tempest\routing\Route;
-use \tempest\routing\RoutePart;
 
 
 class Request extends Route
@@ -22,7 +21,7 @@ class Request extends Route
 			case NAMED: return array_key_exists($name, $this->params) ? $this->params[$name] : $default; break;
 		}
 
-		return null;
+		return $default;
 	}
 
 
