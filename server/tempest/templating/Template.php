@@ -3,7 +3,6 @@
 namespace tempest\templating;
 
 use \tempest\templating\Token;
-use \tempest\templating\Behaviour;
 
 
 class Template
@@ -26,12 +25,18 @@ class Template
 	}
 
 
-	public static function merge($base, $data, array $behaviours = null)
+	public static function merge($base, $data)
 	{
 		$tokens = self::getTokens($base);
 
-		if(is_array($data)) return self::mergeArray($base, $data, $tokens, $behaviours);
-		return self::mergeObject($base, $data, $tokens, $behaviours);
+		if(is_array($data)) return self::mergeArray($base, $data, $tokens);
+		return self::mergeObject($base, $data, $tokens);
+	}
+
+
+	public static function combine($chunks)
+	{
+		return implode($chunks);
 	}
 
 
@@ -43,16 +48,12 @@ class Template
 
 	private static function getTokens($base)
 	{
-		preg_match_all(PATTERN_TPL_TOKEN, $base, $matches);
+		preg_match_all(PATTERN_TOKEN, $base, $matches);
 		
 		$tokens = array();
 		for($i = 0; $i < count($matches[0]); $i++)
 		{
-			$tokens[] = new Token(
-				$matches[0][$i],
-				$matches[1][$i],
-				$matches[2][$i]
-			);
+			$tokens[] = new Token($matches[0][$i], $matches[1][$i], $matches[2][$i]);
 		}
 
 
@@ -60,14 +61,25 @@ class Template
 	}
 
 
-	private static function mergeArray($base, $data, $tokens, array $behaviours = null)
+	private static function mergeArray($base, $data, $tokens)
 	{
 		foreach($tokens as $token)
 		{
-			if(array_key_exists($token->getName(), $data))
+			$value = $data;
+			foreach($token->getParts() as $part)
 			{
-				$base = $token->replace($base, $data[$token->getName()]);
+				if(array_key_exists($part, $value))
+				{
+					$value = $value[$part];
+				}
+				else
+				{
+					// Incomplete path, stop processing token.
+					continue 2;
+				}
 			}
+
+			$base = $token->replace($base, $value);
 		}
 
 
@@ -75,8 +87,11 @@ class Template
 	}
 
 
-	private static function mergeObject($base, $data, $tokens, array $behaviours = null)
+	private static function mergeObject($base, $data, $tokens)
 	{
+		// TODO.
+		//
+
 		return $base;
 	}
 

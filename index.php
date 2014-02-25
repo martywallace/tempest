@@ -8,8 +8,9 @@ session_start();
 
 // Global constants.
 define('PATTERN_SLASHES', '/[\\|\/]+/');
+define('PATTERN_DOTS', '/\.+/');
 define('PATTERN_NAMED_ROUTE_PART', '/^\[[^\]]+\]/');
-define('PATTERN_TPL_TOKEN', '/\{{2}\s?([\w]+)(\([\w\'\"\,]*\))*\s?\}{2}/');
+define('PATTERN_TOKEN', '/\{{2}\s?([\w\.]+)(\([\w\'\"\,]*\))*\s?\}{2}/');
 
 define('GET', 'get');
 define('POST', 'post');
