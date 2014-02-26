@@ -21,9 +21,9 @@ class DemoPage extends Response
 	{
 		$html = Template::load("demo.html");
 
-		for($i = 0; $i < 100000; $i++)
+		for($i = 0; $i < 10000; $i++)
 		{
-			$html = Template::injectA($html, array(
+			$html = Template::inject($html, array(
 				"first" => $request->param(GET, 'first', 'Steve'),
 				"last" => $request->param(GET, 'last', 'Stevenson'),
 				"marty" => array(
@@ -36,7 +36,8 @@ class DemoPage extends Response
 				)
 			));
 
-			$html = Template::injectB($html, 'demo', new DemoModel());
+			$html = Template::inject($html, new DemoModel(), 'demo');
+			$html = Template::inject($html, new DemoModel());
 		}
 
 

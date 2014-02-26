@@ -7,6 +7,7 @@
 	<body>
 		<p>Hello {{ first }} {{ last }}.</p>
 		<p>Hello {{ marty.first }} {{ marty.last }}, {{ marty.age.years }} {{ marty.model.inner.first }}.</p>
-		<p>{{ @demo.array.test }} {{ @demo.last }}</p>
+		<p>{{ @demo.array.test }} {{ @demo.getNewModel().inner.getNewModel().getNewModel() }}</p>
+		<p>{{ another }}</p>
 	</body>
 </html>

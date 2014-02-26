@@ -31,46 +31,28 @@ class Template
 	}
 
 
-	public static function injectA($base, $data)
+	public static function inject($base, $data, $context = null)
 	{
 		foreach(self::getTokens($base) as $token)
 		{
 			$value = $data;
+
+			if($context === null && $token->isContextual()) continue;
+			if($context !== null && !$token->isContextual()) continue;
+			if($context !== null && $token->getContext() !== $context) continue;
+
 			foreach($token->getParts() as $part)
 			{
-				if($token->isContextual()) continue 2;
-
 				if(is_array($value) && array_key_exists($part, $value)) $value = $value[$part];
 				else if(is_object($value) && property_exists($value, $part)) $value = $value->$part;
-				else continue 2;	
+				else if(is_object($value) && method_exists($value, rtrim($part, '()'))) $value = $value->{rtrim($part, '()')}();
+
+				else continue 2;
 			}
 
 			$base = $token->replace($base, $value);
 		}
 
-
-		return $base;
-	}
-
-
-	public static function injectB($base, $context, $data)
-	{
-		foreach(self::getTokens($base) as $token)
-		{
-			if($token->getContext() === $context)
-			{
-				// Token matches context.
-				$value = $data;
-				foreach($token->getParts() as $part)
-				{
-					if(is_object($value) && property_exists($value, $part)) $value = $value->$part;
-					else if(is_array($value) && array_key_exists($part, $value)) $value = $value[$part];
-					else continue 2;
-				}
-
-				$base = $token->replace($base, $value);
-			}
-		}
 
 		return $base;
 	}

@@ -11,6 +11,7 @@ class DemoModel
 	public $age = 22;
 	public $inner;
 	public $array = array("test" => 5);
+	public $another = "Working";
 
 
 	public function __construct($first = true)
@@ -23,6 +24,12 @@ class DemoModel
 	public function getFullName()
 	{
 		return "$this->first $this->last";
+	}
+
+
+	public function getNewModel()
+	{
+		return new DemoModel();
 	}
 
 }
