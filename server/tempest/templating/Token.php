@@ -7,15 +7,15 @@ class Token
 {
 
 	private $base;
+	private $context;
 	private $parts;
-	private $params;
 
 
-	public function __construct($base, $prop, $params)
+	public function __construct($base, $context, $prop)
 	{
 		$this->base = $base;
-		$this->parts = preg_split(PATTERN_DOTS, $prop);
-		$this->params = $params;
+		$this->context = ltrim($context, '@');
+		$this->parts = preg_split(PATTERN_DOTS, trim($prop, '.'));
 	}
 
 
@@ -38,14 +38,12 @@ class Token
 	}
 
 
-	public function isFunction(){ return strlen($this->params) > 0; }
+	public function isContextual(){ return strlen($this->context) > 0; }
 	public function isMultipart(){ return count($this->parts) > 1; }
 
 
 	public function getBase(){ return $this->base; }
+	public function getContext(){ return $this->context; }
 	public function getParts(){ return $this->parts; }
-	public function getFirstPart(){ return $this->parts[0]; }
-	public function getTotalParts(){ return count($this->parts); }
-	public function getParams(){ return $this->params; }
 
 }

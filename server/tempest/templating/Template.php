@@ -25,18 +25,54 @@ class Template
 	}
 
 
-	public static function merge($base, $data)
-	{
-		$tokens = self::getTokens($base);
-
-		if(is_array($data)) return self::mergeArray($base, $data, $tokens);
-		return self::mergeObject($base, $data, $tokens);
-	}
-
-
 	public static function combine($chunks)
 	{
 		return implode($chunks);
+	}
+
+
+	public static function injectA($base, $data)
+	{
+		foreach(self::getTokens($base) as $token)
+		{
+			$value = $data;
+			foreach($token->getParts() as $part)
+			{
+				if($token->isContextual()) continue 2;
+
+				if(is_array($value) && array_key_exists($part, $value)) $value = $value[$part];
+				else if(is_object($value) && property_exists($value, $part)) $value = $value->$part;
+				else continue 2;	
+			}
+
+			$base = $token->replace($base, $value);
+		}
+
+
+		return $base;
+	}
+
+
+	public static function injectB($base, $context, $data)
+	{
+		foreach(self::getTokens($base) as $token)
+		{
+			if($token->getContext() === $context)
+			{
+				// Token matches context.
+				$value = $data;
+				foreach($token->getParts() as $part)
+				{
+					if(is_object($value) && property_exists($value, $part)) $value = $value->$part;
+					else if(is_array($value) && array_key_exists($part, $value)) $value = $value[$part];
+					else continue 2;
+				}
+
+				$base = $token->replace($base, $value);
+			}
+		}
+
+		return $base;
 	}
 
 
@@ -53,46 +89,15 @@ class Template
 		$tokens = array();
 		for($i = 0; $i < count($matches[0]); $i++)
 		{
-			$tokens[] = new Token($matches[0][$i], $matches[1][$i], $matches[2][$i]);
+			$tokens[] = new Token(
+				$matches[0][$i],
+				$matches[1][$i],
+				$matches[2][$i]
+			);
 		}
 
 
 		return $tokens;
-	}
-
-
-	private static function mergeArray($base, $data, $tokens)
-	{
-		foreach($tokens as $token)
-		{
-			$value = $data;
-			foreach($token->getParts() as $part)
-			{
-				if(array_key_exists($part, $value))
-				{
-					$value = $value[$part];
-				}
-				else
-				{
-					// Incomplete path, stop processing token.
-					continue 2;
-				}
-			}
-
-			$base = $token->replace($base, $value);
-		}
-
-
-		return $base;
-	}
-
-
-	private static function mergeObject($base, $data, $tokens)
-	{
-		// TODO.
-		//
-
-		return $base;
 	}
 
 }
