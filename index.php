@@ -69,8 +69,8 @@ function cleanUri($uri)
 spl_autoload_register(function($class)
 {
 	$class = str_replace('\\', DIRECTORY_SEPARATOR, $class);
-	$applicationPath = APP_ROOT . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . "$class.php";
-	$vendorPath = APP_ROOT . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . "$class.php";
+	$applicationPath = APP_ROOT . 'server' . DIRECTORY_SEPARATOR . "$class.php";
+	$vendorPath = APP_ROOT . 'vendor' . DIRECTORY_SEPARATOR . "$class.php";
 
 	// Try normal path using full namespace first.
 	if(file_exists($applicationPath)) require_once $applicationPath;
