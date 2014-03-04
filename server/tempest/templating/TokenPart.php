@@ -3,7 +3,7 @@
 namespace tempest\templating;
 
 
-class PartInfo
+class TokenPart
 {
 
 	private $base;

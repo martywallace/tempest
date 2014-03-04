@@ -15,7 +15,12 @@ class Token
 	{
 		$this->base = $base;
 		$this->context = ltrim($context, '@');
-		$this->parts = preg_split(PATTERN_DOTS, trim($prop, '.'));
+		$parts = preg_split(PATTERN_DOTS, trim($prop, '.'));
+
+		foreach($parts as $p)
+		{
+			$this->parts[] = new TokenPart($p);
+		}
 	}
 
 

@@ -3,7 +3,7 @@
 namespace tempest\templating;
 
 use \tempest\templating\Token;
-use \tempest\templating\PartInfo;
+use \tempest\templating\TokenPart;
 
 
 class Template
@@ -44,11 +44,11 @@ class Template
 
 			foreach($token->getParts() as $part)
 			{
-				$partInfo = new PartInfo($part);
+				$p = $part->getBase();
 
-				if(is_array($value) && array_key_exists($part, $value)) $value = $value[$part];
-				else if(is_object($value) && !$partInfo->isFunction() && property_exists($value, $part)) $value = $value->$part;
-				else if(is_object($value) && $partInfo->isFunction() && method_exists($value, $partInfo->getName())) $value = $value->{$partInfo->getName()}();
+				if(is_array($value) && array_key_exists($p, $value)) $value = $value[$p];
+				else if(is_object($value) && !$part->isFunction() && property_exists($value, $p)) $value = $value->$p;
+				else if(is_object($value) && $part->isFunction() && method_exists($value, $part->getName())) $value = $value->{$part->getName()}();
 
 				else continue 2;
 			}
