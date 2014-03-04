@@ -17,7 +17,7 @@ class DemoPage extends Response
 	}
 
 
-	protected function respond(Request $request)
+	public function index(Request $request)
 	{
 		$html = Template::load("demo.html");
 
@@ -42,6 +42,12 @@ class DemoPage extends Response
 
 
 		return $html;
+	}
+
+
+	public function about(Request $request)
+	{
+		return 'About page.';
 	}
 
 }

@@ -7,7 +7,7 @@ session_start();
 
 
 // Global constants.
-define('PATTERN_SLASHES', '/[\\|\/]+/');
+define('PATTERN_SLASHES', '/[\\\|\/]+/');
 define('PATTERN_DOTS', '/\.+/');
 define('PATTERN_NAMED_ROUTE_PART', '/^\[[^\]]+\]/');
 define('PATTERN_TOKEN', '/\{{2}\s?(\@\w+)*([\w\.\(\)]+)*\s?\}{2}/');
@@ -32,7 +32,9 @@ define('APP_ROOT', normalizePath(__DIR__));
 define('CLIENT_ROOT', normalizePath(dirname($_SERVER["PHP_SELF"]), '/'));
 define('REQUEST_METHOD', strtolower($_SERVER["REQUEST_METHOD"]));
 define('REQUEST_URI', cleanUri(str_replace(CLIENT_ROOT, '', $_SERVER["REQUEST_URI"])));
+define('RESPONSE_DIR', 'app\\responses\\');
 define('TEMPLATE_DIR', APP_ROOT . 'view' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
+define('DEFAULT_RESPONSE_NAME', 'index');
 
 
 /**
@@ -76,6 +78,14 @@ spl_autoload_register(function($class)
 	if(file_exists($applicationPath)) require_once $applicationPath;
 	else if(file_exists($vendorPath)) require_once $vendorPath;
 	else die("Class <code>$applicationPath</code> not found.");
+
+});
+
+
+// Error handler.
+set_error_handler(function($number, $message, $file, $line)
+{
+	echo "<p class='error'>$message</p>";
 
 });
 

@@ -12,6 +12,7 @@ class DemoModel
 	public $inner;
 	public $array = array("test" => 5);
 	public $another = "Working";
+	public $getFullName = 10;
 
 
 	public function __construct($first = true)

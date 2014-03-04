@@ -29,33 +29,42 @@ class Tempest
 		if($this->route === null)
 		{
 			// No valid Route was found.
-			header("HTTP/1.0 404 Not Found");
-			die();
+			echo "The page was not found.";
 		}
 		else
 		{
 			// Matched a Route, construct Response and prepare output.
-			$def = $this->route->getResponse();
-			$def = '\\' . str_replace('.', '\\', $def);
+			$rclass = $this->route->getResponseClass();
+			$rclass = '\\' . str_replace('.', '\\', RESPONSE_DIR . $rclass);
 
-			if(class_exists($def))
+			$rmethod = $this->route->getResponseMethod();
+
+			if(class_exists($rclass))
 			{
-				$response = new $def($this);
+				$response = new $rclass($this);
 				if($response instanceof Response)
 				{
-					header("Content-type: {$response->getMime()}");
-					echo $response->getOutput();
+					if(method_exists($response, $rmethod))
+					{
+						$this->setMime($response->getMime());
+						echo $response->$rmethod($this->router->getRequest());
+					}
+					else
+					{
+						// Response did not have the relevant function.
+						trigger_error("Response does not implement <code>$rmethod</code>.");
+					}
 				}
 				else
 				{
 					// Constructed object was not a Response.
-					echo "<code>{$this->route->getResponse()}</code> must be an instance of <code>Response</code>.";
+					trigger_error("<code>{$this->route->getResponse()}</code> must be an instance of <code>Response</code>.");
 				}
 			}
 			else
 			{
 				// Route was valid, but the Response class was not found.
-				echo "Response <code>{$this->route->getResponse()}</code> not found.";
+				trigger_error("Response <code>{$this->route->getResponse()}</code> not found.");
 			}
 		}
 	}
@@ -66,5 +75,6 @@ class Tempest
 
 	public function getRouter(){ return $this->router; }
 	public function getRoute(){ return $this->route; }
+	public function setMime($value){ header("Content-type: $value"); }
 
 }

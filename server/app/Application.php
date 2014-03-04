@@ -11,7 +11,8 @@ class Application extends Tempest
 	protected function setup()
 	{
 		$this->getRouter()->map(array(
-			"home" => "app.responses.DemoPage"
+			"index" => "DemoPage",
+			"about" => "DemoPage::about"
 		));
 	}
 	

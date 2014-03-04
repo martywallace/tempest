@@ -10,13 +10,17 @@ class Route
 
 	private $pattern;
 	private $parts = array();
-	private $response;
+	private $responseClass;
+	private $responseMethod;
 
 
 	public function __construct($pattern, $response = null)
 	{
 		$this->pattern = cleanUri($pattern);
-		$this->response = $response;
+
+		$response = preg_split('/::/', $response);
+		$this->responseClass = $response[0];
+		$this->responseMethod = count($response) === 2 ? $response[1] : DEFAULT_RESPONSE_NAME;
 
 		$parts = preg_split(PATTERN_SLASHES, $this->pattern);
 		foreach($parts as $part)
@@ -27,16 +31,10 @@ class Route
 	}
 
 
-	public function getPart($index)
-	{
-		return ($index >= 0 && $index < count($this->parts)) ? $this->parts[$index] : null;
-	}
-
-
 	public function getPattern(){ return $this->pattern; }
 	public function getParts(){ return $this->parts; }
-	public function getResponse(){ return $this->response; }
+	public function getResponseClass(){ return $this->responseClass; }
+	public function getResponseMethod(){ return $this->responseMethod; }
 	public function getLastPart(){ return end($this->parts); }
-	public function getTotalParts(){ return count($this->parts); }
 
 }

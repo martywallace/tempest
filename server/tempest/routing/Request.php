@@ -29,7 +29,7 @@ class Request extends Route
 	{
 		foreach($router->getRoutes() as $route)
 		{
-			if($route->getTotalParts() !== $this->getTotalParts())
+			if(count($route->getParts()) !== count($this->getParts()))
 			{
 				// Don't bother if the Route lengths don't match.
 				// Move to the next Route.
@@ -41,10 +41,10 @@ class Request extends Route
 			$params = array();
 
 			// Compare each part of the Route to each part of the Request.
-			for($i = 0; $i < $route->getTotalParts(); $i++)
+			for($i = 0; $i < count($route->getParts()); $i++)
 			{
-				$localPart = $this->getPart($i);
-				$routePart = $route->getPart($i);
+				$localPart = $this->getParts()[$i];
+				$routePart = $route->getParts()[$i];
 
 				if($localPart->matches($routePart))
 				{
