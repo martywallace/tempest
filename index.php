@@ -77,18 +77,11 @@ spl_autoload_register(function($class)
 	// Try normal path using full namespace first.
 	if(file_exists($applicationPath)) require_once $applicationPath;
 	else if(file_exists($vendorPath)) require_once $vendorPath;
-	else die("Class <code>$applicationPath</code> not found.");
-
-});
-
-
-// Error handler.
-set_error_handler(function($number, $message, $file, $line)
-{
-	echo "<p class='error'>$message</p>";
+	else trigger_error("Class <code>$applicationPath</code> not found.");
 
 });
 
 
 // Initialize the core Application.
-$application = new \app\Application();
+$errorHandler = new \tempest\base\ErrorHandler();
+$application = new \app\Application($errorHandler);

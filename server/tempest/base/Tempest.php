@@ -2,6 +2,7 @@
 
 namespace tempest\base;
 
+use \tempest\base\ErrorHandler;
 use \tempest\routing\Router;
 use \tempest\routing\Response;
 
@@ -11,14 +12,29 @@ class Tempest
 	
 	private $router;
 	private $route;
+	private $output;
+	private $errorHandler;
 
 
-	public function __construct()
+	public function __construct(ErrorHandler $errorHandler)
 	{
+		$this->errorHandler = $errorHandler;
 		$this->router = new Router();
 
 		$this->setup();
 		$this->run();
+
+		if($errorHandler->hasErrors())
+		{
+			// Display application errors.
+			$this->setMime(MIME_HTML);
+			$errorHandler->displayErrors();
+		}
+		else
+		{
+			// Print output.
+			echo $this->output;
+		}
 	}
 
 
@@ -29,7 +45,7 @@ class Tempest
 		if($this->route === null)
 		{
 			// No valid Route was found.
-			echo "The page was not found.";
+			trigger_error("The route <code>" . REQUEST_URI . "</code> is not mapped to a response.");
 		}
 		else
 		{
@@ -47,7 +63,7 @@ class Tempest
 					if(method_exists($response, $rmethod))
 					{
 						$this->setMime($response->getMime());
-						echo $response->$rmethod($this->router->getRequest());
+						$this->output = $response->$rmethod($this->router->getRequest());
 					}
 					else
 					{
