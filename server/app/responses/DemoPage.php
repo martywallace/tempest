@@ -47,6 +47,11 @@ class DemoPage extends Response
 
 	public function about(Request $request)
 	{
+		$html = Template::load("win/hello.html");
+		$html = Template::load("win/ggfgfd.html");
+		$html = Template::load("gfgdf.html");
+		new \PDO();
+
 		return 'About page.';
 	}
 

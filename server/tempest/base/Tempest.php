@@ -45,7 +45,7 @@ class Tempest
 		if($this->route === null)
 		{
 			// No valid Route was found.
-			trigger_error("The route <code>" . REQUEST_URI . "</code> is not mapped to a response.");
+			trigger_error("Input route <em><code>" . REQUEST_URI . "</code></em> did not provide a response.");
 		}
 		else
 		{
@@ -68,19 +68,19 @@ class Tempest
 					else
 					{
 						// Response did not have the relevant function.
-						trigger_error("Response does not implement <code>$rmethod</code>.");
+						trigger_error("<code>{$this->route->getResponseClass()}</code> does not define a function <em><code>$rmethod</code></em>.");
 					}
 				}
 				else
 				{
 					// Constructed object was not a Response.
-					trigger_error("<code>{$this->route->getResponse()}</code> must be an instance of <code>Response</code>.");
+					trigger_error("<em><code>{$this->route->getResponseClass()}</code></em> is not an instance of <code>Response</code>.");
 				}
 			}
 			else
 			{
 				// Route was valid, but the Response class was not found.
-				trigger_error("Response <code>{$this->route->getResponse()}</code> not found.");
+				trigger_error("Response <em><code>{$this->route->getResponseClass()}</code></em> not found.");
 			}
 		}
 	}

@@ -15,14 +15,29 @@ class Template
 	public static function load($file)
 	{
 		$file = preg_replace(PATTERN_SLASHES, DIRECTORY_SEPARATOR, $file);
+		$path = TEMPLATE_DIR . $file;
 
 		if(!array_key_exists($file, self::$cache))
 		{
-			self::$cache[$file] = self::prepare(file_get_contents(TEMPLATE_DIR . $file));
+			if(file_exists($path))
+			{
+				self::$cache[$file] = self::prepare(file_get_contents($path));
+			}
+			else
+			{
+				trigger_error("Template <em><code>$file</code></em> does not exist.");
+				return '';
+			}
 		}
 
 
 		return self::$cache[$file];
+	}
+
+
+	public static function prepare($base)
+	{
+		return str_replace("~/", CLIENT_ROOT, $base);
 	}
 
 
@@ -58,12 +73,6 @@ class Template
 
 
 		return $base;
-	}
-
-
-	private static function prepare($base)
-	{
-		return str_replace("~/", CLIENT_ROOT, $base);
 	}
 
 
