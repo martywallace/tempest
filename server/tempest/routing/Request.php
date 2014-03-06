@@ -27,15 +27,16 @@ class Request extends Route
 
 	public function findMatch(Router $router)
 	{
+		$possibleRoutes = array();
 		foreach($router->getRoutes() as $route)
 		{
+			$totalScore = 0;
 			if(count($route->getParts()) !== count($this->getParts()))
 			{
 				// Don't bother if the Route lengths don't match.
 				// Move to the next Route.
 				continue;
 			}
-
 
 			$match = null;
 			$params = array();
@@ -45,10 +46,13 @@ class Request extends Route
 			{
 				$localPart = $this->getPart($i);
 				$routePart = $route->getPart($i);
+				$score = $localPart->compare($routePart);
 
-				if($localPart->matches($routePart))
+				if($score > 0)
 				{
 					$match = $route;
+					$totalScore += $score;
+
 					if($routePart->getType() === RoutePart::TYPE_NAMED)
 					{
 						// Associated named part with request value.
@@ -68,12 +72,28 @@ class Request extends Route
 			if($match !== null)
 			{
 				$this->params = $params;
-				return $match;
+				$possibleRoutes[] = array("score" => $totalScore, "match" => $match);
 			}
 		}
 
 
+		usort($possibleRoutes, array($this, 'sortPossibleRoutes'));
+
+		if(count($possibleRoutes) === 1 || (count($possibleRoutes) > 1 && $possibleRoutes[0]["score"] !== $possibleRoutes[1]["score"]))
+		{
+			$matchedRoute = array_shift($possibleRoutes);
+			return $matchedRoute["match"];
+		}
+
+		else trigger_error("Ambiguous request - " . count($possibleRoutes) . " routes matched.");
+
 		return null;
+	}
+
+
+	private function sortPossibleRoutes($a, $b)
+	{
+		return $a["score"] < $b["score"];
 	}
 
 }

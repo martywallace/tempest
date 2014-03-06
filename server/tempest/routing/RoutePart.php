@@ -29,12 +29,12 @@ class RoutePart
 	}
 
 
-	public function matches(RoutePart $part)
+	public function compare(RoutePart $part)
 	{
-		if($this->getType() === self::TYPE_NAMED || $part->getType() === self::TYPE_NAMED) return true;
-		if($this->getBase() === $part->getBase()) return true;
-
-		return false;
+		if($this->getType() === self::TYPE_NAMED || $part->getType() === self::TYPE_NAMED) return 1;
+		if($this->getBase() === $part->getBase()) return 2;
+		
+		return 0;
 	}
 
 
