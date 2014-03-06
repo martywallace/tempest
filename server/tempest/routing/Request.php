@@ -43,8 +43,8 @@ class Request extends Route
 			// Compare each part of the Route to each part of the Request.
 			for($i = 0; $i < count($route->getParts()); $i++)
 			{
-				$localPart = $this->getParts()[$i];
-				$routePart = $route->getParts()[$i];
+				$localPart = $this->getPart($i);
+				$routePart = $route->getPart($i);
 
 				if($localPart->matches($routePart))
 				{

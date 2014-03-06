@@ -31,6 +31,12 @@ class Route
 	}
 
 
+	public function getPart($index)
+	{
+		return $this->parts[$index];
+	}
+
+
 	public function getPattern(){ return $this->pattern; }
 	public function getParts(){ return $this->parts; }
 	public function getResponseClass(){ return $this->responseClass; }
