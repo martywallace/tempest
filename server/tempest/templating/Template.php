@@ -4,12 +4,14 @@ namespace tempest\templating;
 
 use \tempest\templating\Token;
 use \tempest\templating\TokenPart;
+use \tempest\templating\BaseHookHandler;
 
 
 class Template
 {
 
 	private static $cache = array();
+	private static $hookHandler = null;
 
 
 	public static function load($file)
@@ -25,7 +27,7 @@ class Template
 			}
 			else
 			{
-				trigger_error("Template <em><code>$file</code></em> does not exist.");
+				trigger_error("Template <code>$file</code> does not exist.");
 				return '';
 			}
 		}
@@ -78,20 +80,20 @@ class Template
 
 	private static function getTokens($base)
 	{
+		$tokens = array();
 		preg_match_all(PATTERN_TOKEN, $base, $matches);
 		
-		$tokens = array();
 		for($i = 0; $i < count($matches[0]); $i++)
 		{
-			$tokens[] = new Token(
-				$matches[0][$i],
-				$matches[1][$i],
-				$matches[2][$i]
-			);
+			$tokens[] = new Token($matches, $i);
 		}
 
 
 		return $tokens;
 	}
+
+
+	public static function getHookHandler(){ return self::$hookHandler; }
+	public static function setHookHandler(BaseHookHandler $value){ self::$hookHandler = $value; }
 
 }

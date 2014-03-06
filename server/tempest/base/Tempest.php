@@ -5,6 +5,8 @@ namespace tempest\base;
 use \tempest\base\ErrorHandler;
 use \tempest\routing\Router;
 use \tempest\routing\Response;
+use \tempest\templating\Template;
+use \tempest\templating\BaseHookHandler;
 
 
 class Tempest
@@ -12,12 +14,15 @@ class Tempest
 	
 	private $router;
 	private $route;
-	private $output;
+	private $outputMime;
+	private $outputData;
 	private $errorHandler;
 
 
 	public function __construct(ErrorHandler $errorHandler)
 	{
+		Template::setHookHandler(new BaseHookHandler());
+
 		$this->errorHandler = $errorHandler;
 		$this->router = new Router();
 
@@ -33,7 +38,8 @@ class Tempest
 		else
 		{
 			// Print output.
-			echo $this->output;
+			$this->setMime($this->outputMime);
+			echo $this->outputData;
 		}
 	}
 
@@ -45,42 +51,43 @@ class Tempest
 		if($this->route === null)
 		{
 			// No valid Route was found.
-			trigger_error("Input route <em><code>" . REQUEST_URI . "</code></em> did not provide a response.");
+			trigger_error("Input route <code>" . REQUEST_URI . "</code> did not provide a response.");
 		}
 		else
 		{
 			// Matched a Route, construct Response and prepare output.
-			$rclass = $this->route->getResponseClass();
-			$rclass = '\\' . str_replace('.', '\\', RESPONSE_DIR . $rclass);
+			$responseClass = $this->route->getResponseClass();
+			$responseMethod = $this->route->getResponseMethod();
+			$concreteResponseClass = '\\' . str_replace('.', '\\', RESPONSE_DIR . $responseClass);
 
-			$rmethod = $this->route->getResponseMethod();
-
-			if(class_exists($rclass))
+			if(class_exists($concreteResponseClass))
 			{
-				$response = new $rclass($this);
+				$request = $this->router->getRequest();
+				$response = new $concreteResponseClass($this, $request);
+
 				if($response instanceof Response)
 				{
-					if(method_exists($response, $rmethod))
+					if(method_exists($response, $responseMethod))
 					{
-						$this->setMime($response->getMime());
-						$this->output = $response->$rmethod($this->router->getRequest());
+						$this->outputMime = $response->getMime();
+						$this->outputData = $response->$responseMethod($request);
 					}
 					else
 					{
 						// Response did not have the relevant function.
-						trigger_error("<code>{$this->route->getResponseClass()}</code> does not define a function <em><code>$rmethod</code></em>.");
+						trigger_error("<code>$responseClass</code> does not define a function <code>$responseMethod</code>.");
 					}
 				}
 				else
 				{
 					// Constructed object was not a Response.
-					trigger_error("<em><code>{$this->route->getResponseClass()}</code></em> is not an instance of <code>Response</code>.");
+					trigger_error("<code>$responseClass</code> is not an instance of <code>Response</code>.");
 				}
 			}
 			else
 			{
 				// Route was valid, but the Response class was not found.
-				trigger_error("Response <em><code>{$this->route->getResponseClass()}</code></em> not found.");
+				trigger_error("Response <code>$responseClass</code> not found.");
 			}
 		}
 	}
@@ -88,9 +95,8 @@ class Tempest
 
 	protected function setup(){ /* Virtual */ }
 
+	protected function setMime($value){ header("Content-type: $value"); }
 
 	public function getRouter(){ return $this->router; }
-	public function getRoute(){ return $this->route; }
-	public function setMime($value){ header("Content-type: $value"); }
 
 }

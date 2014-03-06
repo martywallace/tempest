@@ -14,7 +14,7 @@ class Router
 	private $routes = array();
 
 
-	public function map($map, $default = "index")
+	public function map($map, $default = DEFAULT_RESPONSE_NAME)
 	{
 		$this->request = new Request(strlen(REQUEST_URI) === 0 ? $default : REQUEST_URI);
 

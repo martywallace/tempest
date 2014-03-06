@@ -11,12 +11,6 @@ use \app\models\DemoModel;
 class DemoPage extends Response
 {
 
-	protected function setup()
-	{
-		$this->setMime(MIME_TEXT);
-	}
-
-
 	public function index(Request $request)
 	{
 		$html = Template::load("demo.html");
@@ -33,7 +27,9 @@ class DemoPage extends Response
 						"years" => 22
 					),
 					"model" => new DemoModel()
-				)
+				),
+				"escaped" => "<strong>Hello</strong>",
+				"time" => time()
 			));
 
 			$html = Template::inject($html, new DemoModel(), 'demo');

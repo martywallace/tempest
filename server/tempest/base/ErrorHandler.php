@@ -41,9 +41,7 @@ class ErrorHandler
 			"content" => $errorBatchTpl
 		));
 
-		$html = Template::inject($html, array("errors" => Template::combine($errorHtml)));
-
-		die($html);
+		die(Template::inject($html, array("errors" => Template::combine($errorHtml))));
 	}
 
 

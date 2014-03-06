@@ -12,7 +12,8 @@ class Application extends Tempest
 	{
 		$this->getRouter()->map(array(
 			"index" => "DemoPage",
-			"about" => "DemoPage::about"
+			"about" => "DemoPage::about",
+			"test" => "DemoPage::test"
 		));
 	}
 	
