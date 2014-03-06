@@ -10,7 +10,7 @@ session_start();
 
 
 // Global constants.
-define('PATTERN_SLASHES', '/[\\\|\/]+/');
+define('PATTERN_SLASHES', '/[\/\\\\]+/');
 define('PATTERN_DOTS', '/\.+/');
 define('PATTERN_NAMED_ROUTE_PART', '/^\[[^\]]+\]/');
 define('PATTERN_TOKEN', '/\{{2}\s?([!\?]*)(\@\w+)*([\w\.\(\)]+)([\w\s\|]+)\s?\}{2}/');
