@@ -31,7 +31,7 @@ define('MIME_PNG', 'image/png');
 define('APP_ROOT', normalizePath(__DIR__));
 define('CLIENT_ROOT', normalizePath(dirname($_SERVER["PHP_SELF"]), '/'));
 define('REQUEST_METHOD', strtolower($_SERVER["REQUEST_METHOD"]));
-define('REQUEST_URI', cleanUri(str_replace(CLIENT_ROOT, '', $_SERVER["REQUEST_URI"])));
+define('REQUEST_URI', cleanUri(str_replace(CLIENT_ROOT, '/', $_SERVER["REQUEST_URI"])));
 define('RESPONSE_DIR', 'app\\responses\\');
 define('TEMPLATE_DIR', APP_ROOT . 'view' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
 define('DEFAULT_RESPONSE_NAME', 'index');
@@ -61,7 +61,7 @@ function cleanUri($uri)
 {
 	$base = preg_replace(PATTERN_SLASHES, '/', $uri);
 	$base = preg_replace('/[#|\?].*$/', '', $base);
-	$base = rtrim($base, '/');
+	$base = trim($base, '/');
 
 	return $base;
 }
