@@ -85,7 +85,7 @@ class Request extends Route
 			return $matchedRoute["match"];
 		}
 
-		else trigger_error("Ambiguous request - " . count($possibleRoutes) . " routes matched.");
+		else trigger_error("Ambiguous request - multiple routes matched.");
 
 		return null;
 	}
