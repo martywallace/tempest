@@ -17,7 +17,7 @@ class Error
 		$this->number = $number;
 		$this->message = $message;
 		$this->line = $line;
-		$this->script = str_replace(APP_ROOT, '', normalizePath($script));
+		$this->script = str_replace(APP_ROOT, '', \tempest\normalizePath($script));
 		$this->script = str_replace('.php' . DIRECTORY_SEPARATOR, '', $this->script);
 	}
 

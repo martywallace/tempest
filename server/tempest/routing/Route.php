@@ -16,7 +16,7 @@ class Route
 
 	public function __construct($pattern, $response = null)
 	{
-		$this->pattern = cleanUri($pattern);
+		$this->pattern = \tempest\cleanUri($pattern);
 
 		$response = preg_split('/::/', $response);
 		$this->responseClass = $response[0];

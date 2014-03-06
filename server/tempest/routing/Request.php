@@ -79,13 +79,22 @@ class Request extends Route
 
 		usort($possibleRoutes, array($this, 'sortPossibleRoutes'));
 
+		if(count($possibleRoutes) === 0)
+		{
+			// No routes were matched.
+			return null;
+		}
 		if(count($possibleRoutes) === 1 || (count($possibleRoutes) > 1 && $possibleRoutes[0]["score"] !== $possibleRoutes[1]["score"]))
 		{
+			// One or more routes where matched, but the highest scorer had a unique score.
 			$matchedRoute = array_shift($possibleRoutes);
 			return $matchedRoute["match"];
 		}
+		else
+		{
+			trigger_error("Ambiguous request - multiple routes matched.");
+		}
 
-		else trigger_error("Ambiguous request - multiple routes matched.");
 
 		return null;
 	}

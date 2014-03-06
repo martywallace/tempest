@@ -1,5 +1,8 @@
 <?php
 
+namespace tempest;
+
+
 // Tempest PHP framework.
 // Author: Marty Wallace.
 // https://github.com/MartyWallace/Tempest
