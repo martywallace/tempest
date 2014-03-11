@@ -34,6 +34,18 @@ class DemoPage extends Response
 
 			$html = Template::inject($html, new DemoModel(), 'demo');
 			$html = Template::inject($html, new DemoModel());
+
+
+			$list = array(
+				array("name" => "a"),
+				array("name" => "b"),
+				array("name" => "c"),
+				array("name" => "d"),
+				array("name" => "e")
+			);
+
+			$batch = Template::batch("<li>{{ name }} {{ test }}</li>", $list, 'None');
+			$html = Template::inject($html, array("items" => $batch), 'batch');
 		}
 
 

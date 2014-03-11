@@ -21,7 +21,7 @@ class Template
 
 		if(!array_key_exists($file, self::$cache))
 		{
-			if(file_exists($path))
+			if(is_file($path))
 			{
 				self::$cache[$file] = self::prepare(file_get_contents($path));
 			}
@@ -75,6 +75,20 @@ class Template
 
 
 		return $base;
+	}
+
+
+	public static function batch($base, Array $list, $emptyResult = '')
+	{
+		if(count($list) === 0) return $emptyResult;
+
+		$output = array();
+		foreach($list as $item)
+		{
+			$output[] = Template::inject($base, $item);
+		}
+
+		return self::combine($output);
 	}
 
 

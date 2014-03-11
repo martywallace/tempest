@@ -100,6 +100,13 @@ class Request extends Route
 	}
 
 
+	public function redirect($url)
+	{
+		header("Location: " . CLIENT_ROOT . $url);
+		exit();
+	}
+
+
 	private function sortPossibleRoutes($a, $b)
 	{
 		return $a["score"] < $b["score"];

@@ -78,8 +78,8 @@ spl_autoload_register(function($class)
 	$vendorPath = APP_ROOT . 'vendor' . DIRECTORY_SEPARATOR . "$class.php";
 
 	// Try normal path using full namespace first.
-	if(file_exists($applicationPath)) require_once $applicationPath;
-	else if(file_exists($vendorPath)) require_once $vendorPath;
+	if(is_file($applicationPath)) require_once $applicationPath;
+	else if(is_file($vendorPath)) require_once $vendorPath;
 	else trigger_error("Class <code>$applicationPath</code> not found.");
 
 });
