@@ -7,13 +7,11 @@
 	<body>
 		<p>Hello {{ first }} {{ last }}.</p>
 		<p>Hello {{ marty.first }} {{ marty.last }}, {{ marty.age.years }} {{ marty.model.inner.first }}.</p>
-		<p>{{ @demo.array.test }} {{ @demo.getNewModel().inner.getNewModel().getNewModel().first | ucase }}</p>
+		<p>{{ @demo.array.test }} {{ @demo.getNewModel().inner.getNewModel().getNewModel().first : ucase }}</p>
 		<p>{{ another }}</p>
 		<p>{{ !?escaped }}</p>
-		<p>{{ time | dmy }}</p>
+		<p>{{ time : sha1 : ucase : strong }}</p>
 
-		<ul>
-			{{ @batch.items }}
-		</ul>
+		<ul>{{ @batch.items }}</ul>
 	</body>
 </html>

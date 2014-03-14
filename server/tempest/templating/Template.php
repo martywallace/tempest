@@ -4,7 +4,7 @@ namespace tempest\templating;
 
 use \tempest\templating\Token;
 use \tempest\templating\TokenPart;
-use \tempest\templating\BaseHookHandler;
+use \tempest\templating\BaseHooks;
 
 
 class Template
@@ -108,6 +108,6 @@ class Template
 
 
 	public static function getHookHandler(){ return self::$hookHandler; }
-	public static function setHookHandler(BaseHookHandler $value){ self::$hookHandler = $value; }
+	public static function setHookHandler(BaseHooks $value){ self::$hookHandler = $value; }
 
 }

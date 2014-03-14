@@ -13,7 +13,7 @@ session_start();
 define('PATTERN_SLASHES', '/[\/\\\\]+/');
 define('PATTERN_DOTS', '/\.+/');
 define('PATTERN_NAMED_ROUTE_PART', '/^\[[^\]]+\]/');
-define('PATTERN_TOKEN', '/\{{2}\s?([!\?]*)(\@\w+)*([\w\.\(\)]+)([\w\s\|]+)\s?\}{2}/');
+define('PATTERN_TOKEN', '/\{{2}\s?([!\?]*)(\@\w+)*([\w\.\(\)]+)([\w\s\:]+)\s?\}{2}/');
 
 define('GET', 'get');
 define('POST', 'post');
@@ -39,7 +39,7 @@ define('RESPONSE_DIR', 'app\\responses\\');
 define('TEMPLATE_DIR', APP_ROOT . 'view' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
 define('CONFIG_DIR', APP_ROOT . 'server' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR);
 define('ROUTES_DIR', CONFIG_DIR . 'routes' . DIRECTORY_SEPARATOR);
-define('DEFAULT_RESPONSE_NAME', 'index');
+define('DEFAULT_ROUTE', 'index');
 
 
 /**

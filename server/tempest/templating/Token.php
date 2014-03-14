@@ -26,7 +26,7 @@ class Token
 		$this->context = $stack[2][$index];
 		$this->context = ltrim($this->context, '@');
 		$this->behaviours = str_split($stack[1][$index]);
-		$this->hooks = preg_split('/[\|\s]+/', trim($stack[4][$index], '| '));
+		$this->hooks = preg_split('/[\:\s]+/', trim($stack[4][$index], ': '));
 
 		$parts = preg_split(PATTERN_DOTS, trim($stack[3][$index], '.'));
 
@@ -84,7 +84,7 @@ class Token
 			if(strlen($hook) === 0) continue;
 
 			if(method_exists($hookHandler, $hook)) $value = $hookHandler->$hook($value);
-			else trigger_error("<code>" . get_class($hookHandler) . "</code> does not define a hook named <code>$hook</code>.");
+			else trigger_error("<code>" . get_class($hookHandler) . "</code> does not define the hook <code>$hook</code>.");
 		}
 
 

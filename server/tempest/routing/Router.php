@@ -16,14 +16,14 @@ class Router
 
 	public function __construct($map)
 	{
-		$this->request = new Request(strlen(REQUEST_URI) === 0 ? DEFAULT_RESPONSE_NAME : REQUEST_URI);
+		$this->request = new Request(strlen(REQUEST_URI) === 0 ? DEFAULT_ROUTE : REQUEST_URI);
 
 		foreach($map as $pattern => $handler)
 		{
 			$route = new Route($pattern, $handler);
 			$this->routes[] = $route;
 
-			if($route->getPattern() === DEFAULT_RESPONSE_NAME)
+			if($route->getPattern() === DEFAULT_ROUTE)
 			{
 				$this->default = $route;
 			}

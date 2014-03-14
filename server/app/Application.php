@@ -10,6 +10,7 @@ class Application extends Tempest
 
 	protected function setup()
 	{
+		// Application setup.
 		//
 	}
 	

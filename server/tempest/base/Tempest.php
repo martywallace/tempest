@@ -6,7 +6,7 @@ use \tempest\base\ErrorHandler;
 use \tempest\routing\Router;
 use \tempest\routing\Response;
 use \tempest\templating\Template;
-use \tempest\templating\BaseHookHandler;
+use \tempest\templating\BaseHooks;
 
 
 class Tempest
@@ -21,7 +21,7 @@ class Tempest
 
 	public function __construct(ErrorHandler $errorHandler)
 	{
-		Template::setHookHandler(new BaseHookHandler());
+		Template::setHookHandler(new BaseHooks());
 
 		$this->errorHandler = $errorHandler;
 
@@ -106,9 +106,6 @@ class Tempest
 
 
 	protected function setup(){ /* Virtual */ }
-
 	protected function setMime($value){ header("Content-type: $value"); }
-
-	public function getRouter(){ return $this->router; }
 
 }

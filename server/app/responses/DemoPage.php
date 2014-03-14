@@ -44,23 +44,12 @@ class DemoPage extends Response
 				array("name" => "e")
 			);
 
-			$batch = Template::batch("<li>{{ name }} {{ test }}</li>", $list, 'None');
+			$batch = Template::batch("<li>{{ name }}</li>", $list, 'None');
 			$html = Template::inject($html, array("items" => $batch), 'batch');
 		}
 
 
 		return $html;
-	}
-
-
-	public function about(Request $request)
-	{
-		$html = Template::load("win/hello.html");
-		$html = Template::load("win/ggfgfd.html");
-		$html = Template::load("gfgdf.html");
-		new \PDO();
-
-		return 'About page.';
 	}
 
 }

@@ -20,7 +20,7 @@ class Route
 
 		$response = preg_split('/::/', $response);
 		$this->responseClass = $response[0];
-		$this->responseMethod = count($response) === 2 ? $response[1] : DEFAULT_RESPONSE_NAME;
+		$this->responseMethod = count($response) === 2 ? $response[1] : DEFAULT_ROUTE;
 
 		$parts = preg_split(PATTERN_SLASHES, $this->pattern);
 		foreach($parts as $part)
