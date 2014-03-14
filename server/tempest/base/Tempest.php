@@ -24,7 +24,19 @@ class Tempest
 		Template::setHookHandler(new BaseHookHandler());
 
 		$this->errorHandler = $errorHandler;
-		$this->router = new Router();
+
+		// Set up router and routes.
+		$routes = array();
+		foreach(\tempest\getFiles(ROUTES_DIR) as $file)
+		{
+			$fname = basename($file);
+			$chunk = json_decode(file_get_contents($file), true);
+
+			if(json_last_error() === JSON_ERROR_NONE) $routes = array_merge($chunk, $routes);
+			else trigger_error("JSON error in route file <code>$fname</code>.");
+		}
+
+		$this->router = new Router($routes);
 
 		$this->setup();
 		$this->run();

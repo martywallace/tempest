@@ -10,14 +10,7 @@ class Application extends Tempest
 
 	protected function setup()
 	{
-		$this->getRouter()->map(array(
-			"index" => "DemoPage",
-			"about" => "DemoPage::about",
-			"test/[b]/hat" => "DemoPage",
-			"test/a/hat" => "DemoPage",
-			"test/[a]/hat" => "DemoPage",
-			"test/c/hat" => "DemoPage::test"
-		));
+		//
 	}
 	
 }

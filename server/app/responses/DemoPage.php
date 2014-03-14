@@ -15,7 +15,7 @@ class DemoPage extends Response
 	{
 		$html = Template::load("demo.html");
 
-		for($i = 0; $i < 10000; $i++)
+		for($i = 0; $i < 100; $i++)
 		{
 			$html = Template::inject($html, array(
 				"first" => $request->param(GET, 'first', 'Steve'),

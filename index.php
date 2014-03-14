@@ -37,6 +37,8 @@ define('REQUEST_METHOD', strtolower($_SERVER["REQUEST_METHOD"]));
 define('REQUEST_URI', cleanUri(str_replace(CLIENT_ROOT, '/', $_SERVER["REQUEST_URI"])));
 define('RESPONSE_DIR', 'app\\responses\\');
 define('TEMPLATE_DIR', APP_ROOT . 'view' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR);
+define('CONFIG_DIR', APP_ROOT . 'server' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR);
+define('ROUTES_DIR', CONFIG_DIR . 'routes' . DIRECTORY_SEPARATOR);
 define('DEFAULT_RESPONSE_NAME', 'index');
 
 
@@ -67,6 +69,23 @@ function cleanUri($uri)
 	$base = trim($base, '/');
 
 	return $base;
+}
+
+
+/**
+ * Scan a directory for files and return an array containing full paths to those files.
+ * @param $directory The directory to scan;
+ */
+function getFiles($directory)
+{
+	$output = array();
+	foreach(scandir($directory) as $file)
+	{
+		if($file === '.' || $file === '..') continue;
+		$output[] = $directory . $file;
+	}
+
+	return $output;
 }
 
 
