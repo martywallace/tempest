@@ -9,7 +9,7 @@ abstract class Response
 {
 
 	private $app;
-	private $reqiest;
+	private $request;
 	private $mime = MIME_HTML;
 
 

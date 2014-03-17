@@ -8,8 +8,9 @@ use \tempest\templating\Template;
 class Token
 {
 
-	const B_ESCAPE = '!';
-	const B_EMPTY = '?';
+	const B_HTML_ESCAPE = '!';
+	const B_REPLACE_NULL_WITH_EMPTY = '?';
+	const B_REMOVE_WITHOUT_VALUE = '*';
 
 
 	private $base;
@@ -67,11 +68,11 @@ class Token
 
 
 		// The value needs to be escaped.
-		if(in_array(self::B_ESCAPE, $this->behaviours)) $value = htmlspecialchars($value);
+		if(in_array(self::B_HTML_ESCAPE, $this->behaviours)) $value = htmlspecialchars($value);
 
 
 		// The value should be interpreted as an empty string if it is null or empty.
-		if(in_array(self::B_EMPTY, $this->behaviours))
+		if(in_array(self::B_REPLACE_NULL_WITH_EMPTY, $this->behaviours))
 		{
 			if($value === 'null') return '';
 		}
