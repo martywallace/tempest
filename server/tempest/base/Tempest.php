@@ -81,8 +81,8 @@ class Tempest
 				{
 					if(method_exists($response, $responseMethod))
 					{
-						$this->outputMime = $response->getMime();
 						$this->outputData = $response->$responseMethod($request);
+						$this->outputMime = $response->getMime();
 					}
 					else
 					{
