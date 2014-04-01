@@ -1,0 +1,16 @@
+<snippet>
+	<content><![CDATA[
+<?php namespace ${1:namespace}
+
+class ${2:class}
+{
+	
+	public function __construct()
+	{
+		//
+	}
+
+}
+]]></content>
+	<tabTrigger>tempest::class</tabTrigger>
+</snippet>
