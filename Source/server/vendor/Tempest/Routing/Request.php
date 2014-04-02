@@ -1,7 +1,18 @@
 <?php namespace Tempest\Routing;
 
+
+/**
+ * A request made to the application by a user.
+ * @author Marty Wallace.
+ */
 class Request
 {
+
+	const POST = 'post';
+	const GET = 'get';
+	const NAMED = 'named';
+	const HASH = 'hash';
+
 
 	private $uri;
 
@@ -22,9 +33,29 @@ class Request
 	}
 
 
-	public function redirect($uri, $local = true)
+	public function data($stack, $key = null)
 	{
-		header("Location: " . ($local ? PUBL . $uri : $uri));
+		if($key === null)
+		{
+			// Returns entire stack.
+			//
+		}
+
+		switch($stack)
+		{
+			default: return null; break;
+
+			case self::POST: return $_POST[$key]; break;
+			case self::GET: return $_GET[$key]; break;
+		}
+
+		return null;
+	}
+
+
+	public function redirect($uri)
+	{
+		header("Location: " . PUBL . $uri);
 		exit();
 	}
 

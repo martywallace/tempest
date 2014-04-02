@@ -13,7 +13,7 @@ class Tempest
 	{
 		header("Content-type: text/plain");
 
-		$this->request = new Request();
+		//$this->request = new Request();
 		//echo $this->request->getUri();
 
 		//echo "<br>working";
