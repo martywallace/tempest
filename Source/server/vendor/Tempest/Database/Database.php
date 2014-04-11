@@ -4,7 +4,7 @@ use PDO;
 use PDOStatement;
 
 
-class Repository
+class Database
 {
 
 	private static $pdo;

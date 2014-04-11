@@ -1,22 +1,41 @@
 <?php namespace Tempest\Base;
 
-use Tempest\Routing\Request;
+use Tempest\Routing\Router;
 
 
 class Tempest
 {
 
-	private $request;
+	protected $router;
 
 	
+	public static function init()
+	{
+		new static();
+	}
+
+
 	public function __construct()
 	{
-		header("Content-type: text/plain");
+		$this->router = new Router();
+		$this->setup();
 
-		//$this->request = new Request();
-		//echo $this->request->getUri();
+		$this->route = $this->router->getMatch();
 
-		//echo "<br>working";
+		if($this->route !== null)
+		{
+			echo 'success';
+		}
+		else
+		{
+			trigger_error("No input route.");
+		}
+
+		$this->finalize();
 	}
+
+
+	protected function setup(){ /**/ }
+	protected function finalize(){ /**/ }
 
 }

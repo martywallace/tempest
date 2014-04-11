@@ -8,7 +8,7 @@ class Response
 
 	public function index(Request $request)
 	{
-		return "Hello!";
+		return Request::POST;
 	}
 
 }

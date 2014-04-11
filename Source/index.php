@@ -1,40 +1,16 @@
 <?php
 
-// Application constants.
-// =================================================================================================
-define("ROOT", __DIR__);
-define("PUBL", normalize_path(dirname($_SERVER["PHP_SELF"]), '/'));
-
-
-
-// Global methods.
-// =================================================================================================
-function normalize_path($path, $separator = DIRECTORY_SEPARATOR, $trailingSlash = true)
+foreach(array('functions', 'autoloader') as $common)
 {
-	if(strlen($path) === 0 || $path === '/' || $path === '\\' || $path === $separator) return $separator;
-
-	$base = preg_replace('/[\/\\\\]+/', $separator, $path);
-	$base = rtrim($base, $separator);
-
-	return $trailingSlash ? $base . $separator : $base;
+	// Include base requirements.
+	require_once __DIR__ . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR . "$common.php";
 }
 
 
-
-// Autoloader definition.
-// Searches in <code>server/vendor</code> and <code>server/app</code> for classes.
-// =================================================================================================
-spl_autoload_register(function($class)
-{
-	foreach(array('vendor','app') as $path)
-	{
-		$path = ROOT . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
-		if(is_file($path)) require_once $path;
-	}
-
-});
+define("ROOT", __DIR__);
+define("DIR_SERVER", ROOT . DIRECTORY_SEPARATOR . 'server' . DIRECTORY_SEPARATOR);
+define("DIR_BASE", path_normalize(dirname($_SERVER["PHP_SELF"]), '/'));
+define("DIR_PUBLIC", DIR_BASE . 'public/');
 
 
-// Initialize the Application.
-// =================================================================================================
-new App\Application;
+App\Application::init();

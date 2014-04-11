@@ -1,6 +1,8 @@
 <?php namespace Tempest\Database;
 
-use Tempest\Database\Repository;
+use ReflectionClass;
+use ReflectionProperty;
+use Tempest\Database\Database;
 
 
 class Model
@@ -8,19 +10,20 @@ class Model
 
 	protected $table = null;
 	protected $primary = 'id';
+	protected $readonly = array('id');
 
 
-	public static function find($primary, $columns = "*")
+	public static function find($primary, Array $columns = null)
 	{
 		$def = new static();
-		$stmt = Repository::prepare("SELECT $columns FROM {$def->table} WHERE {$def->primary} = :primary");
+		$stmt = Database::prepare("SELECT " . ($columns === null ? "*" : str_comma_join($columns)) . " FROM {$def->table} WHERE {$def->primary} = :primary");
 		$stmt->execute(array(":primary" => $primary));
 
-		$result = $stmt->fetchObject(get_class($def));
+		$result = $stmt->fetchObject($def->name());
 
 		if($result === false)
 		{
-			Repository::error($stmt, "Could not find an instance of '" . get_class($def) . "' where '{$def->primary}' is '$primary'");
+			Database::error($stmt, "Could not find an instance of '" . $def->name() . "' where '{$def->primary}' is '$primary'");
 			return null;
 		}
 
@@ -34,37 +37,81 @@ class Model
 
 		$columns = array_keys($primitive);
 		$values = array_values($primitive);
-		$placeholders = array_map(function($x){ return ":$x"; }, $columns);
+		$markers = array_map(function($x){ return ":$x"; }, $columns);
 
-		$stmt = Repository::prepare("INSERT INTO {$def->table} (" . implode(',',$columns) . ") VALUES(" . implode(',',$placeholders) . ")");
+		$stmt = Database::prepare("INSERT INTO {$def->table} (" . str_comma_join($columns) . ") VALUES(" . str_comma_join($markers) . ")");
 		
-		if($stmt->execute(array_combine($placeholders, $values)))
+		if($stmt->execute(array_combine($markers, $values)))
 		{
 			// Return newly created Model if successful.
-			return static::find(Repository::lastInsertId());
+			return static::find(Database::lastInsertId());
 		}
 		else
 		{
 			// Error with create request.
-			Repository::error($stmt, "Could not create an instance of '" . get_class($def) ."'");
+			Database::error($stmt, "Could not create an instance of '" . $def->name() ."'");
 		}
 
 		return null;
 	}
 
 
-	public function save()
+	public static function getProperties()
 	{
-		$stmt = Repository::prepare("INSERT INTO {$this->table} ({}) VALUES({})
-			ON DUPLICATE KEY UPDATE {}");
+		$ref = new ReflectionClass(new static());
+		$props = $ref->getProperties(ReflectionProperty::IS_PUBLIC);
 
-		$stmt->execute(array());
+		$output = array();
+		foreach($props as $prop) $output[] = $prop->getName();
 
-		if(in_array('id', $this->columns) && $this->id === null)
+		return $output;
+	}
+
+
+	public function set($data, $value = null)
+	{
+		$props = self::getProperties();
+
+		if(is_array($data))
 		{
-			// Assign ID.
-			$this->id = Repository::lastInsertId();
+			// Map values from an array.
+			foreach($props as $prop)
+			{
+				if(array_key_exists($prop, $data) && !in_array($prop, $this->readonly))
+				{
+					// Pass value to model.
+					$this->{$prop} = $data[$prop];
+				}
+			}
 		}
+		else
+		{
+			// Single value.
+			if(in_array($data, $props))
+			{
+				$this->{$data} = $value;
+			}
+		}
+	}
+
+
+	public function toJSON()
+	{
+		$props = static::getProperties();
+		$output = array();
+
+		foreach($props as $prop)
+		{
+			$output[$prop] = $this->{$prop};
+		}
+
+		return json_encode($output, JSON_NUMERIC_CHECK);
+	}
+
+
+	public function name()
+	{
+		return get_class($this);
 	}
 
 }
