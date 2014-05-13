@@ -10,34 +10,25 @@ use Tempest\Utils\Path;
 class Request extends Path
 {
 
-	const GET = 'get';
-	const POST = 'post';
-	const FILE = 'file';
-	const NAMED = 'named';
+	private $router;
+	private $data;
 
 
-	private $data = array();
-
-
-	public function __construct()
+	public function __construct($router)
 	{
-		$this->data = array(
-			self::GET => array_slice($_GET, 0),
-			self::POST => array_slice($_POST, 0),
-			self::FILE => array_slice($_FILES, 0),
-			self::NAMED => array()
-		);
-
+		$this->router = $router;
 		parent::__construct(APP_REQUEST_URI);
 	}
 
 
 	public function data($stack = null, $key = null)
 	{
-		if($stack === null) return $this->data;
-		if($key === null) return $this->data[$stack];
+		$data = $this->getData();
 
-		return in_array($this->data[$stack], $key) ? $this->data[$stack][$key] : null;
+		if($stack === null) return $data;
+		if($key === null) return $data[$stack];
+
+		return array_key_exists($key, $data[$stack]) ? $data[$stack][$key] : null;
 	}
 
 
@@ -45,6 +36,21 @@ class Request extends Path
 	{
 		header("Location: " . PUBLIC_ROOT . $uri);
 		exit;
+	}
+
+
+	private function getData()
+	{
+		if($this->data === null)
+		{
+			$this->data = array(
+				GET => array_slice($_GET, 0),
+				POST => array_slice($_POST, 0),
+				NAMED => array_slice($this->router->getParams(), 0)
+			);
+		}
+
+		return $this->data;
 	}
 
 }

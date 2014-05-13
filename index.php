@@ -7,6 +7,10 @@ foreach(array('functions', 'autoloader') as $common)
 }
 
 
+define('GET', 'get');
+define('POST', 'post');
+define('NAMED', 'named');
+
 define("RGX_PATH_DELIMITER", '/[\/\\\\]+/');
 
 define("APP_ROOT", path_normalize(__DIR__, DIRECTORY_SEPARATOR, false, true));

@@ -12,7 +12,8 @@ class Application extends Tempest
 			"/" => "Test",
 			"/a/b/c" => "Test",
 			"/a/b/[c]" => "Test",
-			"/a/[b]/[c]" => "Test"
+			"/a/[b]/[c]" => "Test",
+			"/test" => "Test"
 		));
 	}
 

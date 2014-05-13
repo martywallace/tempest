@@ -11,8 +11,8 @@ class Route extends Path
 
 	public function __construct($base, $handler)
 	{
-		parent::__construct($base);
 		$this->handler = preg_split('/\:+/', $handler);
+		parent::__construct($base);
 	}
 
 
