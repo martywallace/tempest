@@ -19,15 +19,3 @@ function path_split($path)
 	$base = trim($path, '/\\ ');
 	return preg_split(RGX_PATH_DELIMITER, $base);
 }
-
-
-function str_comma_join(Array $input)
-{
-	return implode(',', $input);
-}
-
-
-function str_needle_remove($needle, $haystack)
-{
-	return str_replace($needle, '', $haystack);
-}

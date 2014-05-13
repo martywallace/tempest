@@ -19,7 +19,7 @@ define("DIR_SERVER", path_normalize(__DIR__ . '/server/', DIRECTORY_SEPARATOR, f
 define("DIR_STATIC", path_normalize(PUBLIC_ROOT . '/static/', '/'));
 define("REQUEST_CLEAN", preg_replace('/(\?|#)(.+)/', '', $_SERVER["REQUEST_URI"]));
 define("REQUEST_URI", path_normalize(REQUEST_CLEAN, '/', true, false));
-define("APP_REQUEST_URI", path_normalize(PUBLIC_ROOT !== '/' ? str_needle_remove(PUBLIC_ROOT, REQUEST_CLEAN) : REQUEST_URI, '/', true, false));
+define("APP_REQUEST_URI", path_normalize(PUBLIC_ROOT !== '/' ? str_replace(PUBLIC_ROOT, '', REQUEST_CLEAN) : REQUEST_URI, '/', true, false));
 
 
 App\Application::init();

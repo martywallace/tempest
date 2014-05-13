@@ -9,6 +9,9 @@ Tempest defines a collection of global constants and methods.
 
 #### Constants
 
+* <code>GET</code> - Used where the string <code>'get'</code> could otherwise be used.
+* <code>POST</code> - Used where the string <code>'post'</code> could otherwise be used.
+* <code>NAMED</code> - Used where the string <code>'named'</code> could otherwise be used.
 * <code>RGX_PATH_DELIMITER</code> - Regex pattern for matching one or more forward or black slashes.
 * <code>APP_ROOT</code> - The application root on the server e.g. <code>C:\\...\\MySite\\</code>.
 * <code>PUBLIC_ROOT</code> - The public application root e.g. <code>/MySite/</code>.
@@ -20,7 +23,5 @@ Tempest defines a collection of global constants and methods.
 
 #### Methods
 
-* <code>path_normalize</code>
-* <code>path_split</code>
-* <code>str_comma_join</code>
-* <code>str_needle_remove</code>
+* <code>path_normalize()</code> - Helper for normalizing a path.
+* <code>path_split()</code> - Helper for splitting a path into chunks.
