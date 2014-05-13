@@ -9,7 +9,8 @@ class Test extends Response
 	
 	public function index(Request $request)
 	{
-		return 'hello';
+		print_r($request->data());
+		return 'Hello world!';
 	}
 
 }

@@ -1,0 +1,121 @@
+@charset "utf-8";
+
+body
+{
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+}
+
+noscript,
+h1, h2, h3, h4, h5, h6,
+p,
+hr,
+pre,
+blockquote,
+ol,
+ul,
+li,
+div,
+form,
+small
+{
+	display: block;
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+
+h6{ font-size: 120%; }
+h5{ font-size: 140%; }
+h4{ font-size: 160%; }
+h3{ font-size: 180%; }
+h2{ font-size: 200%; }
+h1{ font-size: 220%; }
+
+a,
+button,
+select,
+input[type='checkbox'],
+input[type='radio'],
+input[type='button'],
+input[type='submit'],
+label[for]
+{
+	cursor: pointer;
+}
+
+a
+{
+	text-decoration: none;
+	color: inherit;
+}
+
+ol,
+ul
+{
+	padding-left: 20px;
+}
+
+table
+{
+	border-collapse: collapse;
+}
+
+td
+{
+	border: 1px solid #000;
+	padding: 8px 10px;
+}
+
+ol.horizontal,
+ul.horizontal
+{
+	list-style: none;
+	padding-left: 0px;
+}
+
+ol.horizontal > li,
+ul.horizontal > li
+{
+	display: inline;
+}
+
+.content > * + *
+{
+	margin-top: 20px;
+}
+
+
+.clear
+{
+	clear: both;
+	width: auto;
+	height: auto;
+	float: none;
+}
+
+.hidden{ display: none; }
+.block{ display: block; }
+.inline{ display: inline; }
+.inline-block{ display: inline-block; }
+
+.left{ float: left; }
+.right{ float: right; }
+
+.perc.ten{ width: 10%; }
+.perc.twenty{ width: 20%; }
+.perc.thirty{ width: 30%; }
+.perc.fourty{ width: 40%; }
+.perc.fifty{ width: 50%; }
+.perc.sixty{ width: 60%; }
+.perc.seventy{ width: 70%; }
+.perc.eighty{ width: 80%; }
+.perc.ninety{ width: 90%; }
+.perc.hundred{ width: 100%; }
+
+.grid
+{
+	width: 1024px;
+	margin: 0 auto;
+}

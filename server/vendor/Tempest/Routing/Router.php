@@ -9,6 +9,7 @@ class Router
 
 	private $request;
 	private $match;
+	private $named;
 
 
 	public function __construct()
@@ -25,6 +26,12 @@ class Router
 			$route = new Route($input, $handler);
 			$score = 0;
 
+			if($this->request->getLength() === 0 && $route->getLength() === 0)
+			{
+				// Exact match on index route.
+				$score = 3;
+			}
+
 			if($this->request->getLength() !== $route->getLength())
 			{
 				// Route lengths must match.
@@ -36,18 +43,15 @@ class Router
 				$a = $this->request->chunk($i);
 				$b = $route->chunk($i);
 
-				if($a === $b)
-				{
-					// Exact match between request path chunk and listed route chunk.
-					$score += 2;
-				}
+				// Exact match between request and subject chunk.
+				if($a === $b) $score += 2;
 
 				else if(trim($b, '[]') !== $b)
 				{
 					// Chunk is dynamic.
 					$score += 1;
 				}
-				
+
 				else $score = 0;
 			}
 
@@ -77,12 +81,11 @@ class Router
 				trigger_error("Ambiguous request.");
 			}
 		}
-
-		print_r($scores);
 	}
 
 
 	public function getRequest(){ return $this->request; }
 	public function getMatch(){ return $this->match; }
+	public function getNamed(){ return $this->named; }
 
 }

@@ -12,11 +12,11 @@ class Route extends Path
 	public function __construct($base, $handler)
 	{
 		parent::__construct($base);
-		$handler = preg_split('/\:+/', $handler);
+		$this->handler = preg_split('/\:+/', $handler);
 	}
 
 
 	public function getHandlerClass(){ return $this->handler[0]; }
-	public function getHandlerMethod(){ return count($this->handler) > 1 ? $this->handler[1] : null; }
+	public function getHandlerMethod(){ return count($this->handler) > 1 ? $this->handler[1] : 'index'; }
 
 }
