@@ -15,12 +15,19 @@ pre,
 blockquote,
 ol,
 ul,
-li,
 div,
 form,
 small
 {
 	display: block;
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+
+li
+{
+	display: list-item;
 	position: relative;
 	margin: 0;
 	padding: 0;
@@ -49,12 +56,6 @@ a
 {
 	text-decoration: none;
 	color: inherit;
-}
-
-ol,
-ul
-{
-	padding-left: 20px;
 }
 
 table

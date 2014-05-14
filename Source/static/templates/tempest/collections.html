@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Tempest</title>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+		<link rel="stylesheet" href="~/static/css/tempest.css">
+	</head>
+	<body>
+		<div id="head">
+			<div id="navigation">
+				<ul class="grid">
+					<li><a href="~/tempest"><span class="icon pretext home2"></span> Dashboard</a></li>
+					<li><a href="~/tempest/routes"><span class="icon pretext shuffle"></span>Routes</a></li>
+					<li><a href="~/tempest/content"><span class="icon pretext book"></span>Content</a></li>
+					<li><a href="~/tempest/collections" class="current"><span class="icon pretext drawer"></span>Collections</a></li>
+					<li><a href="~/tempest/modules"><span class="icon pretext stack"></span>Modules</a></li>
+					<li><a href="~/tempest/system"><span class="icon pretext cog"></span>System</a></li>
+
+					<li class="right"><a href="~/tempest/auth/logout">Logout</a></li>
+				</ul>
+			</div>
+
+			<h1 class="grid"><span class="icon smaller pretext drawer"></span> Collections</h1>
+		</div>
+
+		<div id="content">
+			<div class="grid boxcolumns" id="collections">
+				<ul>
+					<li>
+						<h3>Blog Posts <code>blog_posts</code></h3>
+						<div class="pad">
+							<p>14 records</p>
+						</div>
+						<table>
+							<thead>
+								<tr>
+									<td>Field</td>
+									<td>Type</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><code>id</code></td>
+									<td>int</td>
+								</tr>
+								<tr>
+									<td><code>title</code></td>
+									<td>string</td>
+								</tr>
+								<tr>
+									<td><code>content</code></td>
+									<td>text</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pad">
+							<a class="button" href="#">Browse</a>
+							<a class="button" href="#">Modify</a>
+						</div>
+					</li>
+
+					<li>
+						<h3>Misc <code>misc</code></h3>
+						<div class="pad">
+							<p>2 records</p>
+						</div>
+						<table>
+							<thead>
+								<tr>
+									<td>Field</td>
+									<td>Type</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><code>id</code></td>
+									<td>int</td>
+								</tr>
+								<tr>
+									<td><code>value</code></td>
+									<td>string</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pad">
+							<a class="button" href="#">Browse</a>
+							<a class="button" href="#">Modify</a>
+						</div>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<h3>Entries <code>entries</code></h3>
+						<div class="pad">
+							<p>1,027 records</p>
+						</div>
+						<table>
+							<thead>
+								<tr>
+									<td>Field</td>
+									<td>Type</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><code>id</code></td>
+									<td>int</td>
+								</tr>
+								<tr>
+									<td><code>firstName</code></td>
+									<td>string</td>
+								</tr>
+								<tr>
+									<td><code>lastName</code></td>
+									<td>string</td>
+								</tr>
+								<tr>
+									<td><code>email</code></td>
+									<td>string</td>
+								</tr>
+								<tr>
+									<td><code>dob</code></td>
+									<td>date</td>
+								</tr>
+								<tr>
+									<td><code>answer</code></td>
+									<td>text</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pad">
+							<a class="button" href="#">Browse</a>
+							<a class="button" href="#">Modify</a>
+						</div>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<h3>Products <code>products</code></h3>
+						<div class="pad">
+							<p>63,120 records</p>
+						</div>
+						<table>
+							<thead>
+								<tr>
+									<td>Field</td>
+									<td>Type</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><code>id</code></td>
+									<td>int</td>
+								</tr>
+								<tr>
+									<td><code>name</code></td>
+									<td>string</td>
+								</tr>
+								<tr>
+									<td><code>image</code></td>
+									<td>asset</td>
+								</tr>
+								<tr>
+									<td><code>price</code></td>
+									<td>float</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="pad">
+							<a class="button" href="#">Browse</a>
+							<a class="button" href="#">Modify</a>
+						</div>
+					</li>
+					
+				</ul>
+
+				<div class="clear"></div>
+			</div>
+		</div>
+
+		<div id="foot">
+			<p>Tempest Version 1.0 &middot; Developed by Marty Wallace &middot; <a href="https://github.com/MartyWallace/Tempest">GitHub</a></p>
+		</div>
+	</body>
+</html>

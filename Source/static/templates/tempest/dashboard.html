@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Tempest</title>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+		<link rel="stylesheet" href="~/static/css/tempest.css">
+	</head>
+	<body>
+		<div id="head">
+			<div id="navigation">
+				<ul class="grid">
+					<li><a href="~/tempest" class="current"><span class="icon pretext home2"></span> Dashboard</a></li>
+					<li><a href="~/tempest/routes"><span class="icon pretext shuffle"></span>Routes</a></li>
+					<li><a href="~/tempest/content"><span class="icon pretext book"></span>Content</a></li>
+					<li><a href="~/tempest/data"><span class="icon pretext drawer"></span>Collections</a></li>
+					<li><a href="~/tempest/modules"><span class="icon pretext stack"></span>Modules</a></li>
+					<li><a href="~/tempest/system"><span class="icon pretext cog"></span>System</a></li>
+
+					<li class="right"><a href="~/tempest/auth/logout">Logout</a></li>
+				</ul>
+			</div>
+
+			<h1 class="grid"><span class="icon smaller pretext home2"></span> Dashboard</h1>
+		</div>
+
+		<div id="content">
+			<div class="grid boxcolumns">
+				<ul>
+					<li>
+						<h3><span class="icon pretext file3"></span> Pages</h3>
+						<table>
+							<thead>
+								<tr>
+									<td>Name</td>
+									<td>Route</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr><td><a href="#">Home</a></td><td><a href="#"><code>/</code></a></td></tr>
+								<tr><td><a href="#">Blog</a></td><td><a href="#"><code>/blog</code></a></td></tr>
+								<tr><td><a href="#">Post</a></td><td><a href="#"><code>/blog/[posts.id]</code></a></td></tr>
+								<tr><td><a href="#">About</a></td><td><a href="#"><code>/about</code></a></td></tr>
+								<tr><td><a href="#">Contact</a></td><td><a href="#"><code>/contact</code></a></td></tr>
+							</tbody>
+						</table>
+					</li>
+
+					<li>
+						<h3><span class="icon pretext code"></span> Templates</h3>
+						<table>
+							<thead>
+								<tr>
+									<td>Name</td>
+									<td>Preview</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr><td><a href="#">Main</a></td><td><code>&lt;!DOCTPYE html&gt;...&lt;/html&gt;</code></td></tr>
+								<tr><td><a href="#">Post</a></td><td><code>&lt;li data-id="{{id}}"&gt;...&lt;/li&gt;</code></td></tr>
+							</tbody>
+						</table>
+					</li>
+
+					<li>
+						<h3>Quick Asset</h3>
+						<form action="#" method="post">
+							<input type="file" name="name" />
+							<button type="submit">Upload</button>
+						</form>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<h3><span class="icon pretext drawer"></span> Collections</h3>
+						<table>
+							<thead>
+								<tr>
+									<td>Collection</td>
+									<td>Records</td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td><a href="#">Entries</a></td>
+									<td>1,027</td>
+								</tr>
+								<tr>
+									<td><a href="#">Posts</a></td>
+									<td>6</td>
+								</tr>
+							</tbody>
+						</table>
+					</li>
+
+					<li>
+						<h3>Quick Collection</h3>
+						<form action="#" method="post">
+							<input placeholder="Collection name" type="text" name="name" />
+							<button type="submit">Create</button>
+						</form>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<h3><span class="icon pretext shuffle"></span> Routes</h3>
+						<div class="pad">
+							<p>Some route stuff.</p>
+						</div>
+					</li>
+				</ul>
+
+				<div class="clear"></div>
+			</div>
+		</div>
+
+		<div id="foot">
+			<p>Tempest Version 1.0 &middot; Developed by Marty Wallace &middot; <a href="https://github.com/MartyWallace/Tempest">GitHub</a></p>
+		</div>
+	</body>
+</html>

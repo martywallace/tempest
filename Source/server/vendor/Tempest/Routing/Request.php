@@ -21,14 +21,14 @@ class Request extends Path
 	}
 
 
-	public function data($stack = null, $key = null)
+	public function data($stack = null, $key = null, $default = null)
 	{
 		$data = $this->getData();
 
 		if($stack === null) return $data;
 		if($key === null) return $data[$stack];
 
-		return array_key_exists($key, $data[$stack]) ? $data[$stack][$key] : null;
+		return array_key_exists($key, $data[$stack]) ? $data[$stack][$key] : $default;
 	}
 
 
