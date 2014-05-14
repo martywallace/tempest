@@ -3,9 +3,17 @@
 Currently being redeveloped - [older, stable version found here](https://github.com/MartyWallace/Tempest/tree/7c42c8cbed3b049f107b2f266419e7ddc1a9c8c1).
 
 
+## Sublime Text
+
+The <code>Sublime</code> folder contains various snippets useful for faster development using Tempest. Below are the tab-triggers available.
+
+* <code>tempest::class</code> - A blank class definition.
+* <code>tempest::response</code> - A Tempest response class.
+
+
 ## Globals
 
-Tempest defines a collection of global constants and methods.
+Tempest defines a collection of global constants and methods. Constants are defined within <code>index.php</code> and methods in <code>/server/common/functions.php</code>.
 
 #### Constants
 

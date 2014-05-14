@@ -1,0 +1,26 @@
+<snippet>
+	<content><![CDATA[
+<?php namespace ${1:namespace}
+
+use Tempest\Routing\Request;
+use Tempest\Routing\Response;
+
+
+class ${2:class} extends Response
+{
+
+	public function setup()
+	{
+		\$this->mime = 'text/html';
+	}
+
+	
+	public function index(Request \$request)
+	{
+		return 'Hello world!';
+	}
+
+}
+]]></content>
+	<tabTrigger>tempest::response</tabTrigger>
+</snippet>
