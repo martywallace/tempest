@@ -12,6 +12,7 @@ define('POST', 'post');
 define('NAMED', 'named');
 
 define("RGX_PATH_DELIMITER", '/[\/\\\\]+/');
+define("RGX_TEMPLATE_TOKEN", '/\{{2}\s*([!\?]*)(\@\w+)*([\w\.\(\)]+)([\w\s\:]+)\s*\}{2}/');
 
 define("APP_ROOT", path_normalize(__DIR__, DIRECTORY_SEPARATOR, false, true));
 define("PUB_ROOT", path_normalize(dirname($_SERVER["PHP_SELF"]), '/'));

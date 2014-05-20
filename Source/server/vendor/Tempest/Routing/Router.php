@@ -24,9 +24,9 @@ class Router
 
 		foreach($routes as $input => $handler)
 		{
+			$route = new Route($input, $handler);
 			$score = 0;
 			$named = array();
-			$route = new Route($input, $handler);
 
 			if($this->request->getLength() === 0 && $route->getLength() === 0)
 			{

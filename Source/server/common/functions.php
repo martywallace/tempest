@@ -19,3 +19,10 @@ function path_split($path)
 	$base = trim($path, '/\\ ');
 	return preg_split(RGX_PATH_DELIMITER, $base);
 }
+
+
+function dtrim($value, $left, $right)
+{
+	$base = ltrim($value, $left);
+	return rtrim($base, $right);
+}

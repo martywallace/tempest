@@ -7,12 +7,18 @@ use Tempest\Templating\Template;
 
 class Test extends Response
 {
+
+	public $title = array("value" => "Hello");
 	
 	public function index(Request $request)
 	{
-		$this->mime = 'text/html';
+		$this->mime = 'text/plain';
 
-		$template = Template::load("templates/tempest/" . $request->data(GET, 'page', 'dashboard') . ".html");
+		$template = Template::load("templates/child.html");
+
+		$template->bind($this);
+
+		
 
 		return $template;
 	}

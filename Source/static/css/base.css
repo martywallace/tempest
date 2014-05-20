@@ -69,19 +69,6 @@ td
 	padding: 8px 10px;
 }
 
-ol.horizontal,
-ul.horizontal
-{
-	list-style: none;
-	padding-left: 0px;
-}
-
-ol.horizontal > li,
-ul.horizontal > li
-{
-	display: inline;
-}
-
 .content > * + *
 {
 	margin-top: 20px;
@@ -103,20 +90,3 @@ ul.horizontal > li
 
 .left{ float: left; }
 .right{ float: right; }
-
-.perc.ten{ width: 10%; }
-.perc.twenty{ width: 20%; }
-.perc.thirty{ width: 30%; }
-.perc.fourty{ width: 40%; }
-.perc.fifty{ width: 50%; }
-.perc.sixty{ width: 60%; }
-.perc.seventy{ width: 70%; }
-.perc.eighty{ width: 80%; }
-.perc.ninety{ width: 90%; }
-.perc.hundred{ width: 100%; }
-
-.grid
-{
-	width: 1024px;
-	margin: 0 auto;
-}
