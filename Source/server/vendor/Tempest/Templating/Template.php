@@ -22,7 +22,7 @@ class Template
 
 	public static function prepare($content)
 	{
-		return str_replace("~/", PUB_STATIC, $content);
+		return str_replace("~/", PUB_ROOT, $content);
 	}
 
 
@@ -74,6 +74,12 @@ class Template
 
 			$this->update($token->replace($this->content, $value));
 		}
+	}
+
+
+	public function copy(Template $template)
+	{
+		return new Template($template->getContent());
 	}
 
 

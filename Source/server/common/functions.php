@@ -26,3 +26,15 @@ function dtrim($value, $left, $right)
 	$base = ltrim($value, $left);
 	return rtrim($base, $right);
 }
+
+
+function array_keys_prepend($array, $prefix)
+{
+	$new = array();
+	foreach($array as $key => $value)
+	{
+		$new[$prefix . $key] = $value;
+	}
+
+	return $new;
+}
