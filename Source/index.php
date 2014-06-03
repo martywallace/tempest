@@ -24,4 +24,4 @@ define("REQUEST_URI", path_normalize(REQUEST_CLEAN, '/', true, false));
 define("APP_REQUEST_URI", path_normalize(PUB_ROOT !== '/' ? str_replace(PUB_ROOT, '', REQUEST_CLEAN) : REQUEST_URI, '/', true, false));
 
 
-App\Application::init();
+Application::init();

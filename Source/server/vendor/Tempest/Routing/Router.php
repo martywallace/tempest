@@ -18,7 +18,7 @@ class Router
 	}
 
 	
-	public function register(Array $routes)
+	public function register($routes)
 	{
 		$possible = array();
 

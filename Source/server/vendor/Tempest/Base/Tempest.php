@@ -6,10 +6,11 @@ use Tempest\Routing\Router;
 class Tempest
 {
 
-	protected $router;
-	protected $route;
-	protected $mime;
-	protected $output;
+	private $router;
+	private $route;
+	private $mime;
+	private $output;
+	private $config;
 
 	
 	public static function init()
@@ -21,20 +22,24 @@ class Tempest
 	public function __construct()
 	{
 		$this->router = new Router();
+		$this->config = new Config();
+		$this->router->register($this->config->routes);
 		$this->setup();
 		$this->route = $this->router->getMatch();
 
 		if($this->route !== null)
 		{
-			$class = preg_replace('/\.+/', '\\', 'App\\Responses\\' . $this->route->getHandlerClass());
+			$class = preg_replace('/\.+/', '\\', 'Responses\\' . $this->route->getHandlerClass());
 			$method = $this->route->getHandlerMethod();
-			$response = new $class();
+			$response = new $class($this);
 
 			if(method_exists($response, $method))
 			{
-				$response->setup();
+				$req = $this->router->getRequest();
 
-				$this->output = $response->$method($this->router->getRequest());
+				$response->setup($req);
+
+				$this->output = $response->$method($req);
 				$this->mime = $response->getMime();
 				$this->finalize();
 			}
@@ -61,5 +66,10 @@ class Tempest
 
 
 	protected function setup(){ /**/ }
+
+
+	protected function getRouter(){ return $this->router; }
+	protected function getRoute(){ return $this->route; }
+	protected function getConfig(){ return $this->config; }
 
 }

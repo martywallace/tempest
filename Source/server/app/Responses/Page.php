@@ -1,4 +1,4 @@
-<?php namespace App\Responses;
+<?php namespace Responses;
 
 use Tempest\Routing\Response;
 use Tempest\Routing\Request;
