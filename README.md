@@ -1,6 +1,6 @@
 # Tempest
 
-Currently being redeveloped - [older, stable version found here](https://github.com/MartyWallace/Tempest/tree/7c42c8cbed3b049f107b2f266419e7ddc1a9c8c1).
+Tempest is a tiny PHP framework.
 
 
 ## Globals
@@ -13,6 +13,7 @@ Tempest defines a collection of global constants and methods. Constants are defi
 * <code>POST</code> - Used where the string <code>'post'</code> could otherwise be used.
 * <code>NAMED</code> - Used where the string <code>'named'</code> could otherwise be used.
 * <code>RGX_PATH_DELIMITER</code> - Regex pattern for matching one or more forward or black slashes.
+* <code>RGX_TEMPLATE_TOKEN</code> - Regex pattern for matching tokens within a template.
 * <code>APP_ROOT</code> - The application root on the server e.g. <code>C:\\...\\MySite\\</code>.
 * <code>PUB_ROOT</code> - The public application root e.g. <code>/MySite/</code>.
 * <code>DIR_SERVER</code> - The <code>server</code> directory within the application e.g. <code>C:\\...\MySite\\server\\</code>.
@@ -26,6 +27,8 @@ Tempest defines a collection of global constants and methods. Constants are defi
 
 * <code>path_normalize()</code> - Helper for normalizing a path.
 * <code>path_split()</code> - Helper for splitting a path into chunks.
+* <code>dtrim()</code> - Trims characters from the left, then trims another set of characters from the right.
+* <code>array_keys_prepend()</code> - Prepends the given string on every key in an array. Useful for situations like adding a <code>:</code> for prepared statements.
 
 
 ## Sublime Text

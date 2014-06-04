@@ -9,7 +9,7 @@ use Tempest\Routing\Response;
 class ${2:class} extends Response
 {
 
-	public function setup()
+	public function setup(Request \$request)
 	{
 		\$this->mime = 'text/html';
 	}
