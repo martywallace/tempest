@@ -9,6 +9,8 @@ Tempest defines a collection of global constants and methods. Constants are defi
 
 #### Constants
 
+* <code>DIR</code> - Exactly the same value as <code>__DIR__</code> would provide from <code>index.php</code>.
+* <code>SEP</code> - Shorthand for <code>DIRECTORY_SEPARATOR</code>.
 * <code>GET</code> - Used where the string <code>'get'</code> could otherwise be used.
 * <code>POST</code> - Used where the string <code>'post'</code> could otherwise be used.
 * <code>NAMED</code> - Used where the string <code>'named'</code> could otherwise be used.
