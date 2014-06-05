@@ -77,9 +77,9 @@ class Template
 	}
 
 
-	public function copy(Template $template)
+	public function copy()
 	{
-		return new Template($template->getContent());
+		return new Template($this->getContent());
 	}
 
 

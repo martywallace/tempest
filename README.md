@@ -39,3 +39,4 @@ The <code>Sublime</code> folder contains various snippets useful for faster deve
 
 * <code>tempest::class</code> - A blank class definition.
 * <code>tempest::response</code> - A Tempest response class.
+* <code>tempest::modelroutes</code> - A block of common routes that deal with a model, formatted as JSON.

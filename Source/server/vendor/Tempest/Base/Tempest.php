@@ -69,8 +69,8 @@ class Tempest
 	protected function setup(){ /**/ }
 
 
-	protected function getRouter(){ return $this->router; }
-	protected function getRoute(){ return $this->route; }
-	protected function getConfig(){ return $this->config; }
+	public function getRouter(){ return $this->router; }
+	public function getRoute(){ return $this->route; }
+	public function getConfig(){ return $this->config; }
 
 }
