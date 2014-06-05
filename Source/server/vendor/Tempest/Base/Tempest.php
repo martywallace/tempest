@@ -12,14 +12,8 @@ class Tempest
 	private $output;
 	private $config;
 
-	
-	public static function init()
-	{
-		new static();
-	}
 
-
-	public function __construct()
+	public function start()
 	{
 		$this->router = new Router();
 		$this->config = new Config();
@@ -54,6 +48,13 @@ class Tempest
 			// No matching routes.
 			trigger_error("Input route <code>{$this->router->getRequest()}</code> not handled.");
 		}
+	}
+
+
+	public function error($number, $string, $file, $line, $context)
+	{
+		// TODO: Handle errors nicely.
+		echo $string;
 	}
 
 

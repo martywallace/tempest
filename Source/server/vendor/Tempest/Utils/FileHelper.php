@@ -10,7 +10,7 @@ class FileHelper
 	{
 		if(!array_key_exists($file, self::$loaded))
 		{
-			$path = path_normalize($file, DIRECTORY_SEPARATOR, false, false);
+			$path = path_normalize($file, SEP, false, false);
 
 			if(is_file($path))
 			{
