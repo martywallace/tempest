@@ -1,6 +1,7 @@
 <?php namespace Tempest\Base;
 
 use Tempest\Routing\Router;
+use Tempest\Base\Error;
 
 
 class Tempest
@@ -8,9 +9,10 @@ class Tempest
 
 	private $router;
 	private $route;
-	private $mime;
-	private $output;
 	private $config;
+	private $mime;
+	private $output = '';
+	private $errors = [];
 
 
 	public function start()
@@ -35,7 +37,6 @@ class Tempest
 
 				$this->output = $response->$method($req);
 				$this->mime = $response->getMime();
-				$this->finalize();
 			}
 			else
 			{
@@ -48,13 +49,23 @@ class Tempest
 			// No matching routes.
 			trigger_error("Input route <code>{$this->router->getRequest()}</code> not handled.");
 		}
+
+		if(count($this->errors) > 0)
+		{
+			$this->mime = 'text/plain';
+			foreach($this->errors as $error)
+			{
+				$this->output .= "{$error->getString()}\n";
+			}
+		}
+		
+		$this->finalize();
 	}
 
 
 	public function error($number, $string, $file, $line, $context)
 	{
-		// TODO: Handle errors nicely.
-		echo $string;
+		$this->errors[] = new Error($number, $string, $file, $line, $context);
 	}
 
 
