@@ -10,8 +10,16 @@ class Page extends Response
 
 	public function index(Request $request)
 	{
-		$this->mime = 'text/plain';
-		return new Template('Site root: ~/');
+		$this->mime = 'text/html';
+
+		$output = Template::load("/templates/hw.html");
+		
+		$output->bind([
+			"time" => date("Y M d H:i:s", time()),
+			"visits" => $_SESSION["visits"]
+		]);
+
+		return $output;
 	}
 
 }

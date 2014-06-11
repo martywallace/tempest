@@ -16,7 +16,8 @@ class Template
 
 	public static function load($file)
 	{
-		return new static(FileHelper::getContents(DIR_STATIC . $file));
+		$path = APP_ROOT . 'static' . SEP . path_normalize($file, SEP, false, false);
+		return new static(FileHelper::getContents($path));
 	}
 
 

@@ -1,14 +1,14 @@
 <?php
 
-function path_normalize($path, $separator = DIRECTORY_SEPARATOR, $leadingSlash = true, $trailingSlash = true)
+function path_normalize($path, $separator = DIRECTORY_SEPARATOR, $head = false, $tail = false)
 {
 	if(strlen($path) === 0 || $path === '/' || $path === '\\' || $path === $separator) return $separator;
 
 	$base = preg_replace(RGX_PATH_DELIMITER, $separator, $path);
 	$base = trim($base, $separator);
 
-	$base = $leadingSlash ? $separator . $base : $base;
-	$base = $trailingSlash ? $base . $separator : $base;
+	$base = $head ? $separator . $base : $base;
+	$base = $tail ? $base . $separator : $base;
 
 	return $base;
 }
@@ -37,4 +37,12 @@ function array_keys_prepend($array, $prefix)
 	}
 
 	return $new;
+}
+
+
+function debug($data)
+{
+	echo '<pre>';
+	print_r($data);
+	echo '</pre>';
 }
