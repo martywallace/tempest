@@ -9,7 +9,8 @@ class Path
 	
 	public function __construct($base)
 	{
-		$this->base = path_normalize($base, '/', true, false);
+		$this->base = strtolower($base);
+		$this->base = path_normalize($this->base, '/', true, false);
 
 		if($base === '/') $this->chunks = array();
 		else $this->chunks = path_split($base);
