@@ -11,14 +11,11 @@ Tempest defines a collection of global constants and methods. Constants are defi
 
 * <code>DIR</code> - Exactly the same value as <code>\_\_DIR\_\_</code> would provide from <code>index.php</code>.
 * <code>SEP</code> - Shorthand for <code>DIRECTORY_SEPARATOR</code>.
-
 * <code>GET</code> - Used where the string <code>'get'</code> could otherwise be used.
 * <code>POST</code> - Used where the string <code>'post'</code> could otherwise be used.
 * <code>NAMED</code> - Used where the string <code>'named'</code> could otherwise be used.
-
 * <code>RGX_PATH_DELIMITER</code> - Regex pattern for matching one or more forward or black slashes.
 * <code>RGX_TEMPLATE_TOKEN</code> - Regex pattern for matching tokens within a template.
-
 * <code>APP_ROOT</code> - The application root on the server e.g. <code>C:\\...\\MySite\\</code>.
 * <code>PUB_ROOT</code> - The public application root e.g. <code>/MySite/</code>.
 * <code>REQUEST_CLEAN</code> - The request URI with querystring and hash values trimmed off.
@@ -31,7 +28,7 @@ Tempest defines a collection of global constants and methods. Constants are defi
 * <code>path_split()</code> - Helper for splitting a path into chunks.
 * <code>dtrim()</code> - Trims characters from the left, then trims another set of characters from the right.
 * <code>array_keys_prepend()</code> - Prepends the given string on every key in an array. Useful for situations like adding a <code>:</code> for prepared statements.
-* <code>debug()</code> - Same as <code>print\_r()</code> but also wraps in <code>&lt;pre&gt;&lt;/pre&gt;</code>.
+* <code>debug()</code> - Same as <code>print\_r()</code> but also wraps in <code>&lt;pre&gt;&lt;/pre&gt;</code> for readbility in HTML output.
 
 
 ## Sublime Text
