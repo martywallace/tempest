@@ -32,9 +32,11 @@ class Request extends Path
 	}
 
 
-	public function redirect($uri)
+	public function redirect($dest)
 	{
-		header("Location: " . PUBLIC_ROOT . $uri);
+		if(preg_match('/^\w*:\/\//', $dest)) header("Location: $dest");
+		else header("Location: " . PUB_ROOT . $dest);
+
 		exit;
 	}
 

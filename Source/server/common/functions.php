@@ -30,7 +30,7 @@ function dtrim($value, $left, $right)
 
 function array_keys_prepend($array, $prefix)
 {
-	$new = array();
+	$new = [];
 	foreach($array as $key => $value)
 	{
 		$new[$prefix . $key] = $value;

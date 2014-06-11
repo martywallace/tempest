@@ -3,7 +3,7 @@
 class FileHelper
 {
 	
-	private static $loaded = array();
+	private static $loaded = [];
 
 
 	public static function getContents($file)

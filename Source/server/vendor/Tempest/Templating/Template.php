@@ -86,7 +86,7 @@ class Template
 
 	private function getTokens()
 	{
-		$tokens = array();
+		$tokens = [];
 		preg_match_all(RGX_TEMPLATE_TOKEN, $this->content, $matches);
 		
 		for($i = 0; $i < count($matches[0]); $i++)

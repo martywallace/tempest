@@ -20,13 +20,13 @@ class Router
 	
 	public function register($routes)
 	{
-		$possible = array();
+		$possible = [];
 
 		foreach($routes as $input => $handler)
 		{
 			$route = new Route($input, $handler);
 			$score = 0;
-			$named = array();
+			$named = [];
 
 			if($this->request->getLength() === 0 && $route->getLength() === 0)
 			{
@@ -70,7 +70,7 @@ class Router
 			if($score > 0)
 			{
 				// Route has a positive score, place in list of possible routes.
-				$possible[$score][] = array($route, $named);
+				$possible[$score][] = [$route, $named];
 			}
 		}
 

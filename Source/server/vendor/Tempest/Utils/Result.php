@@ -4,7 +4,7 @@
 class Result
 {
 	
-	private $errors = array();
+	private $errors = [];
 
 
 	public function error($message)
