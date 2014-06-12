@@ -31,6 +31,79 @@ Tempest defines a collection of global constants and methods. Constants are defi
 * <code>debug()</code> - Same as <code>print\_r()</code> but also wraps in <code>&lt;pre&gt;&lt;/pre&gt;</code> for readbility in HTML output.
 
 
+## Templating
+
+Tempest provides simple templating via the <code>\\Tempest\\Templating\\Template</code> class. Templates can be created on the fly via:
+
+<pre>
+$tpl = new Template('&lt;p&gt;My template.&lt;/p&gt;');
+</pre>
+
+Or loaded from the <code>/static/</code> directory via the static <code>load()</code> method:
+
+<pre>
+$tpl = Template::load("templates/my-template.html");
+</pre>
+
+Templates use the typical <code>{{ curlybrace }}</code> syntax seen in most popular templating libraries. Data is bound to templates via the <code>bind()</code> method, e.g.
+
+<pre>
+$tpl = new Template("&lt;p&gt;Hello {{ name }}.&lt;/p&gt;");
+$tpl->bind(["name" => "John"]);
+
+echo $tpl; // &lt;p&gt;Hello John.&lt;/p&gt;
+</pre>
+
+Templates also provide a way to define a context in which properties will be made relevant. The name of the context is passed optionally as the 2nd argument of <code>bind()</code>, and utilitied in the template itself via the syntax <code>{{ @context.property }}</code>. For example:
+
+<pre>
+$tpl = new Template("{{ @john.name }} greets {{ @david.name }}.");
+$tpl->bind(["name" => "John"], 'john');
+$tpl->bind(["name" => "David"]. 'david');
+
+echo $tpl; // John greets David.
+</pre>
+
+Tokens support nested properties originating from both arrays and objects. Dot notation is used to access these values, e.g.
+
+<pre>
+$tpl = new Template("{{ name.first }}");
+$tpl->bind(["name" => ["first" => "John"]]);
+</pre>
+
+Methods are also supported by appending <code>()</code> parenthesis onto the relevant values. If the method returns a datastructure with nested properties, those properties can be accessed in the same manner as above. Examples of suitable tokens:
+
+<pre>
+{{ someMethod() }}
+{{ person.getName().first }}
+</pre>
+
+Any occurrence of the value <code>~/</code> within a template will be replaced with the application root. This is useful for creating paths to resources within your application. For example, your main template may include the line:
+
+<pre>
+&lt;script src="~/static/js/app.js"&gt;
+</pre>
+
+Which will output as something like this:
+
+<pre>
+&lt;script src="/MySite/static/js/app.js"&gt;
+</pre>
+
+Tokens can be prepended with <code>!</code> for escaping HTML in the result, or <code>?</code> to replace <code>null</code> values with nothing rather than the string <code>"null"</code>:
+
+<pre>
+{{ !valueThatIsEscaped }}
+{{ ?valueThatIsNull }}
+</pre>
+
+Finally, tokens can have hooks attached, which are used to alter the final replacement value. Hooks are added via <code>: hookName</code> at the end of a token. You are able to attach unlimited hooks, and the order of those hooks are preserved when obtaining the final value. Hooks should be added to the <code>\\Tempest\\Templating\\Hooks</code> class, where several are already defined. Example usage:
+
+<pre>
+{{ value : sha1 : ucase }} // The resulting value will be an uppercase SHA1 hash of the original.
+</pre>
+
+
 ## Sublime Text
 
 The <code>Sublime</code> folder contains various snippets useful for faster development using Tempest. Below are the tab-triggers available.
