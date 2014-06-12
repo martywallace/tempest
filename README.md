@@ -59,7 +59,7 @@ Templates also provide a way to define a context in which properties will be mad
 <pre>
 $tpl = new Template("{{ @john.name }} greets {{ @david.name }}.");
 $tpl->bind(["name" => "John"], 'john');
-$tpl->bind(["name" => "David"]. 'david');
+$tpl->bind(["name" => "David"], 'david');
 
 echo $tpl; // John greets David.
 </pre>
