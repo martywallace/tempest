@@ -46,3 +46,9 @@ function debug($data)
 	print_r($data);
 	echo '</pre>';
 }
+
+
+function set_or($value, $fallback = null)
+{
+	return isset($value) ? $value : $fallback;
+}
