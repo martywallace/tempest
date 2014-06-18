@@ -9,6 +9,7 @@ class Hooks
 	public static function dmy($value){ return date("d M Y", $value); }
 	public static function link($value){ return '<a href="' . $value . '">' . $value . '</a>'; }
 	public static function mailto($value){ return '<a href="mailto:' . $value . '">' . $value . '</a>'; }
+	public static function tel($value){ return '<a href="tel:' . $value . '">' . $value . '</a>'; }
 	public static function sha1($value){ return sha1($value); }
 	public static function trim($value){ return trim($value); }
 	public static function nl2br($value){ return nl2br($value); }
