@@ -12,14 +12,16 @@ class Page extends Response
 	{
 		$this->mime = 'text/html';
 
-		$output = Template::load("/templates/hw.html");
-		
-		$output->bind([
-			"time" => date("Y M d H:i:s", time()),
-			"visits" => $_SESSION["visits"]
+		$content = Template::load("/templates/intro.html");
+		$content->bind([
+			"heading" => "Success!",
+			"content" => "Everything appears to be working correctly.<br>Head over to <code>/server/app/Responses/Page.php</code> to modify this response."
 		]);
 
-		return $output;
+		$template = Template::load("/templates/base.html");
+		$template->bind(["content" => $content]);
+
+		return $template;
 	}
 
 }
