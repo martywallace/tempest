@@ -1,0 +1,161 @@
+body,
+div,
+header,
+nav,
+footer,
+section,
+article,
+address,
+figure,
+figcaption,
+pre,
+blockquote,
+aside,
+main,
+p,
+hr,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ol,
+ul,
+dl,
+dt,
+dd,
+iframe,
+embed,
+object,
+video,
+audio,
+canvas,
+form,
+fieldset,
+legend,
+label
+{
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+
+body
+{
+	font-family: serif;
+	font-size: 14px;
+}
+
+pre,
+code
+{
+	font-family: 'Consolas', monospace;
+}
+
+pre,
+blockquote
+{
+	background: #EEE;
+}
+
+
+h6{ font-size: 125%; }
+h5{ font-size: 150%; }
+h4{ font-size: 175%; }
+h3{ font-size: 200%; }
+h2{ font-size: 225%; }
+h1{ font-size: 250%; }
+
+table
+{
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+input,
+select,
+button
+{
+	border: none;
+	outline: none;
+	background: none;
+}
+
+a,
+button
+{
+	cursor: pointer;
+}
+
+a img{ border: none; }
+
+img
+{
+	max-width: 100%;
+	height: auto;
+}
+
+p + p
+{
+	margin-top: 20px;
+}
+
+.clear
+{
+	clear: both;
+	float: none;
+	width: auto;
+	height: auto;
+}
+
+.block{ display: block; }
+.inline-block{ display: inline-block; }
+.inline{ display: inline; }
+.hidden{ display: none; }
+.text-center{ text-align: center; }
+.text-left{ text-align: left; }
+.text-right{ text-align: right; }
+.pos-relative{ position: relative; }
+.pos-absoulute{ position: absolute; }
+.pos-fixed{ position: fixed; }
+.pos-static{ position: static; }
+.float-left{ float: left; }
+.float-right{ float: right; }
+
+.grid
+{
+	max-width: 1000px;
+	margin: 0 auto;
+}
+
+.column
+{
+	float: left;
+	width: 100%;
+}
+
+.column.five{ width: 5%; }
+.column.ten{ width: 10%; }
+.column.fifteen{ width: 15%; }
+.column.twenty{ width: 20%; }
+.column.twenty-five{ width: 25%; }
+.column.thirty{ width: 30%; }
+.column.thirty-five{ width: 35%; }
+.column.forty{ width: 40%; }
+.column.forty-five{ width: 45%; }
+.column.fifty{ width: 50%; }
+.column.fifty-five{ width: 55%; }
+.column.sixty{ width: 60%; }
+.column.sixty-five{ width: 65%; }
+.column.seventy{ width: 70%; }
+.column.seventy-five{ width: 75%; }
+.column.eighty{ width: 80%; }
+.column.eighty-five{ width: 85%; }
+.column.ninety{ width: 90%; }
+.column.ninety-five{ width: 95%; }
+
+.column + .column > .box
+{
+	padding-left: 20px;
+}

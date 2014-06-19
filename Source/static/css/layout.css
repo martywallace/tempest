@@ -1,7 +1,13 @@
 @charset "utf-8";
+@import "base.css";
 
 section#intro
 {
-	text-align: center;
-	padding: 40px 0;
+	padding: 40px 20px;
+}
+
+section#intro img
+{
+	border-radius: 3px;
+	margin-bottom: 20px;
 }

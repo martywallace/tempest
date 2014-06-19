@@ -1,0 +1,3 @@
+SetHandler None
+Options -ExecCGI
+php_flag engine off

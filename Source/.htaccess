@@ -1,2 +1,4 @@
+Options -indexes
+
 RewriteEngine on
 RewriteRule ^[^\.]+$ index.php [L]

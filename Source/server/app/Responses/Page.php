@@ -12,14 +12,8 @@ class Page extends Response
 	{
 		$this->mime = 'text/html';
 
-		$content = Template::load("/templates/intro.html");
-		$content->bind([
-			"heading" => "Success!",
-			"content" => "Everything appears to be working correctly.<br>Head over to <code>/server/app/Responses/Page.php</code> to modify this response."
-		]);
-
 		$template = Template::load("/templates/base.html");
-		$template->bind(["content" => $content]);
+		$template->bind(["content" => Template::load("/templates/intro.html")]);
 
 		return $template;
 	}
