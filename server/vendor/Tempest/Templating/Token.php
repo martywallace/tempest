@@ -81,8 +81,8 @@ class Token
 		{
 			if(strlen($hook) === 0) continue;
 
-			if(method_exists($hooks, $hook)) $value = $hooks->$hook($value);
-			else trigger_error("<code>" . get_class($hooks) . "</code> does not define the hook <code>$hook</code>.");
+			if(method_exists('Tempest\Templating\Hooks', $hook)) $value = Hooks::$hook($value);
+			else trigger_error("Hook <code>$hook</code> not defined.");
 		}
 
 

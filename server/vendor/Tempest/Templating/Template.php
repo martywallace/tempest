@@ -11,9 +11,6 @@ class Template
 	private $content;
 
 
-	private static $hookHandler;
-
-
 	public static function load($file)
 	{
 		$path = APP_ROOT . 'static' . SEP . path_normalize($file, SEP, false, false);
@@ -24,13 +21,6 @@ class Template
 	public static function prepare($content)
 	{
 		return str_replace("~/", PUB_ROOT, $content);
-	}
-
-
-	public static function getHookHandler()
-	{
-		if(self::$hookHandler === null) self::$hookHandler = new Hooks();
-		return self::$hookHandler;
 	}
 
 
