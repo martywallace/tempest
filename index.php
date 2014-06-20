@@ -1,5 +1,8 @@
 <?php
 
+session_start();
+
+
 define("DIR", __DIR__);
 define("SEP", DIRECTORY_SEPARATOR);
 define("APP_ROOT", DIR . SEP);

@@ -12,8 +12,8 @@ class Page extends Response
 	{
 		$this->mime = 'text/html';
 
-		$template = Template::load("/templates/base.html");
-		$template->bind(["content" => Template::load("/templates/intro.html")]);
+		$template = Template::load("/templates/base.html")
+			->bind(["content" => Template::load("/templates/intro.html")]);
 
 		return $template;
 	}
