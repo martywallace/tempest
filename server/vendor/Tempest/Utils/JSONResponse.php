@@ -7,12 +7,19 @@ class JSONResponse extends Result
 {
 
 	private $body = [];
+	private $padding = null;
 
 
 	public function add($value)
 	{
 		$this->body[] = $value;
 		return $this;
+	}
+
+
+	public function pad($padding)
+	{
+		$this->padding = $padding;
 	}
 
 
@@ -24,13 +31,21 @@ class JSONResponse extends Result
 	
 	public function getContent()
 	{
-		return json_encode([
+		$base = json_encode([
 			"head" => [
 				"ok" => $this->isOk(),
 				"errors" => $this->getErrors()
 			],
 			"body" => $this->body
 		]);
+
+		if($this->padding !== null)
+		{
+			// Enabled JSONP.
+			$base = "{$this->padding}({$base})";
+		}
+
+		return $base;
 	}
 
 }
