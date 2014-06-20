@@ -46,7 +46,7 @@ Or loaded from the <code>/static/</code> directory via the static <code>load()</
 $tpl = Template::load("templates/my-template.html");
 </pre>
 
-Templates use the typical <code>{{ curlybrace }}</code> syntax seen in most popular templating libraries. Data is bound to templates via the <code>bind()</code> method, e.g.
+Templates use the typical <code>{{ curlybrace }}</code> syntax seen in most popular templating libraries. Data is bound to templates via the <code>bind()</code> method which accepts either an Array or class instance, e.g.
 
 <pre>
 $tpl = new Template("&lt;p&gt;Hello {{ name }}.&lt;/p&gt;");
@@ -70,6 +70,14 @@ Tokens support nested properties originating from both arrays and objects. Dot n
 <pre>
 $tpl = new Template("{{ name.first }}");
 $tpl->bind(["name" => ["first" => "John"]]);
+</pre>
+
+The <code>bind()</code> method returns the <code>Template</code> object it is being called on. This makes chaining possible, e.g.
+
+<pre>
+$tpl = new Template("{{ first }} {{ last }}")
+	->bind(["first" => "Marty"])
+	->bind(["last" => "Wallace"]);
 </pre>
 
 Methods are also supported by appending <code>()</code> parenthesis onto the relevant values. If the method returns a datastructure with nested properties, those properties can be accessed in the same manner as above. Examples of suitable tokens:
@@ -103,12 +111,3 @@ Finally, tokens can have hooks attached, which are used to alter the final repla
 <pre>
 {{ value : sha1 : ucase }} // The resulting value will be an uppercase SHA1 hash of the original.
 </pre>
-
-
-## Sublime Text
-
-The <code>Sublime</code> folder contains various snippets useful for faster development using Tempest. Below are the tab-triggers available.
-
-* <code>tempest::class</code> - A blank class definition.
-* <code>tempest::response</code> - A Tempest response class.
-* <code>tempest::modelroutes</code> - A block of common routes that deal with a model, formatted as JSON.
