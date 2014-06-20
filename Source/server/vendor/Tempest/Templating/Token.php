@@ -77,7 +77,6 @@ class Token
 
 
 		// Apply hooks.
-		$hooks = Template::getHookHandler();
 		foreach($this->hooks as $hook)
 		{
 			if(strlen($hook) === 0) continue;

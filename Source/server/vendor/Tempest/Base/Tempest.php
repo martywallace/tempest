@@ -72,7 +72,17 @@ class Tempest
 	private function finalize()
 	{
 		header("Content-type: {$this->mime}");
+
+		if(is_a($this->output, 'Tempest\Templating\Template'))
+		{
+			// Bind response values.
+			$this->output->bind([
+				"T_REQUEST_DATA" => base64_encode(json_encode($this->router->getRequest()->data(), JSON_NUMERIC_CHECK))
+			]);
+		}
+
 		echo $this->output;
+
 		exit;
 	}
 

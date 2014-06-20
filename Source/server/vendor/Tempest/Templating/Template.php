@@ -75,6 +75,8 @@ class Template
 
 			$this->update($token->replace($this->content, $value));
 		}
+
+		return $this;
 	}
 
 

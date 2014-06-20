@@ -23,5 +23,7 @@ class Response
 
 	public function getMime(){ return $this->mime; }
 	public function getApp(){ return $this->app; }
+	public function getRequest(){ return $this->app->getRouter()->getRequest(); }
+	public function getNamedJSON(){ return json_encode($this->getRequest()->data(NAMED)); }
 
 }

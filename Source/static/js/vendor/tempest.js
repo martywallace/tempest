@@ -2,6 +2,9 @@
 {
 	var baseUri = $("base").attr("href") || null;
 
+	var request = $("meta[name=request]").attr("content");
+	    request = request === undefined ? {} : $.parseJSON(B64.decode(request));
+
 
 	// A collection of front-end tools for working with the Tempest backend.
 	// @author Marty Wallace.
@@ -60,7 +63,19 @@
 			},
 
 
-			getBaseUri: function(){ return baseUri; }
+			data: function(group, name)
+			{
+				if(!request.hasOwnProperty(group) || !request[group].hasOwnProperty(name)) return null;
+
+				if(group === undefined) return request;
+				if(name === undefined) return request[group].slice();
+
+				return request[group][name];
+			},
+
+
+			getBaseUri: function(){ return baseUri; },
+			getRequest: function(){ return request; }
 
 		};
 

@@ -5,6 +5,9 @@ use Tempest\Utils\FileHelper;
 
 class Config
 {
+
+	private $required = ['routes'];
+
 	
 	public function __construct()
 	{
@@ -14,6 +17,11 @@ class Config
 		{
 			// Move config properties to config class.
 			$this->$prop = $value;
+		}
+
+		foreach($this->required as $r)
+		{
+			if(!property_exists($this, $r)) trigger_error("Missing configuration requirement <code>$r</code>.");
 		}
 	}
 
