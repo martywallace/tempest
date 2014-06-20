@@ -78,7 +78,8 @@ class Tempest
 			// Bind response values.
 			$this->output->bind([
 				"T_REQUEST_DATA" => base64_encode(json_encode($this->router->getRequest()->data(), JSON_NUMERIC_CHECK))
-			]);
+				
+			])->finalize();
 		}
 
 		echo $this->output;

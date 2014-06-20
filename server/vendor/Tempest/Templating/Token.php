@@ -9,6 +9,7 @@ class Token
 
 	const B_HTML_ESCAPE = '!';
 	const B_REPLACE_NULL_WITH_EMPTY = '?';
+	const B_REMOVE_WITHOUT_VALUE = '*';
 
 
 	private $base;
@@ -66,11 +67,11 @@ class Token
 
 
 		// The value needs to be escaped.
-		if(in_array(self::B_HTML_ESCAPE, $this->behaviours)) $value = htmlspecialchars($value);
+		if($this->hasPrefix(self::B_HTML_ESCAPE)) $value = htmlspecialchars($value);
 
 
 		// The value should be interpreted as an empty string if it is null or empty.
-		if(in_array(self::B_REPLACE_NULL_WITH_EMPTY, $this->behaviours))
+		if($this->hasPrefix(self::B_REPLACE_NULL_WITH_EMPTY))
 		{
 			if($value === 'null') return '';
 		}
@@ -87,6 +88,12 @@ class Token
 
 
 		return $value;
+	}
+
+
+	public function hasPrefix($prefix)
+	{
+		return in_array($prefix, $this->behaviours);
 	}
 
 

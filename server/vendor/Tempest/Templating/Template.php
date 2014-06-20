@@ -46,7 +46,7 @@ class Template
 
 	public function __toString()
 	{
-		return $this->content;
+		return $this->getContent();
 	}
 
 
@@ -87,6 +87,17 @@ class Template
 	public function copy()
 	{
 		return new Template($this->getContent());
+	}
+
+
+	public function finalize()
+	{
+		foreach($this->getTokens() as $token)
+		{
+			if($token->hasPrefix(Token::B_REMOVE_WITHOUT_VALUE)) $this->update($token->replace($this->content, ''));
+		}
+
+		return $this;
 	}
 
 

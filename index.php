@@ -12,7 +12,7 @@ define('POST', 'post');
 define('NAMED', 'named');
 
 define("RGX_PATH_DELIMITER", '/[\/\\\\]+/');
-define("RGX_TEMPLATE_TOKEN", '/\{\{\s*([\!\?]*)(@\w)*([\w\.\(\)]+)([\w\s\:]*)\s*\}\}/');
+define("RGX_TEMPLATE_TOKEN", '/\{\{\s*([\!\?\*]*)(@\w)*([\w\.\(\)]+)([\w\s\:]*)\s*\}\}/');
 
 
 foreach(array('functions', 'autoloader') as $inc) require_once APP_ROOT . 'server' . SEP . 'common' . SEP . "$inc.php";
