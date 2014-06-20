@@ -20,6 +20,7 @@ class JSONResponse extends Result
 	public function pad($padding)
 	{
 		$this->padding = $padding;
+		return $this;
 	}
 
 
@@ -39,7 +40,7 @@ class JSONResponse extends Result
 			"body" => $this->body
 		]);
 
-		if($this->padding !== null)
+		if($this->padding !== null && strlen($this->padding) > 0)
 		{
 			// Enabled JSONP.
 			$base = "{$this->padding}({$base})";

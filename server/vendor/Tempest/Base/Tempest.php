@@ -2,6 +2,7 @@
 
 use Tempest\Routing\Router;
 use Tempest\Base\Error;
+use Tempest\Templating\Template;
 
 
 class Tempest
@@ -52,11 +53,11 @@ class Tempest
 
 		if(count($this->errors) > 0)
 		{
-			$this->mime = 'text/plain';
-			foreach($this->errors as $error)
-			{
-				$this->output .= "{$error->getString()}\n";
-			}
+			// Errors found, use error output.
+			$this->mime = 'text/html';
+			$this->output = Template::load('/templates/tempest/errors.html')->bind([
+				"errors" => Template::batch(Template::load('/templates/tempest/error.html'), $this->errors)
+			]);
 		}
 		
 		$this->finalize();
@@ -78,7 +79,7 @@ class Tempest
 			// Bind response values.
 			$this->output->bind([
 				"T_REQUEST_DATA" => base64_encode(json_encode($this->router->getRequest()->data(), JSON_NUMERIC_CHECK))
-				
+
 			])->finalize();
 		}
 

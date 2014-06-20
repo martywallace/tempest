@@ -1,6 +1,5 @@
 {
 	"routes": {
-		"/": "Page",
-		"/test": "Page::test"
+		"/": "Page"
 	}
 }

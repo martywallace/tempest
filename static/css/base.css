@@ -90,6 +90,12 @@ button
 
 a img{ border: none; }
 
+a
+{
+	text-decoration: none;
+	color: inherit;
+}
+
 img
 {
 	max-width: 100%;

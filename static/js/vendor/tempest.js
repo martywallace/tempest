@@ -69,7 +69,7 @@
 
 					// Return request data passed to the browser via <code>meta[name=request]</code>, if found.
 					// @param group The data group i.e. <code>get</code>, <code>post</code> or <code>named</code> data.
-					// @param prop The 
+					// @param prop The property name within the group.
 					data: function(group, prop)
 					{
 						if(group === undefined) return request;

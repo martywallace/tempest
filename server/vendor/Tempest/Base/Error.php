@@ -14,7 +14,7 @@ class Error
 	{
 		$this->number = $number;
 		$this->string = $string;
-		$this->file = $file;
+		$this->file = str_replace(APP_ROOT, '', $file);
 		$this->line = $line;
 		$this->context = $context;
 	}
