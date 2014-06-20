@@ -24,6 +24,20 @@ class Template
 	}
 
 
+	public static function batch(Template $template, Array $batch, Template $empty = null)
+	{
+		if(count($batch) === 0) return $empty === null ? new Template('') : $empty;
+
+		$output = [];
+		foreach($batch as $b)
+		{
+			$output[] = $template->copy()->bind($b);
+		}
+
+		return new Template(implode($output));
+	}
+
+
 	public function __construct($content = '')
 	{
 		$this->update($content);
