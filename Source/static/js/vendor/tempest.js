@@ -1,15 +1,11 @@
 (function()
 {
-	var baseUri = $("base").attr("href") || null;
-
-	var request = $("meta[name=request]").attr("content");
-	    request = request === undefined ? {} : $.parseJSON(B64.decode(request));
-
-
 	// A collection of front-end tools for working with the Tempest backend.
 	// @author Marty Wallace.
 	window.Tempest = (function()
 	{
+		var baseUri = $("base").attr("href") || null;
+		
 		return {
 
 			// Send a request to the application.
@@ -63,19 +59,36 @@
 			},
 
 
-			data: function(group, name)
+			// Holds information about the request that was made to result in the current context.
+			Request: (function()
 			{
-				if(!request.hasOwnProperty(group) || !request[group].hasOwnProperty(name)) return null;
+				var request = $("meta[name=request]").attr("content");
+	    			    request = request === undefined ? {} : $.parseJSON(B64.decode(request));
 
-				if(group === undefined) return request;
-				if(name === undefined) return request[group].slice();
+				return {
 
-				return request[group][name];
-			},
+					// Return request data passed to the browser via <code>meta[name=request]</code>, if found.
+					// @param group The data group i.e. <code>get</code>, <code>post</code> or <code>named</code> data.
+					// @param prop The 
+					data: function(group, prop)
+					{
+						if(group === undefined) return request;
+						if(!request.hasOwnProperty(group)) return null;
+
+						if(prop === undefined) return request[group];
+						if(!request[group].hasOwnProperty(prop)) return null;
+
+						return request[group][prop];
+					},
 
 
-			getBaseUri: function(){ return baseUri; },
-			getRequest: function(){ return request; }
+					getRaw: function(){ return request; }
+				};
+
+			})(),
+
+
+			getBaseUri: function(){ return baseUri; }
 
 		};
 
