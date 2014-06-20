@@ -10,12 +10,14 @@ class Result
 	public function error($message)
 	{
 		$this->errors[] = $message;
+		return $this;
 	}
 
 
 	public function merge(Result $result)
 	{
 		$this->errors = array_merge($this->errors, $result->getErrors());
+		return $this;
 	}
 
 

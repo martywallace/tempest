@@ -53,6 +53,7 @@ class Template
 	public function update($content = '')
 	{
 		$this->content = self::prepare($content);
+		return $this;
 	}
 
 

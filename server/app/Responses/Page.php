@@ -3,6 +3,7 @@
 use Tempest\Routing\Response;
 use Tempest\Routing\Request;
 use Tempest\Templating\Template;
+use Tempest\Utils\JSONResponse;
 
 
 class Page extends Response
@@ -16,6 +17,17 @@ class Page extends Response
 			->bind(["content" => Template::load("/templates/intro.html")]);
 
 		return $template;
+	}
+
+
+	public function test(Request $request)
+	{
+		$this->mime = 'application/json';
+
+		$response = new JSONResponse();
+		$response->add("Working");
+
+		return $response;
 	}
 
 }

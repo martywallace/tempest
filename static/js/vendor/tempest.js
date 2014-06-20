@@ -106,7 +106,7 @@
 			{
 				if(!base.hasOwnProperty("head")) base.head = { };
 				if(!base.head.hasOwnProperty("errors")) base.head.errors = [];
-				if(!base.head.hasOwnProperty("success")) base.head.success = base.head.errors.length === 0;
+				if(!base.head.hasOwnProperty("ok")) base.head.ok = base.head.errors.length === 0;
 				if(!base.hasOwnProperty("body")) base.body = { };
 
 				return {
@@ -115,7 +115,7 @@
 					getHead: function(){ return base.head; },
 					getErrors: function(){ return base.head.errors; },
 					getBody: function(){ return base.body; },
-					isOk: function(){ return base.head.success; }
+					isOk: function(){ return base.head.ok; }
 
 				};
 			}
