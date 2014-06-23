@@ -76,9 +76,12 @@ class Tempest
 
 		if(is_a($this->output, 'Tempest\Templating\Template'))
 		{
+			$request = $this->router->getRequest();
+			$reqData = array_merge($request->data(), ["uri" => ["base" => $request->getBase(), "chunks" => $request->getChunks()]]);
+
 			// Bind response values.
 			$this->output->bind([
-				"T_REQUEST_DATA" => base64_encode(json_encode($this->router->getRequest()->data(), JSON_NUMERIC_CHECK))
+				"T_REQUEST_DATA" => base64_encode(json_encode($reqData, JSON_NUMERIC_CHECK))
 
 			])->finalize();
 		}
