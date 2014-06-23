@@ -88,6 +88,46 @@
 			})(),
 
 
+			// Form and data helpers.
+			Forms: (function()
+			{
+				var callbacks = { };
+
+				return {
+
+					// Adds a callback handler with a given name.
+					// @param name The name of the callback handler, whose value should be used on the <code>form</code> element's
+					//			<code>data-callback</code> attribube.
+					// @param func The function to call, accepting the response object.
+					addCallback: function(name, func)
+					{
+						if(!this.hasCallback(name)) callbacks[name] = func;
+						else throw "Callback '" + name + "' already handled.";
+					},
+
+
+					// Determine whether a callback with a given name exists already.
+					// @param name The callback name.
+					hasCallback: function(name)
+					{
+						return callbacks.hasOwnProperty(name);
+					},
+
+
+					// Calls a previously defined callback function.
+					// Silently does nothing if the callback is not defined.
+					// @param name The callback name.
+					// @param response The JSONResponse object holding response data.
+					executeCallback: function(name, response)
+					{
+						if(this.hasCallback(name)) callbacks[name](response);
+					}
+
+				};
+
+			})(),
+
+
 			getBaseUri: function(){ return baseUri; }
 
 		};
@@ -138,7 +178,6 @@
 			return;
 		}
 
-		event.preventDefault();
 
 		if($(this).is("[type=submit]"))
 		{
@@ -183,20 +222,19 @@
 			});
 
 
-			console.log(data);
-
-			// Post via Tempest.
+			// Send data to server via <code>Tempest.api()</code>.
 			Tempest.api(form.attr("method"), form.attr("action"), data, function(response)
 			{
 				if(form.is("[data-callback]"))
 				{
 					// TODO: Pass response to callback handler.
-					console.log(response);
+					Tempest.Forms.executeCallback(form.data("callback"), response);
 				}
 
 			});
 		}
 
+		event.preventDefault();
 
 	});
 
