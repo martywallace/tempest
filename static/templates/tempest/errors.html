@@ -10,13 +10,16 @@
 		<link rel="stylesheet" href="~/static/css/tempest.css">
 	</head>
 	<body>
-		<h1>Application Error</h1>
-		<p>We're having trouble with your request.</p>
+		<hgroup>
+			<h1 class="grid">Application Error</h1>
+		</hgroup>
 
-		<ul id="errors">
-			{{ errors }}
-		</ul>
+		<div class="grid">
+			<p>We're having trouble with your request.</p>
 
-		<a href="~/">Return home</a>
+			<ul id="errors">{{ errors }}</ul>
+
+			<a href="~/">Return home</a>
+		</div>
 	</body>
 </html>

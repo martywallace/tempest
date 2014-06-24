@@ -2,32 +2,33 @@
 @import "base.css";
 @import "../type/opensans/config.css";
 
+.grid
+{
+	max-width: 600px;
+	padding: 0 20px;
+}
+
 body
 {
 	background: #F8F8F8;
 	font-family: 'OpenSansReg';
-	text-align: center;
 }
 
-h1
+hgroup
 {
-	background: #75A494;
+	background: #F0603C;
 	color: #FFF;
 	height: 120px;
 	line-height: 120px;
 	font-weight: normal;
 	font-family: 'OpenSansBold';
 	text-transform: uppercase;
-	font-size: 22px;
 	margin-bottom: 50px;
-	padding: 0 20px;
-	text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-h1 + p
+h1
 {
-	margin-bottom: 30px;
-	padding: 0 20px;
+	font-size: 22px;
 }
 
 ul
@@ -38,6 +39,7 @@ ul
 	background: #E9E9E9;
 	margin-bottom: 30px;
 	list-style: none;
+	margin-top: 30px;
 }
 
 ul > li
@@ -50,16 +52,16 @@ ul > li + li
 	border-top: 4px solid #F8F8F8;
 }
 
+ul > li > p > code
+{
+	color: #CF3610;
+}
+
 small
 {
 	font-size: 11px;
-	color: #888;
+	color: #777;
 }
 
-ul > li:hover small
-{
-	color: #333;
-}
-
-a{ color: #75A494; }
+a{ color: #F0603C; }
 a:hover{ color: #333; }
