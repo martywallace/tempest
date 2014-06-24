@@ -53,7 +53,6 @@ class Tempest
 
 		if(count($this->errors) > 0)
 		{
-			trigger_error("Hi");
 			// Errors found, use error output.
 			$this->mime = 'text/html';
 			$this->output = Template::load('/templates/tempest/errors.html')->bind([
