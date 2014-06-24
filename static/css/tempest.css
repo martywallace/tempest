@@ -4,7 +4,7 @@
 
 .grid
 {
-	max-width: 600px;
+	max-width: 700px;
 	padding: 0 20px;
 }
 
@@ -12,6 +12,11 @@ body
 {
 	background: #F8F8F8;
 	font-family: 'OpenSansReg';
+}
+
+p + p
+{
+	margin: 0;
 }
 
 hgroup
@@ -36,15 +41,16 @@ ul
 	max-width: 800px;
 	margin: 0 auto;
 	text-align: left;
-	background: #E9E9E9;
 	margin-bottom: 30px;
 	list-style: none;
 	margin-top: 30px;
+	background: #E9E9E9;
+	border-radius: 2px;
 }
 
 ul > li
 {
-	padding: 20px;
+	padding: 16px 20px;
 }
 
 ul > li + li
@@ -63,5 +69,19 @@ small
 	color: #777;
 }
 
-a{ color: #F0603C; }
-a:hover{ color: #333; }
+a#home
+{
+	display: inline-block;
+	background: #EEE;
+	color: #888;
+	padding: 8px 10px;
+	border-radius: 2px;
+	font-size: 12px;
+	font-family: 'OpenSansBold';
+}
+
+a#home:hover
+{
+	background: #F0603C;
+	color: #FFF;
+}
