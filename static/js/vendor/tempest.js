@@ -227,7 +227,7 @@
 			{
 				if(form.is("[data-callback]"))
 				{
-					// TODO: Pass response to callback handler.
+					// Pass response to callback handler.
 					Tempest.Forms.executeCallback(form.data("callback"), response);
 				}
 
@@ -237,5 +237,8 @@
 		event.preventDefault();
 
 	});
+
+
+	// ..
 
 })();
