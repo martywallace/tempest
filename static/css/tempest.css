@@ -1,6 +1,7 @@
 @charset "utf-8";
 @import "base.css";
 @import "../type/opensans/config.css";
+@import "../type/icomoon/config.css";
 
 .grid
 {
@@ -23,17 +24,30 @@ hgroup
 {
 	background: #F0603C;
 	color: #FFF;
-	height: 120px;
-	line-height: 120px;
-	font-weight: normal;
+	padding: 50px 0;
 	font-family: 'OpenSansBold';
-	text-transform: uppercase;
-	margin-bottom: 50px;
+	margin-bottom: 40px;
+	text-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
 
 h1
 {
 	font-size: 22px;
+	font-weight: normal;
+	text-transform: uppercase;
+}
+
+h1 > span
+{
+	font-size: 80%;
+}
+
+h6
+{
+	font-size: 14px;
+	font-weight: normal;
+	font-family: 'OpenSansBold';
+	color: #FFE6CA;
 }
 
 ul
@@ -84,4 +98,10 @@ a#home:hover
 {
 	background: #F0603C;
 	color: #FFF;
+}
+
+a#home > span
+{
+	display: inline-block;
+	margin-right: 5px;
 }
