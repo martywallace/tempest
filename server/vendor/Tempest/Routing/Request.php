@@ -4,7 +4,7 @@ use Tempest\Utils\Path;
 
 
 /**
- * A request made to the application by a user.
+ * A request made to the application by the client.
  * @author Marty Wallace.
  */
 class Request extends Path
@@ -14,6 +14,10 @@ class Request extends Path
 	private $data;
 
 
+	/**
+	 * Constructor.
+	 * @param $router The Router managing this Request.
+	 */
 	public function __construct($router)
 	{
 		$this->router = $router;
@@ -21,6 +25,12 @@ class Request extends Path
 	}
 
 
+	/**
+	 * Returns data associated with the Request.
+	 * @param $stack The stack to return data from. Can be GET, POST or NAMED.
+	 * @param $key The key holding the data within the selected stack.
+	 * @param $default A default value to return if the key did not exist on the selected stack.
+	 */
 	public function data($stack = null, $key = null, $default = null)
 	{
 		$data = $this->getData();
@@ -32,6 +42,11 @@ class Request extends Path
 	}
 
 
+	/**
+	 * Redirect the Request to a new URL.
+	 * @param $dest The destination URL. Acts intelligently enough to redirect relative to the application
+	 *				root if an external URL is not provided.
+	 */
 	public function redirect($dest)
 	{
 		if(preg_match('/^\w*:\/\//', $dest)) header("Location: $dest");
@@ -41,6 +56,9 @@ class Request extends Path
 	}
 
 
+	/**
+	 * Generates and returns the data stack for this Request.
+	 */
 	private function getData()
 	{
 		if($this->data === null)

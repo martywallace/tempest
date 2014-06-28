@@ -4,6 +4,10 @@ use Tempest\Routing\Route;
 use Tempest\Routing\Request;
 
 
+/**
+ * The Router directs a Request to the relevant Response.
+ * @author Marty Wallace.
+ */
 class Router
 {
 
@@ -12,13 +16,20 @@ class Router
 	private $params;
 
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct()
 	{
 		$this->request = new Request($this);
 	}
 
 	
-	public function register($routes)
+	/**
+	 * Registers the Routes that will be managed by this Router.
+	 * @param $routes An Array of Routes.
+	 */
+	public function register(Array $routes)
 	{
 		$possible = [];
 
@@ -96,8 +107,21 @@ class Router
 	}
 
 
+	/**
+	 * Returns the current Request.
+	 */
 	public function getRequest(){ return $this->request; }
+
+
+	/**
+	 * Returns the matched Route.
+	 */
 	public function getMatch(){ return $this->match; }
+
+
+	/**
+	 * Returns the named parameters and values for this Request, if any.
+	 */
 	public function getParams(){ return $this->params; }
 
 }

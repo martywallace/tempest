@@ -17,12 +17,16 @@ define('MIME_JSON', 'application/json');
 define('MIME_JAVASCRIPT', 'application/javascript');
 define('MIME_CSS', 'text/css');
 define('MIME_BINARY', 'application/octet-stream');
+define('MIME_JPG', 'image/jpeg');
+define('MIME_GIF', 'image/gif');
+define('MIME_PNG', 'image/png');
 
 define("RGX_PATH_DELIMITER", '/[\/\\\\]+/');
 define("RGX_TEMPLATE_TOKEN", '/\{\{\s*([\!\?\*]*)(@\w)*([\w\.\(\)]+)([\w\s\:]*)\s*\}\}/');
 
 
-foreach(array('functions', 'autoloader') as $inc) require_once APP_ROOT . 'server' . SEP . 'common' . SEP . "$inc.php";
+foreach(array('functions', 'autoloader') as $inc)
+	require_once APP_ROOT . 'server' . SEP . 'common' . SEP . "$inc.php";
 
 
 define("PUB_ROOT", path_normalize(dirname($_SERVER["PHP_SELF"]), '/', true, true));

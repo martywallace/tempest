@@ -102,11 +102,6 @@ img
 	height: auto;
 }
 
-p + p
-{
-	margin-top: 20px;
-}
-
 .clear
 {
 	clear: both;

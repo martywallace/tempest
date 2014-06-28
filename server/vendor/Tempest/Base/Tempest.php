@@ -27,7 +27,7 @@ class Tempest
 		$this->config = new Config();
 		$this->router = new Router();
 
-		$this->router->register($this->config->getData()["routes"]);
+		$this->router->register($this->config->getData("routes"));
 		$this->setup();
 
 		$match = $this->router->getMatch();
@@ -72,9 +72,10 @@ class Tempest
 
 	/**
 	 * Handles an error triggered by the application. Errors are queued and presented together.
-	 * @param $number The line number triggering the error.
+	 * @param $number The error number.
 	 * @param $string The error text.
 	 * @param $file The file triggering the error.
+	 * @param $line The line number triggering the error.
 	 * @param $context The error context.
 	 */
 	public function error($number, $string, $file, $line, $context)

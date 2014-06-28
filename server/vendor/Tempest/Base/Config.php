@@ -21,14 +21,19 @@ class Config
 
 		foreach($this->required as $r)
 		{
-			if(!array_key_exists($r, $this->data)) trigger_error("Missing configuration requirement <code>$r</code>.");
+			if(!array_key_exists($r, $this->data))
+				trigger_error("Missing configuration requirement <code>$r</code>.");
 		}
 	}
 
 
 	/**
-	 * Returns the configuration data.
+	 * Returns configuration data.
+	 * @param $field Optional inner field to capture data from.
 	 */
-	public function getData(){ return $this->data; }
+	public function getData($field = null)
+	{
+		return $field === null ? $this->data : $this->data[$field];
+	}
 
 }

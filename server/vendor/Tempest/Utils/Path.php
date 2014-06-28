@@ -1,5 +1,10 @@
 <?php namespace Tempest\Utils;
 
+
+/**
+ * Represents a Path.
+ * @author Marty Wallace.
+ */
 class Path
 {
 
@@ -7,6 +12,10 @@ class Path
 	protected $chunks = [];
 
 	
+	/**
+	 * Constructor.
+	 * @param $base The input path string.
+	 */
 	public function __construct($base)
 	{
 		$this->base = strtolower($base);
@@ -17,6 +26,10 @@ class Path
 	}
 
 
+	/**
+	 * Returns a chunk of this Path at a given index.
+	 * @param $index The index.
+	 */
 	public function chunk($index)
 	{
 		if($index < 0 || $index > count($this->chunks) - 1) return null;
@@ -24,14 +37,30 @@ class Path
 	}
 
 
+	/**
+	 * Provides a string value to represent this Path.
+	 */
 	public function __toString()
 	{
 		return $this->base;
 	}
 
 
+	/**
+	 * Returns the base string for this Path.
+	 */
 	public function getBase(){ return $this->base; }
+
+
+	/**
+	 * Returns an Array of chunks that make up this Path.
+	 */
 	public function getChunks(){ return $this->chunks; }
+
+
+	/**
+	 * Returns the amount of chunks in this Path.
+	 */
 	public function getLength(){ return count($this->chunks); }
 
 }

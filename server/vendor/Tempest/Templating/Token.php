@@ -4,6 +4,10 @@ use Tempest\Templating\Template;
 use Tempest\Templating\Hooks;
 
 
+/**
+ * A Token found within a Template.
+ * @author Marty Wallace.
+ */
 class Token
 {
 
@@ -20,7 +24,12 @@ class Token
 	private $hooks;
 
 
-	public function __construct($stack, $index)
+	/**
+	 * Constructor.
+	 * @param $stack The match stack provided by <code>preg_match()</code>.
+	 * @param $index The index of this Token within the match stack.
+	 */
+	public function __construct(Array $stack, $index)
 	{
 		$this->base = $stack[0][$index];
 		$this->context = $stack[2][$index];
@@ -37,12 +46,21 @@ class Token
 	}
 
 
+	/**
+	 * Replaces this Token within the specified value within the subject Template content.
+	 * @param $subject The subject content.
+	 * @param $value The replacement value.
+	 */
 	public function replace($subject, $value)
 	{
 		return str_replace($this->base, $this->toText($value), $subject);
 	}
 
 
+	/**
+	 * Translates a replacement value to text for insertion into a Template.
+	 * @param $value The replacement value.
+	 */
 	private function toText($value)
 	{
 		if(is_array($value))
@@ -91,18 +109,37 @@ class Token
 	}
 
 
+	/**
+	 * Determine whether this Token has a given prefix.
+	 * @param $prefix The prefix to check.
+	 */
 	public function hasPrefix($prefix)
 	{
 		return in_array($prefix, $this->behaviours);
 	}
 
 
+	/**
+	 * Determine whether this Token is associated with a specific context.
+	 */
 	public function isContextual(){ return strlen($this->context) > 0; }
-	public function isMultipart(){ return count($this->parts) > 1; }
 
 
+	/**
+	 * Returns the base matched token value.
+	 */
 	public function getBase(){ return $this->base; }
+
+
+	/**
+	 * Returns the associated context, if any.
+	 */
 	public function getContext(){ return $this->context; }
+
+
+	/**
+	 * Returns an Array containing each part of this Token.
+	 */
 	public function getParts(){ return $this->parts; }
 
 }

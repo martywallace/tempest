@@ -1,6 +1,10 @@
 <?php namespace Tempest\Templating;
 
 
+/**
+ * Defines hooks usable via Tokens in a Template.
+ * @author Marty Wallace.
+ */
 class Hooks
 {
 
