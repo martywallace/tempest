@@ -31,7 +31,7 @@ class Router
 			if($this->request->getLength() === 0 && $route->getLength() === 0)
 			{
 				// Exact match on index route.
-				$score = 3;
+				$score = 1;
 			}
 
 

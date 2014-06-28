@@ -5,44 +5,49 @@ use Tempest\Base\Error;
 use Tempest\Templating\Template;
 
 
+/**
+ * The core class of Tempest - the first to be initialized, managing configuration and router setup.
+ * @author Marty Wallace.
+ */
 class Tempest
 {
 
-	private $router;
-	private $route;
 	private $config;
+	private $router;
 	private $mime;
 	private $output = '';
 	private $errors = [];
 
 
+	/**
+	 * Start the application.
+	 */
 	public function start()
 	{
-		$this->router = new Router();
 		$this->config = new Config();
-		$this->router->register($this->config->routes);
-		$this->setup();
-		$this->route = $this->router->getMatch();
+		$this->router = new Router();
 
-		if($this->route !== null)
+		$this->router->register($this->config->getData()["routes"]);
+		$this->setup();
+
+		$match = $this->router->getMatch();
+
+		if($match !== null)
 		{
-			$class = preg_replace('/\.+/', '\\', 'Responses\\' . $this->route->getHandlerClass());
-			$method = $this->route->getHandlerMethod();
+			$class = preg_replace('/\.+/', '\\', 'Responses\\' . $match->getHandlerClass());
+			$method = $match->getHandlerMethod();
 			$response = new $class($this);
 
 			if(method_exists($response, $method))
 			{
-				$req = $this->router->getRequest();
-
-				$response->setup($req);
-
-				$this->output = $response->$method($req);
+				$response->setup($this->router->getRequest());
+				$this->output = $response->$method($this->router->getRequest());
 				$this->mime = $response->getMime();
 			}
 			else
 			{
 				// Response class was constructed successfully, but the target method was not defined.
-				trigger_error("Response class does not have the method <code>$method()</code>.");
+				trigger_error("Response class <code>$class</code> does not have the method <code>$method()</code>.");
 			}
 		}
 		else
@@ -54,22 +59,33 @@ class Tempest
 		if(count($this->errors) > 0)
 		{
 			// Errors found, use error output.
-			$this->mime = 'text/html';
 			$this->output = Template::load('/templates/tempest/errors.html')->bind([
 				"errors" => Template::batch(Template::load('/templates/tempest/error.html'), $this->errors)
 			]);
+
+			$this->mime = MIME_HTML;
 		}
 		
 		$this->finalize();
 	}
 
 
+	/**
+	 * Handles an error triggered by the application. Errors are queued and presented together.
+	 * @param $number The line number triggering the error.
+	 * @param $string The error text.
+	 * @param $file The file triggering the error.
+	 * @param $context The error context.
+	 */
 	public function error($number, $string, $file, $line, $context)
 	{
 		$this->errors[] = new Error($number, $string, $file, $line, $context);
 	}
 
 
+	/**
+	 * Finalize the application setup.
+	 */
 	private function finalize()
 	{
 		header("Content-type: {$this->mime}");
@@ -92,11 +108,22 @@ class Tempest
 	}
 
 
+	/**
+	 * Called by <code>start()</code> after the configuration and router have been initialized.
+	 * Override  for custom initialization logic in <code>Application</code>.
+	 */
 	protected function setup(){ /**/ }
 
 
+	/**
+	 * Returns the active <code>Router</code> instance.
+	 */
 	public function getRouter(){ return $this->router; }
-	public function getRoute(){ return $this->route; }
+
+
+	/**
+	 * Returns the active <code>Config</code> instance.
+	 */
 	public function getConfig(){ return $this->config; }
 
 }

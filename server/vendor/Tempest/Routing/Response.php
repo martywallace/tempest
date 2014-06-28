@@ -8,7 +8,7 @@ class Response
 {
 
 	private $app;
-	protected $mime = 'text/plain';
+	private $mime = MIME_HTML;
 
 
 	public function __construct(Tempest $app)
@@ -22,6 +22,8 @@ class Response
 
 
 	public function getMime(){ return $this->mime; }
+	public function setMime($value){ $this->mime = $value; }
+
 	public function getApp(){ return $this->app; }
 	public function getRequest(){ return $this->app->getRouter()->getRequest(); }
 	public function getNamedJSON(){ return json_encode($this->getRequest()->data(NAMED)); }

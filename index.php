@@ -11,6 +11,13 @@ define('GET', 'get');
 define('POST', 'post');
 define('NAMED', 'named');
 
+define('MIME_TEXT', 'text/plain');
+define('MIME_HTML', 'text/html');
+define('MIME_JSON', 'application/json');
+define('MIME_JAVASCRIPT', 'application/javascript');
+define('MIME_CSS', 'text/css');
+define('MIME_BINARY', 'application/octet-stream');
+
 define("RGX_PATH_DELIMITER", '/[\/\\\\]+/');
 define("RGX_TEMPLATE_TOKEN", '/\{\{\s*([\!\?\*]*)(@\w)*([\w\.\(\)]+)([\w\s\:]*)\s*\}\}/');
 

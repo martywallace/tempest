@@ -1,6 +1,5 @@
 <?php namespace Tempest\Templating;
 
-use Tempest\Utils\FileHelper;
 use Tempest\Templating\Token;
 use Tempest\Templating\TokenPart;
 
@@ -14,7 +13,7 @@ class Template
 	public static function load($file)
 	{
 		$path = APP_ROOT . 'static' . SEP . path_normalize($file, SEP, false, false);
-		return new static(FileHelper::getContents($path));
+		return new static(file_get_contents($path));
 	}
 
 
