@@ -25,9 +25,12 @@ class Database extends PDO
 	}
 
 
-	public function table()
+	public function table($name)
 	{
-		//
+		return $this->tables[$name];
 	}
+
+
+	public function getTables(){ return $this->tables; }
 
 }

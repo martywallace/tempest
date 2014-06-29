@@ -35,7 +35,10 @@ class Response
 	/**
 	 * The default handler method is <code>index</code>.
 	 */
-	public function index(Request $request){ /**/ }
+	public function index(Request $request)
+	{
+		return "TODO.";
+	}
 
 
 	/**
@@ -51,13 +54,19 @@ class Response
 
 
 	/**
-	 * Returns the core application class.
+	 * Returns the core application instance.
 	 */
 	public function getApp(){ return $this->app; }
 
 
 	/**
-	 * Returns the request class.
+	 * Returns the active <code>Config</code> instance.
+	 */
+	public function getConfig(){ return $this->app->getConfig(); }
+
+
+	/**
+	 * Returns the <code>Request</code> instance.
 	 */
 	public function getRequest(){ return $this->app->getRouter()->getRequest(); }
 

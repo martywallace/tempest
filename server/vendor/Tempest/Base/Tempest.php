@@ -27,7 +27,7 @@ class Tempest
 		$this->config = new Config();
 		$this->router = new Router();
 
-		$this->router->register($this->config->getData("routes"));
+		$this->router->register($this->config->data("routes"));
 		$this->setup();
 
 		$match = $this->router->getMatch();

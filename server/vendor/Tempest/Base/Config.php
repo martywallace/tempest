@@ -29,11 +29,32 @@ class Config
 
 	/**
 	 * Returns configuration data.
-	 * @param $field Optional inner field to capture data from.
+	 * @param $field Optional inner field to capture data from. Dot delimited values can be supplied
+	 * 				 when searching for nested values.
 	 */
-	public function getData($field = null)
+	public function data($field = null)
 	{
-		return $field === null ? $this->data : $this->data[$field];
+		if($field === null) return $this->data;
+
+		$path = preg_split('/\.+/', $field);
+		$valid = [];
+		$target = $this->data;
+
+		foreach($path as $p)
+		{
+			if(array_key_exists($p, $target))
+			{
+				$target = $target[$p];
+				$valid[] = $p;
+			}
+			else
+			{
+				// Field was invalid.
+				trigger_error("Configuration property <code>$p</code> does not exist at <code>" . implode('.', $valid) . "</code>.");
+			}
+		}
+
+		return $target;
 	}
 
 }

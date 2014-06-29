@@ -3,15 +3,29 @@
 use Tempest\Routing\Response;
 use Tempest\Routing\Request;
 use Tempest\Templating\Template;
+use Tempest\MySQL\Database;
 
 
 class Page extends Response
 {
 
+	protected $db;
+
+
+	public function setup(Request $request)
+	{
+		$this->setMime(MIME_HTML);
+
+		$conf = $this->getConfig();
+
+		$this->db = new Database(
+			$conf->data("db.host"), $conf->data("db.dbname"), $conf->data("db.user"), $conf->data("db.pass")
+		);
+	}
+
+
 	public function index(Request $request)
 	{
-		$this->mime = 'text/html';
-
 		$template = Template::load("/templates/base.html")
 			->bind(["content" => Template::load("/templates/intro.html")]);
 
