@@ -137,7 +137,8 @@ class Template
 	{
 		foreach($this->getTokens() as $token)
 		{
-			if($token->hasPrefix(Token::B_REMOVE_WITHOUT_VALUE)) $this->update($token->replace($this->content, ''));
+			if($token->hasPrefix(Token::B_REMOVE_WITHOUT_VALUE))
+				$this->update($token->replace($this->content, ''));
 		}
 
 		return $this;

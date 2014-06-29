@@ -21,6 +21,8 @@ class Page extends Response
 		$this->db = new Database(
 			$conf->data("db.host"), $conf->data("db.dbname"), $conf->data("db.user"), $conf->data("db.pass")
 		);
+
+		debug($this->db->table("people")->find(1));
 	}
 
 

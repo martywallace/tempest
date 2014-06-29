@@ -8,11 +8,6 @@ return [
 		"host" => "localhost",
 		"dbname" => "test",
 		"user" => "root",
-		"pass" => "",
-		"tables" => [
-			"people" => [
-				"primary" => "id"
-			]
-		]
+		"pass" => ""
 	]
 ];

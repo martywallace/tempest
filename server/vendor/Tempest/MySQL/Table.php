@@ -7,8 +7,6 @@ class Table
 	private $name;
 	private $primary;
 
-	private $indexInfo;
-
 	
 	public function __construct(Database $db, $name)
 	{
@@ -18,8 +16,21 @@ class Table
 		$stmt = $db->prepare("SHOW INDEX FROM $name");
 		$stmt->execute();
 
-		$this->indexInfo = $stmt->fetchObject();
-		$this->primary = $this->indexInfo->Column_name;
+		$this->primary = $stmt->fetchObject()->Column_name;
+	}
+
+
+	public function prepare($query)
+	{
+		foreach([
+			"{TBL}" => $this->name,
+			"{PRI}" => $this->primary
+		] as $a => $b)
+		{
+			$query = str_replace($a, $b, $query);
+		}
+
+		return $this->db->prepare($query);
 	}
 
 
@@ -27,7 +38,7 @@ class Table
 	{
 		$fields = $fields === null ? '*' : implode(',', $fields);
 
-		$stmt = $this->db->prepare("SELECT $fields FROM $this->name WHERE $this->primary = :primary");
+		$stmt = $this->prepare("SELECT $fields FROM {TBL} WHERE {PRI} = :primary");
 		$stmt->execute([":primary" => $primary]);
 
 		return $stmt->fetchObject();
@@ -36,14 +47,15 @@ class Table
 
 	public function delete($primary)
 	{
-		$stmt = $this->db->prepare("DELETE FROM $this->name WHERE $this->primary = :primary LIMIT 1");
+		$stmt = $this->prepare("DELETE FROM {TBL} WHERE {PRI} = :primary LIMIT 1");
 		$stmt->execute([":primary" => $primary]);
 	}
 
 
-	public function insert()
+	public function insert(Array $data)
 	{
-		//
+		$stmt = $this->prepare("INSERT INTO {TBL} () VALUES()");
+		$stmt->execute();
 	}
 
 }
