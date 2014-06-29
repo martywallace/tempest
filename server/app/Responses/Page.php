@@ -22,7 +22,10 @@ class Page extends Response
 			$conf->data("db.host"), $conf->data("db.dbname"), $conf->data("db.user"), $conf->data("db.pass")
 		);
 
-		debug($this->db->table("people")->find(1));
+		$this->db->table("people")->insert([
+			"first" => "John",
+			"last" => "Smith"
+		]);
 	}
 
 

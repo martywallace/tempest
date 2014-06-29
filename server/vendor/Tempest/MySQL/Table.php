@@ -54,8 +54,9 @@ class Table
 
 	public function insert(Array $data)
 	{
-		$stmt = $this->prepare("INSERT INTO {TBL} () VALUES()");
-		$stmt->execute();
+		$params = array_keys_prepend($data, ':');
+		$stmt = $this->prepare("INSERT INTO {TBL} (" . implode(',', array_keys($data)) . ") VALUES(" . implode(',', array_keys($params)) . ")");
+		$stmt->execute($params);
 	}
 
 }
