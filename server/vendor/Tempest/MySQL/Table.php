@@ -41,13 +41,29 @@ class Table
 		$stmt = $this->prepare("SELECT $fields FROM {TBL} WHERE {PRI} = :primary");
 		$stmt->execute([":primary" => $primary]);
 
-		return $stmt->fetchObject();
+		$result = $stmt->fetchObject();
+
+		return $result === false ? null : $result;
 	}
 
 
 	public function exists($primary)
 	{
-		// TODO.
+		$stmt = $this->prepare("SELECT {PRI} FROM {TBL} WHERE {PRI} = :primary LIMIT 1");
+		$stmt->execute([":primary" => $primary]);
+
+		return $stmt->fetchObject() !== false;
+	}
+
+
+	public function total()
+	{
+		$stmt = $this->prepare("SELECT COUNT(*) AS n FROM {TBL}");
+		$stmt->execute();
+
+		$result = $stmt->fetchObject();
+
+		return $result->n;
 	}
 
 

@@ -18,7 +18,6 @@ class Page extends Response
 	public function index(Request $request)
 	{
 		$db = new Database("localhost", "test", "root", "");
-		
 
 		return Template::load("/templates/base.html")->bind(["content" => Template::load("/templates/intro.html")]);
 	}
