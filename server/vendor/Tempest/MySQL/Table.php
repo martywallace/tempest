@@ -36,7 +36,7 @@ class Table
 
 	public function find($primary, Array $fields = null)
 	{
-		$fields = $fields === null ? '*' : implode(',', $fields);
+		$fields = $fields === null ? '*' : implode(', ', $fields);
 
 		$stmt = $this->prepare("SELECT $fields FROM {TBL} WHERE {PRI} = :primary");
 		$stmt->execute([":primary" => $primary]);
@@ -45,10 +45,18 @@ class Table
 	}
 
 
+	public function exists($primary)
+	{
+		// TODO.
+	}
+
+
 	public function delete($primary)
 	{
 		$stmt = $this->prepare("DELETE FROM {TBL} WHERE {PRI} = :primary LIMIT 1");
 		$stmt->execute([":primary" => $primary]);
+
+		return $stmt;
 	}
 
 
@@ -57,6 +65,20 @@ class Table
 		$params = array_keys_prepend($data, ':');
 		$stmt = $this->prepare("INSERT INTO {TBL} (" . implode(',', array_keys($data)) . ") VALUES(" . implode(',', array_keys($params)) . ")");
 		$stmt->execute($params);
+
+		return $stmt;
+	}
+
+
+	public function update($primary, Array $data)
+	{
+		$map = [];
+		foreach($data as $key => $value) $map[] = "$key = :$key";
+
+		$stmt = $this->prepare("UPDATE {TBL} SET " . implode(', ', $map) . " WHERE {PRI} = :primary");
+		$stmt->execute(array_merge([":primary" => $primary], array_keys_prepend($data, ':')));
+
+		return $stmt;
 	}
 
 }
