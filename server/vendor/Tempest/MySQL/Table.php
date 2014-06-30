@@ -6,6 +6,7 @@ class Table
 	private $db;
 	private $name;
 	private $primary;
+	private $model;
 
 	
 	public function __construct(Database $db, $name)
@@ -41,7 +42,7 @@ class Table
 		$stmt = $this->prepare("SELECT $fields FROM {TBL} WHERE {PRI} = :primary");
 		$stmt->execute([":primary" => $primary]);
 
-		$result = $stmt->fetchObject();
+		$result = $stmt->fetchObject($this->model === null ? 'stdclass' : $this->model);
 
 		return $result === false ? null : $result;
 	}
@@ -96,5 +97,9 @@ class Table
 
 		return $stmt;
 	}
+
+
+	public function setModel($value){ $this->model = $value; }
+	public function getModel(){ return $this->model; }
 
 }
