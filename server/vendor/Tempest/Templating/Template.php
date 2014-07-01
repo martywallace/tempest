@@ -1,5 +1,6 @@
 <?php namespace Tempest\Templating;
 
+use Tempest\Routing\Output;
 use Tempest\Templating\Token;
 use Tempest\Templating\TokenPart;
 
@@ -9,11 +10,8 @@ use Tempest\Templating\TokenPart;
  * then replaced with the bound value for final output.
  * @author Marty Wallace.
  */
-class Template
+class Template extends Output
 {
-
-	private $content;
-
 
 	/**
 	 * Loads a new Template whose contents is the value of a specified file.
@@ -28,32 +26,11 @@ class Template
 
 	/**
 	 * Prepares template content with core replacements.
-	 * @param $content The content to prepare.
+	 * @param $base The base content to prepare.
 	 */
-	public static function prepare($content)
+	public static function prepare($base)
 	{
-		return str_replace("~/", PUB_ROOT, $content);
-	}
-
-
-	/**
-	 * Binds multiple Array elements to a given Template and returns a new Template whose content is
-	 * the value of each resulting Template combined.
-	 * @param $template The Template to bind each element to.
-	 * @param $batch The Array whose children will be bound to the supplied Template.
-	 * @param $empty The Template to return if the supplied batch Array is empty.
-	 */
-	public static function batch(Template $template, Array $batch, Template $empty = null)
-	{
-		if(count($batch) === 0) return $empty === null ? new Template('') : $empty;
-
-		$output = [];
-		foreach($batch as $b)
-		{
-			$output[] = $template->copy()->bind($b);
-		}
-
-		return new Template(implode($output));
+		return str_replace("~/", PUB_ROOT, $base);
 	}
 
 
@@ -63,26 +40,18 @@ class Template
 	 */
 	public function __construct($content = '')
 	{
-		$this->update($content);
+		$this->setMime(MIME_HTML);
+		$this->setContent($content);
 	}
 
 
 	/**
-	 * Provides a string value to represent this Template.
-	 */
-	public function __toString()
-	{
-		return $this->getContent();
-	}
-
-
-	/**
-	 * Updates this Template with new content.
+	 * Assigns new content to this Template.
 	 * @param $content The new content to allocate to this Template.
 	 */
-	public function update($content = '')
+	public function setContent($content = '')
 	{
-		$this->content = self::prepare($content);
+		parent::setContent(self::prepare($content));
 		return $this;
 	}
 
@@ -113,8 +82,29 @@ class Template
 				else continue 2;
 			}
 
-			$this->update($token->replace($this->content, $value));
+			$this->setContent($token->replace($this->getContent(), $value));
 		}
+
+		return $this;
+	}
+
+
+	/**
+	 * Binds multiple Array elements to this Template, repeating the original Template content for
+	 * each item in the batch.
+	 * @param $batch The Array whose children will be bound to this Template.
+	 * @param $empty The content to use if the supplied batch is empty.
+	 */
+	public function batch(Array $batch, Template $empty = null)
+	{
+		if(count($batch) === 0)
+			$this->setContent($empty === null ? '' : $empty);
+
+		$result = [];
+		foreach($batch as $item)
+			$result[] = $this->copy()->bind($item);
+
+		$this->setContent(implode($result));
 
 		return $this;
 	}
@@ -138,7 +128,7 @@ class Template
 		foreach($this->getTokens() as $token)
 		{
 			if($token->hasPrefix(Token::B_REMOVE_WITHOUT_VALUE))
-				$this->update($token->replace($this->content, ''));
+				$this->setContent($token->replace($this->getContent(), ''));
 		}
 
 		return $this;
@@ -151,21 +141,14 @@ class Template
 	private function getTokens()
 	{
 		$tokens = [];
-		preg_match_all(RGX_TEMPLATE_TOKEN, $this->content, $matches);
+		preg_match_all(RGX_TEMPLATE_TOKEN, $this->getContent(), $matches);
 		
 		for($i = 0; $i < count($matches[0]); $i++)
 		{
 			$tokens[] = new Token($matches, $i);
 		}
 
-
 		return $tokens;
 	}
-
-
-	/**
-	 * Returns the content of this Template.
-	 */
-	public function getContent(){ return $this->content; }
 
 }

@@ -60,7 +60,7 @@ class Tempest
 		{
 			// Errors found, use error output.
 			$this->output = Template::load('/templates/tempest/errors.html')->bind([
-				"errors" => Template::batch(Template::load('/templates/tempest/error.html'), $this->errors)
+				"errors" => Template::load('/templates/tempest/error.html')->batch($this->errors)
 			]);
 
 			$this->mime = MIME_HTML;
