@@ -12,7 +12,6 @@ class Response
 {
 
 	private $app;
-	private $mime = MIME_HTML;
 
 
 	/**
@@ -35,22 +34,7 @@ class Response
 	/**
 	 * The default handler method is <code>index</code>.
 	 */
-	public function index(Request $request)
-	{
-		return "TODO.";
-	}
-
-
-	/**
-	 * Returns the MIME value set by this response.
-	 */
-	public function getMime(){ return $this->mime; }
-
-
-	/**
-	 * Sets the MIME value to use for this response.
-	 */
-	public function setMime($value){ $this->mime = $value; }
+	public function index(Request $request){ /**/ }
 
 
 	/**

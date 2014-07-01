@@ -1,5 +1,7 @@
 <?php namespace Tempest\Routing;
 
+use Tempest\Base\Tempest;
+
 
 /**
  * Represents output sent by a Response.
@@ -22,6 +24,16 @@ class Output
 
 
 	/**
+	 * Obtains the final output string for this instance. This is triggered by the application core.
+	 * @param $app A reference to the core application instance.
+	 */
+	public function getFinalOutput(Tempest $app)
+	{
+		return $this->getContent();
+	}
+
+
+	/**
 	 * Returns the content for this Output.
 	 */
 	public function getContent(){ return $this->content; }
@@ -30,7 +42,11 @@ class Output
 	/**
 	 * Assigns new content to this Output.
 	 */
-	public function setContent($value = ''){ $this->content = $value; }
+	public function setContent($value = '')
+	{
+		$this->content = $value;
+		return $this;
+	}
 
 
 	/**
@@ -42,6 +58,10 @@ class Output
 	/**
 	 * Assigns a new MIME type to this Output.
 	 */
-	public function setMime($value){ $this->mime = $value; }
+	public function setMime($value)
+	{
+		$this->mime = $value;
+		return $this;
+	}
 
 }

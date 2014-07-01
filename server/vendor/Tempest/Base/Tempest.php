@@ -1,7 +1,7 @@
 <?php namespace Tempest\Base;
 
-use Tempest\Routing\Router;
 use Tempest\Base\Error;
+use Tempest\Routing\Router;
 use Tempest\Templating\Template;
 
 
@@ -14,7 +14,7 @@ class Tempest
 
 	private $config;
 	private $router;
-	private $mime;
+	private $mime = MIME_TEXT;
 	private $output = '';
 	private $errors = [];
 
@@ -42,7 +42,6 @@ class Tempest
 			{
 				$response->setup($this->router->getRequest());
 				$this->output = $response->$method($this->router->getRequest());
-				$this->mime = $response->getMime();
 			}
 			else
 			{
@@ -62,8 +61,6 @@ class Tempest
 			$this->output = Template::load('/templates/tempest/errors.html')->bind([
 				"errors" => Template::load('/templates/tempest/error.html')->batch($this->errors)
 			]);
-
-			$this->mime = MIME_HTML;
 		}
 		
 		$this->finalize();
@@ -89,20 +86,15 @@ class Tempest
 	 */
 	private function finalize()
 	{
-		header("Content-type: {$this->mime}");
-
-		if(is_a($this->output, 'Tempest\Templating\Template'))
+		if(is_a($this->output, 'Tempest\Routing\Output'))
 		{
-			$request = $this->router->getRequest();
-			$reqData = array_merge($request->data(), ["uri" => ["base" => $request->getBase(), "chunks" => $request->getChunks()]]);
-
-			// Bind response values.
-			$this->output->bind([
-				"T_REQUEST_DATA" => base64_encode(json_encode($reqData, JSON_NUMERIC_CHECK))
-
-			])->finalize();
+			// Final output is an instance of <code>Tempest/Routing/Output</code> - get the final
+			// output first, as well as a the relevant MIME type.
+			$this->mime = $this->output->getMime();
+			$this->output = $this->output->getFinalOutput($this);
 		}
 
+		header("Content-type: {$this->mime}");
 		echo $this->output;
 
 		exit;

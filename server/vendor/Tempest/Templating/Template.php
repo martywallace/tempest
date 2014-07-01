@@ -1,5 +1,6 @@
 <?php namespace Tempest\Templating;
 
+use Tempest\Base\Tempest;
 use Tempest\Routing\Output;
 use Tempest\Templating\Token;
 use Tempest\Templating\TokenPart;
@@ -42,6 +43,22 @@ class Template extends Output
 	{
 		$this->setMime(MIME_HTML);
 		$this->setContent($content);
+	}
+
+
+	/**
+	 * Returns the final output data for this Template. Binds application data.
+	 * @param $app A reference to the core application instance.
+	 */
+	public function getFinalOutput(Tempest $app)
+	{
+		$request = $app->getRouter()->getRequest();
+		$reqData = array_merge($request->data(), ["uri" => ["base" => $request->getBase(), "chunks" => $request->getChunks()]]);
+
+		return $this->bind([
+			"T_REQUEST_DATA" => base64_encode(json_encode($reqData, JSON_NUMERIC_CHECK))
+
+		])->finalize();
 	}
 
 
