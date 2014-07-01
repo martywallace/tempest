@@ -41,7 +41,7 @@ class Template extends Output
 	 */
 	public function __construct($content = '')
 	{
-		$this->setMime(MIME_HTML);
+		$this->setMime('text/html');
 		$this->setContent($content);
 	}
 

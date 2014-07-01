@@ -11,7 +11,7 @@ class Output
 {
 	
 	private $content = '';
-	private $mime = MIME_TEXT;
+	private $mime = 'text/plain';
 
 
 	/**

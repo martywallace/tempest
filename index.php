@@ -12,19 +12,6 @@ define('GET', 'get');
 define('POST', 'post');
 define('NAMED', 'named');
 
-define('MIME_TEXT', 'text/plain');
-define('MIME_HTML', 'text/html');
-define('MIME_XML', 'text/xml');
-define('MIME_JSON', 'application/json');
-define('MIME_JAVASCRIPT', 'application/javascript');
-define('MIME_CSS', 'text/css');
-define('MIME_BINARY', 'application/octet-stream');
-define('MIME_JPG', 'image/jpeg');
-define('MIME_GIF', 'image/gif');
-define('MIME_PNG', 'image/png');
-define('MIME_PDF', 'application/pdf');
-define('MIME_ZIP', 'application/zip');
-
 define('IS_LOCAL', in_array($_SERVER["HTTP_HOST"], ['localhost', '127.0.0.1']));
 
 define('RGX_PATH_DELIMITER', '/[\/\\\\]+/');

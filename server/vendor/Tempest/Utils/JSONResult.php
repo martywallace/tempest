@@ -22,7 +22,7 @@ class JSONResult extends Output implements IResult
 	 */
 	public function __construct()
 	{
-		$this->setMime(MIME_JSON);
+		$this->setMime('application/json');
 	}
 
 

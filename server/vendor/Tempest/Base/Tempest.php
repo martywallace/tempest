@@ -14,7 +14,7 @@ class Tempest
 
 	private $config;
 	private $router;
-	private $mime = MIME_TEXT;
+	private $mime = 'text/plain';
 	private $output = '';
 	private $errors = [];
 
