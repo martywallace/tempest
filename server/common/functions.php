@@ -52,3 +52,9 @@ function set_or($value, $fallback = null)
 {
 	return isset($value) ? $value : $fallback;
 }
+
+
+function head(Array $headers)
+{
+	foreach($headers as $prop => $value) header("$prop: $value");
+}

@@ -49,8 +49,8 @@ class Request extends Path
 	 */
 	public function redirect($dest)
 	{
-		if(preg_match('/^\w*:\/\//', $dest)) header("Location: $dest");
-		else header("Location: " . PUB_ROOT . $dest);
+		if(preg_match('/^\w*:\/\//', $dest)) head(["Location" => $dest]);
+		else head(["Location" => PUB_ROOT . $dest]);
 
 		exit;
 	}

@@ -94,7 +94,7 @@ class Tempest
 			$this->output = $this->output->getFinalOutput($this);
 		}
 
-		header("Content-type: {$this->mime}");
+		head(["Content-type" => $this->mime]);
 		echo $this->output;
 
 		exit;

@@ -21,6 +21,7 @@ Tempest defines a collection of global constants and methods. Constants are defi
 * <code>REQUEST_CLEAN</code> - The request URI with querystring and hash values trimmed off.
 * <code>REQUEST_URI</code> - The full request URI e.g. <code>/MySite/some/route</code>.
 * <code>APP_REQUEST_URI</code> - The request URI relative to the application root e.g. <code>/some/route</code>.
+* <code>IS_LOCAL</code> - Returns <code>true</code> if the application is running under <code>localhost</code> or <code>127.0.0.1</code>.
 
 #### Methods
 
@@ -30,6 +31,7 @@ Tempest defines a collection of global constants and methods. Constants are defi
 * <code>array_keys_prepend()</code> - Prepends the given string on every key in an array. Useful for situations like adding a <code>:</code> for prepared statements.
 * <code>debug()</code> - Same as <code>print\_r()</code> but also wraps in <code>&lt;pre&gt;&lt;/pre&gt;</code> for readbility in HTML output.
 * <code>set_or()</code> Returns the first value if it is set (<code>isset()</code> returns true), else the latter (which defaults to <code>null</code>). Essentially a shorthand for <code>isset(a) ? a : b</code>.
+* <code>head</code> - Shorthand for setting headers, especially multiple headers at once.
 
 
 ## Templating

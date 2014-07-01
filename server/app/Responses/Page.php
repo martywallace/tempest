@@ -3,6 +3,8 @@
 use Tempest\Routing\Response;
 use Tempest\Routing\Request;
 use Tempest\Templating\Template;
+use Tempest\Utils\JSONResult;
+use Tempest\Utils\ResultError;
 
 
 class Page extends Response
