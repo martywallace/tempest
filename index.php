@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-error_reporting(E_STRICT);
+error_reporting(-1);
 
 
 define('DIR', __DIR__);

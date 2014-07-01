@@ -40,14 +40,6 @@ function array_keys_prepend($array, $prefix)
 }
 
 
-function debug($data)
-{
-	echo '<pre>';
-	print_r($data);
-	echo '</pre>';
-}
-
-
 function set_or($value, $fallback = null)
 {
 	return isset($value) ? $value : $fallback;

@@ -29,7 +29,6 @@ Tempest defines a collection of global constants and methods. Constants are defi
 * <code>path_split()</code> - Helper for splitting a path into chunks.
 * <code>dtrim()</code> - Trims characters from the left, then trims another set of characters from the right.
 * <code>array_keys_prepend()</code> - Prepends the given string on every key in an array. Useful for situations like adding a <code>:</code> for prepared statements.
-* <code>debug()</code> - Same as <code>print\_r()</code> but also wraps in <code>&lt;pre&gt;&lt;/pre&gt;</code> for readbility in HTML output.
 * <code>set_or()</code> Returns the first value if it is set (<code>isset()</code> returns true), else the latter (which defaults to <code>null</code>). Essentially a shorthand for <code>isset(a) ? a : b</code>.
 * <code>head()</code> - Shorthand for setting headers, especially multiple headers at once.
 

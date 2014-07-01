@@ -58,8 +58,11 @@ class Tempest
 		if(count($this->errors) > 0)
 		{
 			// Errors found, use error output.
-			$this->output = Template::load('/templates/tempest/errors.html')->bind([
-				"errors" => Template::load('/templates/tempest/error.html')->batch($this->errors)
+			$this->output = Template::load('/templates/tempest/shell.html')->bind([
+				"title" => "Application Error",
+				"content" => Template::load('/templates/tempest/errors.html')->bind([
+					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
+				])
 			]);
 		}
 		

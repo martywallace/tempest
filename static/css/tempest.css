@@ -18,21 +18,15 @@ hgroup
 {
 	background: #F0603C;
 	color: #FFF;
-	padding: 50px 0;
+	padding: 30px 0;
 	margin-bottom: 40px;
 	text-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
 
 h1
 {
-	font-size: 22px;
+	font-size: 20px;
 	text-transform: uppercase;
-}
-
-h6
-{
-	font-size: 14px;
-	color: #FFE6CA;
 }
 
 ul
