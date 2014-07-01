@@ -31,7 +31,7 @@ Tempest defines a collection of global constants and methods. Constants are defi
 * <code>array_keys_prepend()</code> - Prepends the given string on every key in an array. Useful for situations like adding a <code>:</code> for prepared statements.
 * <code>debug()</code> - Same as <code>print\_r()</code> but also wraps in <code>&lt;pre&gt;&lt;/pre&gt;</code> for readbility in HTML output.
 * <code>set_or()</code> Returns the first value if it is set (<code>isset()</code> returns true), else the latter (which defaults to <code>null</code>). Essentially a shorthand for <code>isset(a) ? a : b</code>.
-* <code>head</code> - Shorthand for setting headers, especially multiple headers at once.
+* <code>head()</code> - Shorthand for setting headers, especially multiple headers at once.
 
 
 ## Templating
@@ -89,6 +89,26 @@ Methods are also supported by appending <code>()</code> parenthesis onto the rel
 {{ person.getName().first }}
 </pre>
 
+You are able to provide an array of elements to a <code>Template</code>, and have the content repeated and bound for each instance in that array. For example, this:
+
+<pre>
+$tpl = new Template('&lt;li&gt;{{ name }}&lt;/li&gt;');
+
+$tpl->batch([
+	["name" => "Marty"],
+	["name" => "Daniel"],
+	["name" => "Carlie"]
+]);
+</pre>
+
+Will result in the following content for <code>$tpl</code>:
+
+<pre>
+&lt;li&gt;Marty&lt;/li&gt;
+&lt;li&gt;Daniel&lt;/li&gt;
+&lt;li&gt;Carlie&lt;/li&gt;
+</pre>
+
 Any occurrence of the value <code>~/</code> within a template will be replaced with the application root. This is useful for creating paths to resources within your application. For example, your main template may include the line:
 
 <pre>
@@ -106,6 +126,12 @@ Tokens can be prepended with <code>!</code> for escaping HTML in the result, or 
 <pre>
 {{ !valueThatIsEscaped }}
 {{ ?valueThatIsNull }}
+</pre>
+
+If a token could potentially have no value associated with it (e.g. if its value is derrived from possibly incomplete JSON) and you want to remove it entirely, you can use the <code>*</code> prefix:
+
+<pre>
+{{ *possiblyNonexistantValue }}
 </pre>
 
 Finally, tokens can have hooks attached, which are used to alter the final replacement value. Hooks are added via <code>: hookName</code> at the end of a token. You are able to attach unlimited hooks, and the order of those hooks are preserved when obtaining the final value. Hooks should be added to the <code>\\Tempest\\Templating\\Hooks</code> class, where several are already defined. Example usage:
