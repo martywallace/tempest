@@ -15,7 +15,7 @@ define('NAMED', 'named');
 define('IS_LOCAL', in_array($_SERVER["HTTP_HOST"], ['localhost', '127.0.0.1']));
 
 define('RGX_PATH_DELIMITER', '/[\/\\\\]+/');
-define('RGX_TEMPLATE_TOKEN', '/\{\{\s*([\!\?\*]*)(@\w)*([\w\.\(\)]+)([\w\s\:]*)\s*\}\}/');
+define('RGX_TEMPLATE_TOKEN', '/\{\{\s*([\!\?\*]*)(@\w+)*([\w\.\(\)]+)([\w\s\:]*)\s*\}\}/');
 
 
 foreach(array('functions', 'autoloader') as $inc)
