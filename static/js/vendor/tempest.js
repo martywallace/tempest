@@ -59,24 +59,42 @@
 			},
 
 
+			// Utilities.
+			Utils: (function()
+			{
+				return {
+
+					// Removes whitespace from the start and end of a string.
+					// @param input The input string.
+					trim: function(input)
+					{
+						return input.replace(/^\s+/).replace(/\s+$/);
+					}
+
+				};
+
+			})(),
+
+
 			// Holds information about the request that was made to result in the current context.
 			Request: (function()
 			{
 				var request = $("meta[name=request]").attr("content");
-	    			    request = request === undefined ? {} : $.parseJSON(B64.decode(request));
+	    			request = request === undefined ? { } : $.parseJSON(B64.decode(request));
 
 				return {
 
 					// Return request data passed to the browser via <code>meta[name=request]</code>, if found.
 					// @param group The data group i.e. <code>get</code>, <code>post</code> or <code>named</code> data.
 					// @param prop The property name within the group.
-					data: function(group, prop)
+					// @param fallback? Default value to use if the property was not found.
+					data: function(group, prop, fallback)
 					{
 						if(group === undefined) return request;
 						if(!request.hasOwnProperty(group)) return null;
 
 						if(prop === undefined) return request[group];
-						if(!request[group].hasOwnProperty(prop)) return null;
+						if(!request[group].hasOwnProperty(prop)) return fallback === undefined ? null : fallback;
 
 						return request[group][prop];
 					},
