@@ -73,4 +73,10 @@ class Request extends Path
 		return $this->data;
 	}
 
+
+	/**
+	 * Returns the request method (GET, POST).
+	 */
+	public function getMethod(){ return strtolower($_SERVER["REQUEST_METHOD"]); }
+
 }
