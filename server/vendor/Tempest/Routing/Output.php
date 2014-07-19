@@ -10,8 +10,20 @@ use Tempest\Base\Tempest;
 class Output
 {
 	
-	private $content = '';
 	private $mime = 'text/plain';
+	private $content = '';
+
+
+	/**
+	 * Constructor.
+	 * @param $mime The starting MIME type.
+	 * @param $content The starting content.
+	 */
+	public function __construct($mime = 'text/plain', $content = '')
+	{
+		$this->mime = $mime;
+		$this->content = $content;
+	}
 
 
 	/**

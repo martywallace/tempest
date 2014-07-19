@@ -10,8 +10,14 @@ use Tempest\Utils\Path;
 class Request extends Path
 {
 
+	const FORMAT_NONE = "";
+	const FORMAT_JSON = "json";
+	const FORMAT_XML = "xml";
+
+
 	private $router;
 	private $data;
+	private $format = self::FORMAT_NONE;
 
 
 	/**
@@ -21,7 +27,17 @@ class Request extends Path
 	public function __construct($router)
 	{
 		$this->router = $router;
-		parent::__construct(APP_REQUEST_URI);
+
+		$requ = preg_replace('/\..*$/', '', APP_REQUEST_URI);
+
+		if(strlen($requ) !== strlen(APP_REQUEST_URI))
+		{
+			// Using alternate format.
+			preg_match('/\.(.+)$/', APP_REQUEST_URI, $match);
+			$this->format = $match[1];
+		}
+
+		parent::__construct($requ);
 	}
 
 
@@ -78,5 +94,11 @@ class Request extends Path
 	 * Returns the request method (GET, POST).
 	 */
 	public function getMethod(){ return strtolower($_SERVER["REQUEST_METHOD"]); }
+
+
+	/**
+	 * Returns the format (file extension) for this Request.
+	 */
+	public function getFormat(){ return $this->format; }
 
 }

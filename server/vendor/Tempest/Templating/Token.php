@@ -66,7 +66,7 @@ class Token
 		if(is_array($value))
 		{
 			$value = '';
-			trigger_error("Attempted insertion of array into token <code>$this->base</code>.");
+			trigger_error("Attempted insertion of array into token <code>$this->base</code>. Did you mean to use <code>Template->batch()</code> here?");
 		}
 
 		if(is_object($value))

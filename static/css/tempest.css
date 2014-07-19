@@ -16,7 +16,7 @@ body
 
 hgroup
 {
-	background: #7A2C2C;
+	background: #F0603C;
 	color: #FFF;
 	padding: 30px 0;
 	margin-bottom: 40px;
@@ -57,8 +57,8 @@ ul > li > p > code
 
 ul > li > pre
 {
-	background: #AAA;
-	color: #111;
+	background: #444;
+	color: #999;
 	font-size: 12px;
 	margin: 10px 0;
 	padding: 10px 0;
@@ -67,13 +67,14 @@ ul > li > pre
 
 ul > li > pre > div
 {
-	padding: 4px 12px;
+	padding: 2px 12px;
 }
 
 ul > li > pre > div[data-line='3']
 {
 	background: #7A2C2C;
 	color: #EEE;
+	padding: 8px 12px;
 }
 
 small
