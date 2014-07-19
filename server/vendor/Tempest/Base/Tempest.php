@@ -54,7 +54,7 @@ class Tempest
 			// No matching routes.
 			trigger_error("Input route <code>{$this->router->getRequest()}</code> not handled.");
 		}
-
+		
 		if(count($this->errors) > 0)
 		{
 			// Errors found, use error output.
@@ -80,7 +80,8 @@ class Tempest
 	 */
 	public function error($number, $string, $file, $line, $context)
 	{
-		$this->errors[] = new Error($number, $string, $file, $line, $context);
+		$error = new Error($number, $string, $file, $line, $context);
+		$this->errors[] = $error;
 	}
 
 

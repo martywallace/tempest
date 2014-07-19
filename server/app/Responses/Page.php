@@ -10,6 +10,9 @@ class Page extends Response
 
 	public function index(Request $request)
 	{
+		trigger_error("sup fef esfds fds");
+		trigger_error("sup fef esfds fds");
+		
 		return Template::load("/templates/base.html")
 			->bind(["content" => Template::load("/templates/intro.html")]);
 	}

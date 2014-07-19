@@ -4,7 +4,7 @@
 
 .grid
 {
-	max-width: 700px;
+	max-width: 840px;
 	padding: 0 20px;
 }
 
@@ -16,7 +16,7 @@ body
 
 hgroup
 {
-	background: #F0603C;
+	background: #7A2C2C;
 	color: #FFF;
 	padding: 30px 0;
 	margin-bottom: 40px;
@@ -31,7 +31,6 @@ h1
 
 ul
 {
-	max-width: 800px;
 	margin: 0 auto;
 	text-align: left;
 	margin-bottom: 30px;
@@ -54,6 +53,27 @@ ul > li + li
 ul > li > p > code
 {
 	color: #CF3610;
+}
+
+ul > li > pre
+{
+	background: #AAA;
+	color: #111;
+	font-size: 12px;
+	margin: 10px 0;
+	padding: 10px 0;
+	overflow: auto;
+}
+
+ul > li > pre > div
+{
+	padding: 4px 12px;
+}
+
+ul > li > pre > div[data-line='3']
+{
+	background: #7A2C2C;
+	color: #EEE;
 }
 
 small
