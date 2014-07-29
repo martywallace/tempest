@@ -2,7 +2,6 @@
 
 use Tempest\Routing\Output;
 use Tempest\Utils\IResult;
-use Tempest\Utils\ResultError;
 
 
 /** 
@@ -54,15 +53,10 @@ class JSONResult extends Output implements IResult
 	 */
 	public function getContent()
 	{
-		$errs = [];
-		foreach($this->getErrors() as $error)
-			$errs[] = ["code" => (string)$error->getCode(), "text" => $error->getText()];
-
-
 		$base = json_encode([
 			"head" => [
 				"ok" => $this->isOk(),
-				"errors" => $errs
+				"errors" => $this->errors
 			],
 			"body" => $this->body
 		]);
@@ -79,9 +73,9 @@ class JSONResult extends Output implements IResult
 
 	/**
 	 * Registers an error.
-	 * @param $error A ResultError instance.
+	 * @param $error The error text.
 	 */
-	public function error(ResultError $error)
+	public function error($error)
 	{
 		$this->errors[] = $error;
 		return $this;

@@ -1,7 +1,5 @@
 <?php namespace Tempest\Utils;
 
-use Tempest\Utils\ResultError;
-
 
 /**
  * Represents a basic Result; that is, whether something was successful and a list of reasons why it
@@ -25,9 +23,9 @@ interface IResult
 
 	/**
 	 * Registers an error.
-	 * @param $error A ResultError instance.
+	 * @param $error The error text.
 	 */
-	public function error(ResultError $error);
+	public function error($error);
 
 
 	/**
