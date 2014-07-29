@@ -67,9 +67,9 @@ class Tempest
 				"title" => "Application Error",
 				"version" => TEMPEST_VERSION,
 				"uri" => $request,
-				"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "NO DATA",
-				"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "NO DATA",
-				"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "NO DATA",
+				"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
+				"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
+				"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",
 				"content" => Template::load('/templates/tempest/errors.html')->bind([
 					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
 				])

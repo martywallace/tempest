@@ -95,7 +95,7 @@ div#request
 	color: #333;
 	font-size: 11px;
 	word-wrap: break-word;
-	border-radius: 4px;
+	border-radius: 5px;
 }
 
 div#request h2
@@ -104,6 +104,8 @@ div#request h2
 	color: #EEE;
 	padding: 14px 10px;
 	font-size: 13px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 }
 
 div#request h6
@@ -118,6 +120,7 @@ div#request p,
 div#request pre
 {
 	padding: 10px;
+	background: none;
 }
 
 div#foot

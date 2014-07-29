@@ -56,7 +56,7 @@ class Request extends Path
 	/**
 	 * Redirect the Request to a new URL.
 	 * @param $dest The destination URL. Acts intelligently enough to redirect relative to the application
-	 *				root if an external URL is not provided.
+	 *			 root if an external URL is not provided.
 	 */
 	public function redirect($dest)
 	{
