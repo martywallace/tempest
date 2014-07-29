@@ -10,14 +10,9 @@ use Tempest\Utils\Path;
 class Request extends Path
 {
 
-	const FORMAT_NONE = "";
-	const FORMAT_JSON = "json";
-	const FORMAT_XML = "xml";
-
-
 	private $router;
 	private $data;
-	private $format = self::FORMAT_NONE;
+	private $format = '';
 
 
 	/**
@@ -88,6 +83,12 @@ class Request extends Path
 
 		return $this->data;
 	}
+
+
+	/**
+	 * Shorthand for <code>if($format === 'some_format'){ ... }</code>.
+	 */
+	public function isFormat($format){ return $this->format === $format; }
 
 
 	/**

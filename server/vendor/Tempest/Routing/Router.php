@@ -13,7 +13,7 @@ class Router
 
 	private $request;
 	private $match;
-	private $params;
+	private $params = [];
 
 
 	/**

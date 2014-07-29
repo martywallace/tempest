@@ -30,6 +30,7 @@ class Tempest
 		$this->router->register($this->config->data("routes"));
 		$this->setup();
 
+		$request = $this->router->getRequest();
 		$match = $this->router->getMatch();
 
 		if($match !== null)
@@ -40,8 +41,8 @@ class Tempest
 
 			if(method_exists($response, $method))
 			{
-				$response->setup($this->router->getRequest());
-				$this->output = $response->$method($this->router->getRequest());
+				$response->setup($request);
+				$this->output = $response->$method($request);
 			}
 			else
 			{
@@ -52,15 +53,21 @@ class Tempest
 		else
 		{
 			// No matching routes.
-			trigger_error("404: Input route <code>{$this->router->getRequest()}</code> not handled.");
+			trigger_error("404: Input route <code>{$request}</code> not handled.");
 		}
 		
 		if(count($this->errors) > 0)
 		{
+			$row = new Template('<tr><td>{{ key }}</td><td>{{ value }}</td></tr>');
+
 			// Errors found, use error output.
 			$this->output = Template::load('/templates/tempest/shell.html')->bind([
 				"title" => "Application Error",
 				"version" => TEMPEST_VERSION,
+				"uri" => $request,
+				"get" => $row->copy()->batch($request->data(GET)),
+				"post" => $row->copy()->batch($request->data(POST)),
+				"named" => $row->copy()->batch($request->data(NAMED)),
 				"content" => Template::load('/templates/tempest/errors.html')->bind([
 					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
 				])

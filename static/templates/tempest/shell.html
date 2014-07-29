@@ -19,13 +19,39 @@
 
 		<div id="content">
 			<div class="grid">
-				{{ content }}
+				<div class="column sixty">
+					{{ content }}
+				</div>
+				<div class="column thirty-five right">
+					<div id="request">
+						<h2>REQUEST</h2>
+						<h6>URI</h6>
+						<p>{{ uri }}</p>
+						
+						<h6>GET</h6>
+						<table>
+							<tbody>{{ get }}</tbody>
+						</table>
+						
+						<h6>POST</h6>
+						<table>
+							<tbody>{{ post }}</tbody>
+						</table>
+						
+						<h6>NAMED</h6>
+						<table>
+							<tbody>{{ named }}</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="clear"></div>
 			</div>
 		</div>
 
 		<div id="foot">
 			<div class="grid">
-				<p><a target="_blank" href="https://github.com/MartyWallace/Tempest">Tempest version {{ version }}</a>, developed by Marty Wallace.</p>
+				<p><a target="_blank" href="https://github.com/MartyWallace/Tempest">Tempest version {{ version }}</a> &middot; Developed by Marty Wallace.</p>
 			</div>
 		</div>
 	</body>

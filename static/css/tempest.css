@@ -4,7 +4,7 @@
 
 .grid
 {
-	max-width: 840px;
+	max-width: 1000px;
 	padding: 0 20px;
 }
 
@@ -19,16 +19,15 @@ div#head
 	background: #F0603C;
 	color: #FFF;
 	padding: 30px 0;
-	text-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
 
 div#head a
 {
 	display: inline-block;
-	background: #444;
-	color: #CCC;
+	background: #DB3911;
+	color: #FFF;
 	padding: 8px 10px;
-	border-radius: 2px;
+	border-radius: 4px;
 	font-size: 12px;
 	font-family: 'OpenSansBold';
 	float: right;
@@ -36,8 +35,13 @@ div#head a
 
 div#head a:hover
 {
-	background: #222;
+	background: #444;
 	color: #FFF;
+}
+
+div#head a:active
+{
+	box-shadow: inset 0 1px 12px rgba(0, 0, 0, 0.2);
 }
 
 h1
@@ -45,18 +49,6 @@ h1
 	display: inline-block;
 	font-size: 20px;
 	text-transform: uppercase;
-}
-
-h2
-{
-	color: #777;
-	font-size: 16px;
-	margin-bottom: 15px;
-}
-
-div + h2
-{
-	margin-top: 60px;
 }
 
 div#content
@@ -70,8 +62,6 @@ ul
 	margin: 0 auto;
 	text-align: left;
 	list-style: none;
-	border-radius: 2px;
-	word-break: break-word;
 }
 
 ul > li + li
@@ -84,29 +74,66 @@ ul > li + li
 ul > li > pre
 {
 	background: none;
+	word-wrap: break-word;
 }
 
 ul > li > pre > code
 {
-	color: #800;
-}
-
-ul > li > pre > div
-{
-	padding: 2px 12px;
-}
-
-ul > li > pre > div[data-line='3']
-{
-	background: #7A2C2C;
-	color: #EEE;
-	padding: 8px 12px;
+	color: #A00;
 }
 
 small
 {
 	font-size: 11px;
 	color: #777;
+}
+
+div#request
+{
+	background: #F0F0F0;
+	color: #333;
+	font-size: 11px;
+	word-wrap: break-word;
+	border-radius: 4px;
+}
+
+div#request h2
+{
+	background: #444;
+	color: #EEE;
+	padding: 14px 10px;
+	font-size: 13px;
+}
+
+div#request h6
+{
+	padding: 10px;
+	font-size: 12px;
+	background: #E0E0E0;
+	color: #5F5F5F;
+}
+
+div#request p,
+div#request table td
+{
+	padding: 10px;
+	font-family: 'Consolas', monospace;
+}
+
+div#request table
+{
+	width: 100%;
+}
+
+div#request table tr + tr td
+{
+	padding-top: 0px;
+}
+
+div#request table td + td
+{
+	color: #777;
+	text-align: right;
 }
 
 div#foot
@@ -124,4 +151,19 @@ div#foot a
 div#foot a:hover
 {
 	color: #000;
+}
+
+
+@media screen and (max-width: 800px)
+{
+	div.column
+	{
+		width: 100% !important;
+		float: none;
+	}
+
+	div.column + div.column
+	{
+		margin-top: 30px;
+	}
 }

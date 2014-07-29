@@ -1,6 +1,11 @@
 @charset "utf-8";
 @import "base.css";
 
+body
+{
+	border-top: 8px solid #EEE;
+}
+
 section#intro
 {
 	padding: 40px 20px;
@@ -10,4 +15,7 @@ section#intro img
 {
 	border-radius: 3px;
 	margin-bottom: 20px;
+	max-width: 440px;
+	width: 100%;
+	height: auto;
 }
