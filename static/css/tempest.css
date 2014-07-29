@@ -10,59 +10,85 @@
 
 body
 {
-	background: #F8F8F8;
+	background: #EEE;
 	font-family: 'OpenSansReg';
 }
 
-hgroup
+div#head
 {
 	background: #F0603C;
 	color: #FFF;
 	padding: 30px 0;
-	margin-bottom: 40px;
 	text-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+div#head a
+{
+	display: inline-block;
+	background: #444;
+	color: #CCC;
+	padding: 8px 10px;
+	border-radius: 2px;
+	font-size: 12px;
+	font-family: 'OpenSansBold';
+	float: right;
+}
+
+div#head a:hover
+{
+	background: #222;
+	color: #FFF;
 }
 
 h1
 {
+	display: inline-block;
 	font-size: 20px;
 	text-transform: uppercase;
+}
+
+h2
+{
+	color: #777;
+	font-size: 16px;
+	margin-bottom: 15px;
+}
+
+div + h2
+{
+	margin-top: 50px;
+}
+
+div#content
+{
+	padding: 30px 0;
+	background: #FFF;
 }
 
 ul
 {
 	margin: 0 auto;
 	text-align: left;
-	margin-bottom: 30px;
 	list-style: none;
-	margin-top: 30px;
-	background: #E9E9E9;
 	border-radius: 2px;
-}
-
-ul > li
-{
-	padding: 16px 20px;
+	word-break: break-word;
 }
 
 ul > li + li
 {
-	border-top: 4px solid #F8F8F8;
-}
-
-ul > li > p > code
-{
-	color: #CF3610;
+	border-top: 1px dotted #DADADA;
+	margin-top: 20px;
+	padding-top: 20px;
 }
 
 ul > li > pre
 {
-	background: #444;
-	color: #999;
-	font-size: 12px;
-	margin: 10px 0;
-	padding: 10px 0;
-	overflow: auto;
+	background: none;
+}
+
+ul > li > pre > code
+{
+	color: #800;
 }
 
 ul > li > pre > div
@@ -83,19 +109,19 @@ small
 	color: #777;
 }
 
-a#home
+div#foot
 {
-	display: inline-block;
-	background: #EEE;
-	color: #888;
-	padding: 8px 10px;
-	border-radius: 2px;
-	font-size: 12px;
-	font-family: 'OpenSansBold';
+	padding: 15px 0;
+	font-size: 11px;
+	color: #AAA;
 }
 
-a#home:hover
+div#foot a
 {
-	background: #F0603C;
-	color: #FFF;
+	color: #F0603C;
+}
+
+div#foot a:hover
+{
+	color: #333;
 }

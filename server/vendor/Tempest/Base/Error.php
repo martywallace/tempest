@@ -12,7 +12,6 @@ class Error
 	private $string;
 	private $file;
 	private $line;
-	private $lines;
 	private $context;
 
 
@@ -31,37 +30,6 @@ class Error
 		$this->file = $file;
 		$this->line = $line;
 		$this->context = $context;
-
-		$lines = explode("\n", htmlspecialchars(file_get_contents($this->file)));
-		$this->lines = array_slice($lines, $this->line - 4, 7);
-	}
-
-
-	/**
-	 * Returns a formatted string of the error lines around and including this error.
-	 */
-	public function writeLines()
-	{
-		$tabs = null;
-		foreach($this->lines as $line)
-		{
-			if(!preg_match('/^\t/', $line)) continue;
-
-			$t = preg_replace('/^(\t)+/', '', $line);
-			$t = strlen($line) - strlen($t);
-
-			if($tabs === null || $tabs > $t) $tabs = $t;
-		}
-
-		$output = [];
-		foreach($this->lines as $line)
-		{
-			$item = preg_replace('/^\t{' . $tabs . '}/', '', $line);
-			$item = preg_replace('/\t/', '    ', $item);
-			$output[] = '<div data-line="' . count($output) . '">' . $item . '</div>';
-		}
-
-		return implode($output);
 	}
 
 
@@ -78,9 +46,15 @@ class Error
 
 
 	/**
-	 * Returns the file triggering this error.
+	 * Returns the name and path of the file triggering this error.
 	 */
 	public function getFile(){ return $this->file; }
+
+
+	/**
+	 * Return the name of the file triggering this error, without the path.
+	 */
+	public function getShortFile(){ return basename($this->file); }
 
 
 	/**

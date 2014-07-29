@@ -3,6 +3,7 @@
 session_start();
 error_reporting(-1);
 
+define('TEMPEST_VERSION', '0.01');
 
 define('DIR', __DIR__);
 define('SEP', DIRECTORY_SEPARATOR);
