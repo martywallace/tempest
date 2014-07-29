@@ -8,7 +8,7 @@
 class Config
 {
 
-	private $required = ['routes'];
+	private $required = ['title', 'routes'];
 	private $data;
 
 	
@@ -22,7 +22,7 @@ class Config
 		foreach($this->required as $r)
 		{
 			if(!array_key_exists($r, $this->data))
-				trigger_error("Missing configuration requirement <code>$r</code>.");
+				trigger_error("Missing configuration requirement: <code>$r</code>.");
 		}
 	}
 

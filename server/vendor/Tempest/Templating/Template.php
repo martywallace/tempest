@@ -56,7 +56,8 @@ class Template extends Output
 		$reqData = array_merge($request->data(), ["uri" => ["base" => $request->getBase(), "chunks" => $request->getChunks()]]);
 
 		return $this->bind([
-			"T_REQUEST_DATA" => base64_encode(json_encode($reqData, JSON_NUMERIC_CHECK))
+			"T_REQUEST_DATA" => base64_encode(json_encode($reqData, JSON_NUMERIC_CHECK)),
+			"T_SITE_TITLE" => $app->getConfig()->data("title")
 
 		])->finalize();
 	}
@@ -118,8 +119,19 @@ class Template extends Output
 			$this->setContent($empty === null ? '' : $empty);
 
 		$result = [];
-		foreach($batch as $item)
-			$result[] = $this->copy()->bind($item);
+		foreach($batch as $key => $item)
+		{
+			if(is_array($item) || is_object($item))
+				$result[] = $this->copy()->bind($item);
+			else
+			{
+				// Bind $key to {{ key }} and $item to {{ value }}.
+				$result[] = $this->copy()->bind([
+					"key" => $key,
+					"value" => $item
+				]);
+			}
+		}
 
 		$this->setContent(implode($result));
 

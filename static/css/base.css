@@ -136,6 +136,9 @@ img
 	width: 100%;
 }
 
+.column.left{ float: left; }
+.column.right{ float: right; }
+
 .column.five{ width: 5%; }
 .column.ten{ width: 10%; }
 .column.fifteen{ width: 15%; }

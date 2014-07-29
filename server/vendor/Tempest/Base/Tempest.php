@@ -60,7 +60,6 @@ class Tempest
 			// Errors found, use error output.
 			$this->output = Template::load('/templates/tempest/shell.html')->bind([
 				"title" => "Application Error",
-				"subhead" => "Errors",
 				"version" => TEMPEST_VERSION,
 				"content" => Template::load('/templates/tempest/errors.html')->bind([
 					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
