@@ -74,6 +74,7 @@ ul > li + li
 ul > li > pre
 {
 	background: none;
+	white-space: normal;
 	word-wrap: break-word;
 }
 
@@ -114,26 +115,9 @@ div#request h6
 }
 
 div#request p,
-div#request table td
+div#request pre
 {
 	padding: 10px;
-	font-family: 'Consolas', monospace;
-}
-
-div#request table
-{
-	width: 100%;
-}
-
-div#request table tr + tr td
-{
-	padding-top: 0px;
-}
-
-div#request table td + td
-{
-	color: #777;
-	text-align: right;
 }
 
 div#foot
@@ -164,6 +148,6 @@ div#foot a:hover
 
 	div.column + div.column
 	{
-		margin-top: 30px;
+		margin-top: 60px;
 	}
 }

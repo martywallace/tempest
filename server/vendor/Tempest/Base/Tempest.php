@@ -14,6 +14,7 @@ class Tempest
 
 	private $config;
 	private $router;
+	private $status = 200;
 	private $mime = 'text/plain';
 	private $output = '';
 	private $errors = [];
@@ -53,21 +54,22 @@ class Tempest
 		else
 		{
 			// No matching routes.
-			trigger_error("404: Input route <code>{$request}</code> not handled.");
+			$this->status = 404;
+			trigger_error("Input route <code>{$request}</code> not handled.");
 		}
 		
 		if(count($this->errors) > 0)
 		{
-			$row = new Template('<tr><td>{{ key }}</td><td>{{ value }}</td></tr>');
+			if($this->status !== 404) $this->status = 500;
 
 			// Errors found, use error output.
 			$this->output = Template::load('/templates/tempest/shell.html')->bind([
 				"title" => "Application Error",
 				"version" => TEMPEST_VERSION,
 				"uri" => $request,
-				"get" => $row->copy()->batch($request->data(GET)),
-				"post" => $row->copy()->batch($request->data(POST)),
-				"named" => $row->copy()->batch($request->data(NAMED)),
+				"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "NO DATA",
+				"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "NO DATA",
+				"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "NO DATA",
 				"content" => Template::load('/templates/tempest/errors.html')->bind([
 					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
 				])
@@ -106,7 +108,9 @@ class Tempest
 			$this->output = $this->output->getFinalOutput($this);
 		}
 
-		head(["Content-type" => $this->mime]);
+		header($_SERVER["SERVER_PROTOCOL"] . " " . $this->status, true, $this->status);
+		header("Content-Type: $this->mime; charset=utf-8");
+
 		echo $this->output;
 
 		exit;

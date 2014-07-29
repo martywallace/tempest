@@ -60,8 +60,12 @@ class Request extends Path
 	 */
 	public function redirect($dest)
 	{
-		if(preg_match('/^\w*:\/\//', $dest)) head(["Location" => $dest]);
-		else head(["Location" => PUB_ROOT . $dest]);
+		if(preg_match('/^\w*:\/\//', $dest)) header("Location: " . $dest);
+		else
+		{
+			header($_SERVER["HTTP_PROTOCOL"] . " 302", true, 302);
+			header("Location: " . PUB_ROOT . $dest);
+		}
 
 		exit;
 	}
