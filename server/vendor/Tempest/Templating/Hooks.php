@@ -19,5 +19,7 @@ class Hooks
 	public static function nl2br($value){ return nl2br($value); }
 	public static function strong($value){ return "<strong>$value</strong>"; }
 	public static function slashes($value){ return addslashes($value); }
+	public static function b64decode($value){ return base64_decode($value); }
+	public static function b64encode($value){ return base64_encode($value); }
 
 }
