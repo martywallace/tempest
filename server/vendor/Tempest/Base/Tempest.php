@@ -108,7 +108,7 @@ class Tempest
 			$this->output = $this->output->getFinalOutput($this);
 		}
 
-		header($_SERVER["SERVER_PROTOCOL"] . " " . $this->status, true, $this->status);
+		http_response_code($this->status);
 		header("Content-Type: $this->mime; charset=utf-8");
 
 		echo $this->output;

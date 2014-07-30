@@ -44,3 +44,11 @@ function set_or($value, $fallback = null)
 {
 	return isset($value) ? $value : $fallback;
 }
+
+
+function pre_print_r($data)
+{
+	echo '<pre>';
+	print_r($data);
+	echo '</pre>';
+}

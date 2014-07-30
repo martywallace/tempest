@@ -30,3 +30,4 @@ Tempest defines a collection of global constants and methods. Constants are defi
 * <code>dtrim()</code> - Trims characters from the left, then trims another set of characters from the right.
 * <code>array_keys_prepend()</code> - Prepends the given string on every key in an array. Useful for situations like adding a <code>:</code> for prepared statements.
 * <code>set_or()</code> Returns the first value if it is set (<code>isset()</code> returns true), else the latter (which defaults to <code>null</code>). Essentially a shorthand for <code>isset(a) ? a : b</code>.
+* <code>pre_print_r()</code> Same as <code>print_r</code>, but the output is wrapped in a <code>&lt;pre&gt;&lt;/pre&gt;</code> block.
