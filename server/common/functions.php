@@ -45,6 +45,19 @@ function set_or($value, $fallback = null)
 	return isset($value) ? $value : $fallback;
 }
 
+function fetch_data($method, $url, $data = null)
+{
+	$options = [
+		"http" => [
+			"header" => "Content-type: application/x-www-form-urlencoded",
+			"method" => strtoupper($method),
+			"content" => http_build_query($data === null ? [] : $data)
+		]
+	];
+
+	return file_get_contents($url, false, stream_context_create($options));
+}
+
 
 function pre_print_r($data)
 {
