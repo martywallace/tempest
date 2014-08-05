@@ -30,7 +30,7 @@ class Config
 	/**
 	 * Returns configuration data.
 	 * @param $field Optional inner field to capture data from. Dot delimited values can be supplied
-	 * 				 when searching for nested values.
+	 * when searching for nested values.
 	 */
 	public function data($field = null)
 	{
