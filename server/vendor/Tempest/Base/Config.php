@@ -8,7 +8,7 @@
 class Config
 {
 
-	private $required = ['title', 'routes'];
+	private $required = ['title', 'timezone', 'routes'];
 	private $data;
 
 	
@@ -24,6 +24,10 @@ class Config
 			if(!array_key_exists($r, $this->data))
 				trigger_error("Missing configuration requirement: <code>$r</code>.");
 		}
+
+
+		// General configuration.
+		date_default_timezone_set($this->data["timezone"]);
 	}
 
 
