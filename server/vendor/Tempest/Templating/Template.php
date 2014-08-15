@@ -116,7 +116,10 @@ class Template extends Output
 	public function batch(Array $batch, Template $empty = null)
 	{
 		if(count($batch) === 0)
+		{
 			$this->setContent($empty === null ? '' : $empty);
+			return $this;
+		}
 
 		$result = [];
 		foreach($batch as $key => $item)
