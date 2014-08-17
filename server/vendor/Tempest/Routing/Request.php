@@ -57,13 +57,14 @@ class Request extends Path
 	 * Redirect the Request to a new URL.
 	 * @param $dest The destination URL. Acts intelligently enough to redirect relative to the application
 	 *			 root if an external URL is not provided.
+	 * @param $status The response code for the redirected request, e.g. 400 Bad Request or 302 Moved Permanently.
 	 */
-	public function redirect($dest)
+	public function redirect($dest, $status = 400)
 	{
 		if(preg_match('/^\w*:\/\//', $dest)) header("Location: " . $dest);
 		else
 		{
-			header($_SERVER["HTTP_PROTOCOL"] . " 302", true, 302);
+			header($_SERVER["HTTP_PROTOCOL"] . " $status", true, $status);
 			header("Location: " . PUB_ROOT . $dest);
 		}
 
