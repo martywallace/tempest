@@ -3,7 +3,7 @@
 session_start();
 error_reporting(-1);
 
-define('TEMPEST_VERSION', '0.1');
+define('TEMPEST_VERSION', 'v0.2-alpha');
 
 define('DIR', __DIR__);
 define('SEP', DIRECTORY_SEPARATOR);
@@ -13,7 +13,7 @@ define('GET', 'get');
 define('POST', 'post');
 define('NAMED', 'named');
 
-define('IS_LOCAL', in_array($_SERVER["HTTP_HOST"], ['localhost', '127.0.0.1']));
+define('IS_LOCAL', in_array($_SERVER["HTTP_HOST"], array('localhost', '127.0.0.1')));
 
 define('RGX_PATH_DELIMITER', '/[\/\\\\]+/');
 define('RGX_TEMPLATE_TOKEN', '/\{\{\s*([\!\?\*]*)(@\w+)*([\w\.\(\)]+)([\w\s\:]*)\s*\}\}/');
@@ -29,7 +29,7 @@ define('REQUEST_URI', path_normalize(REQUEST_CLEAN, '/', true, false));
 define('APP_REQUEST_URI', path_normalize(PUB_ROOT !== '/' ? str_replace(PUB_ROOT, '', REQUEST_CLEAN) : REQUEST_URI, '/', true, false));
 
 
-$app = new Application();
+$app = new App();
 
 set_error_handler(array($app, 'error'));
 

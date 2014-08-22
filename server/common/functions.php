@@ -30,7 +30,7 @@ function dtrim($value, $left, $right)
 
 function array_keys_prepend($array, $prefix)
 {
-	$new = [];
+	$new = array();
 	foreach($array as $key => $value)
 	{
 		$new[$prefix . $key] = $value;
@@ -47,13 +47,13 @@ function set_or($value, $fallback = null)
 
 function fetch_data($method, $url, $data = null)
 {
-	$options = [
-		"http" => [
+	$options = array(
+		"http" => array(
 			"header" => "Content-type: application/x-www-form-urlencoded",
 			"method" => strtoupper($method),
-			"content" => http_build_query($data === null ? [] : $data)
-		]
-	];
+			"content" => http_build_query($data === null ? array() : $data)
+		)
+	);
 
 	return file_get_contents($url, false, stream_context_create($options));
 }

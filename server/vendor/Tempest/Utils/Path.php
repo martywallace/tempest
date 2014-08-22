@@ -9,7 +9,7 @@ class Path
 {
 
 	protected $base;
-	protected $chunks = [];
+	protected $chunks = array();
 
 	
 	/**
@@ -21,7 +21,7 @@ class Path
 		$this->base = strtolower($base);
 		$this->base = path_normalize($this->base, '/', true, false);
 
-		if($base === '/') $this->chunks = [];
+		if($base === '/') $this->chunks = array();
 		else $this->chunks = path_split($base);
 	}
 

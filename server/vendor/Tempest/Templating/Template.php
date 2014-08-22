@@ -53,13 +53,13 @@ class Template extends Output
 	public function getFinalOutput(Tempest $app)
 	{
 		$request = $app->getRouter()->getRequest();
-		$reqData = array_merge($request->data(), ["uri" => ["base" => $request->getBase(), "chunks" => $request->getChunks()]]);
+		$reqData = array_merge($request->data(), array("uri" => array("base" => $request->getBase(), "chunks" => $request->getChunks())));
 
-		return $this->bind([
+		return $this->bind(array(
 			"T_REQUEST_DATA" => base64_encode(json_encode($reqData, JSON_NUMERIC_CHECK)),
 			"T_SITE_TITLE" => $app->getConfig()->data("title")
 
-		])->finalize();
+		))->finalize();
 	}
 
 
@@ -121,7 +121,7 @@ class Template extends Output
 			return $this;
 		}
 
-		$result = [];
+		$result = array();
 		foreach($batch as $key => $item)
 		{
 			if(is_array($item) || is_object($item))
@@ -129,10 +129,10 @@ class Template extends Output
 			else
 			{
 				// Bind $key to {{ key }} and $item to {{ value }}.
-				$result[] = $this->copy()->bind([
+				$result[] = $this->copy()->bind(array(
 					"key" => $key,
 					"value" => $item
-				]);
+				));
 			}
 		}
 
@@ -172,7 +172,7 @@ class Template extends Output
 	 */
 	private function getTokens()
 	{
-		$tokens = [];
+		$tokens = array();
 		preg_match_all(RGX_TEMPLATE_TOKEN, $this->getContent(), $matches);
 		
 		for($i = 0; $i < count($matches[0]); $i++)

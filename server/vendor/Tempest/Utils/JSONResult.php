@@ -11,8 +11,8 @@ use Tempest\Utils\IResult;
 class JSONResult extends Output implements IResult
 {
 
-	private $body = [];
-	private $errors = [];
+	private $body = array();
+	private $errors = array();
 	private $padding = null;
 
 
@@ -53,13 +53,13 @@ class JSONResult extends Output implements IResult
 	 */
 	public function getContent()
 	{
-		$base = json_encode([
-			"head" => [
+		$base = json_encode(array(
+			"head" => array(
 				"ok" => $this->isOk(),
 				"errors" => $this->errors
-			],
+			),
 			"body" => $this->body
-		]);
+		));
 
 		if($this->padding !== null && strlen($this->padding) > 0)
 		{

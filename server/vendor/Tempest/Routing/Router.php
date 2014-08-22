@@ -13,7 +13,7 @@ class Router
 
 	private $request;
 	private $match;
-	private $params = [];
+	private $params = array();
 
 
 	/**
@@ -31,13 +31,13 @@ class Router
 	 */
 	public function register(Array $routes)
 	{
-		$possible = [];
+		$possible = array();
 
 		foreach($routes as $input => $handler)
 		{
 			$route = new Route($input, $handler);
 			$score = 0;
-			$named = [];
+			$named = array();
 
 			if($this->request->getLength() === 0 && $route->getLength() === 0)
 			{
@@ -81,7 +81,7 @@ class Router
 			if($score > 0)
 			{
 				// Route has a positive score, place in list of possible routes.
-				$possible[$score][] = [$route, $named];
+				$possible[$score][] = array($route, $named);
 			}
 		}
 

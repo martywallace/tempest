@@ -8,7 +8,7 @@
 class Config
 {
 
-	private $required = ['title', 'timezone', 'routes'];
+	private $required = array('title', 'timezone', 'routes');
 	private $data;
 
 	
@@ -41,7 +41,7 @@ class Config
 		if($field === null) return $this->data;
 
 		$path = preg_split('/\.+/', $field);
-		$valid = [];
+		$valid = array();
 		$target = $this->data;
 
 		foreach($path as $p)

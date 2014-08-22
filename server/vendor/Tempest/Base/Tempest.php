@@ -17,7 +17,7 @@ class Tempest
 	private $status = 200;
 	private $mime = 'text/plain';
 	private $output = '';
-	private $errors = [];
+	private $errors = array();
 
 
 	/**
@@ -63,17 +63,17 @@ class Tempest
 			if($this->status !== 404) $this->status = 500;
 
 			// Errors found, use error output.
-			$this->output = Template::load('/templates/tempest/shell.html')->bind([
+			$this->output = Template::load('/templates/tempest/shell.html')->bind(array(
 				"title" => "Application Error",
 				"version" => TEMPEST_VERSION,
 				"uri" => $request,
 				"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
 				"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
 				"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",
-				"content" => Template::load('/templates/tempest/errors.html')->bind([
+				"content" => Template::load('/templates/tempest/errors.html')->bind(array(
 					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
-				])
-			]);
+				))
+			));
 		}
 		
 		$this->finalize();

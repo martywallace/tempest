@@ -3,7 +3,7 @@
 use Tempest\Base\Tempest;
 
 
-class Application extends Tempest
+class App extends Tempest
 {
 	
 	protected function setup()

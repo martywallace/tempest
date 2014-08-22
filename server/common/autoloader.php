@@ -3,7 +3,7 @@
 // Class autoloader.
 spl_autoload_register(function($class)
 {
-	foreach(['vendor', 'app'] as $path)
+	foreach(array('vendor', 'app') as $path)
 	{
 		$path = APP_ROOT . 'server' . SEP . $path . SEP . str_replace('\\', SEP, $class) . '.php';
 
