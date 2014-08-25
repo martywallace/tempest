@@ -2,8 +2,6 @@
 
 use Tempest\Base\Tempest;
 use Tempest\Routing\Output;
-use Tempest\Templating\Token;
-use Tempest\Templating\TokenPart;
 
 
 /**
@@ -16,7 +14,8 @@ class Template extends Output
 
 	/**
 	 * Loads a new Template whose contents is the value of a specified file.
-	 * @param $file The file whose contents will be used for the resulting Template.
+	 * @param $file string The file to load, relative to /static/.
+	 * @return Template A new Template.
 	 */
 	public static function load($file)
 	{
@@ -26,8 +25,9 @@ class Template extends Output
 
 
 	/**
-	 * Prepares template content with core replacements.
-	 * @param $base The base content to prepare.
+	 * Prepares template content with core replacements and adjustments.
+	 * @param $base string The base content to prepare.
+	 * @return string The prepared content.
 	 */
 	public static function prepare($base)
 	{
@@ -37,7 +37,7 @@ class Template extends Output
 
 	/**
 	 * Constructor.
-	 * @param $content The starting Template content.
+	 * @param $content string The starting Template content.
 	 */
 	public function __construct($content = '')
 	{
@@ -48,7 +48,8 @@ class Template extends Output
 
 	/**
 	 * Returns the final output data for this Template. Binds application data.
-	 * @param $app A reference to the core application instance.
+	 * @param $app Tempest A reference to the core application instance.
+	 * @return string The final output for this Template.
 	 */
 	public function getFinalOutput(Tempest $app)
 	{
@@ -65,7 +66,8 @@ class Template extends Output
 
 	/**
 	 * Assigns new content to this Template.
-	 * @param $content The new content to allocate to this Template.
+	 * @param $content string The new content to allocate to this Template.
+	 * @return Template The calling Template, for chaining.
 	 */
 	public function setContent($content = '')
 	{
@@ -76,8 +78,9 @@ class Template extends Output
 
 	/**
 	 * Binds data to this Template.
-	 * @param $data The data to bind. Can be either an Array or class instance (object).
-	 * @param $context An optional context. Only tokens with the matching context will be replaced.
+	 * @param $data mixed The data to bind. Can be either an Array or class instance (object).
+	 * @param $context string An optional context. Only tokens with the matching context will be replaced.
+	 * @return Template The calling Template, for chaining.
 	 */
 	public function bind($data, $context = null)
 	{
@@ -110,8 +113,9 @@ class Template extends Output
 	/**
 	 * Binds multiple Array elements to this Template, repeating the original Template content for
 	 * each item in the batch.
-	 * @param $batch The Array whose children will be bound to this Template.
-	 * @param $empty The content to use if the supplied batch is empty.
+	 * @param $batch Array The Array whose children will be bound to this Template.
+	 * @param $empty Template The Template to use if the supplied batch is empty.
+	 * @return Template The calling Template, for chaining.
 	 */
 	public function batch(Array $batch, Template $empty = null)
 	{
@@ -145,6 +149,7 @@ class Template extends Output
 	/**
 	 * Makes a copy of this Template, by taking the current content and using it as the starting content
 	 * for a new Template instance.
+	 * @return Template A copy of the calling Template.
 	 */
 	public function copy()
 	{
@@ -154,6 +159,7 @@ class Template extends Output
 
 	/**
 	 * Finalize the Template content. Used automatically if the Template is the output of a Response.
+	 * @return Template The calling Template, for chaining.
 	 */
 	public function finalize()
 	{
@@ -169,6 +175,7 @@ class Template extends Output
 
 	/**
 	 * Returns an Array of the Tokens found in this Template.
+	 * @return Array The list of matched tokens.
 	 */
 	private function getTokens()
 	{
