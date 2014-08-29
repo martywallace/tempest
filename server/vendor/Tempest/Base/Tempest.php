@@ -21,6 +21,17 @@ class Tempest
 
 
 	/**
+	 * Abort the application.
+	 * @param $code int The HTTP status code.
+	 */
+	public static function abort($code)
+	{
+		http_response_code($code);
+        exit;
+	}
+
+
+	/**
 	 * Start the application.
 	 */
 	public function start()
@@ -43,7 +54,7 @@ class Tempest
 			if(method_exists($response, $method))
 			{
 				$response->setup($request);
-				$this->output = $response->$method($request);
+				$this->output = $response->finalize($response->$method($request));
 			}
 			else
 			{

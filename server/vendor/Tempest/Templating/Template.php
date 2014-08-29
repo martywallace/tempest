@@ -25,6 +25,17 @@ class Template extends Output
 
 
 	/**
+	 * An alias of Template::__construct(), for convenience.
+	 * @param string $content The starting Template content.
+	 * @return Template A new Template.
+	 */
+	public static function create($content = '')
+	{
+		return new static($content);
+	}
+
+
+	/**
 	 * Prepares template content with core replacements and adjustments.
 	 * @param $base string The base content to prepare.
 	 * @return string The prepared content.
@@ -54,10 +65,13 @@ class Template extends Output
 	public function getFinalOutput(Tempest $app)
 	{
 		$request = $app->getRouter()->getRequest();
-		$reqData = array_merge($request->data(), array("uri" => array("base" => $request->getBase(), "chunks" => $request->getChunks())));
+		$reqData = array_merge($request->data(), array(
+			"base" => PUB_ROOT,
+			"uri" => array("base" => $request->getBase(), "chunks" => $request->getChunks())
+		));
 
 		return $this->bind(array(
-			"T_REQUEST_DATA" => base64_encode(json_encode($reqData, JSON_NUMERIC_CHECK)),
+			"T_REQUEST_DATA" => json_encode($reqData, JSON_NUMERIC_CHECK),
 			"T_SITE_TITLE" => $app->getConfig()->data("title")
 
 		))->finalize();

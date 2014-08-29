@@ -1,10 +1,10 @@
 <?php
 
-return [
+return array(
 	"title" => "New App",
 	"timezone" => "Australia/Sydney",
 
-	"routes" => [
-		"/" => "Page"
-	]
-];
+	"routes" => array(
+		"/" => "Pages.AdaptivePage"
+	)
+);

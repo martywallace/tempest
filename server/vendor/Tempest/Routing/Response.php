@@ -1,7 +1,6 @@
 <?php namespace Tempest\Routing;
 
 use Tempest\Base\Tempest;
-use Tempest\Routing\Request;
 
 
 /**
@@ -16,7 +15,7 @@ class Response
 
 	/**
 	 * Constructor.
-	 * @param $app A reference to the core application class.
+	 * @param $app Tempest A reference to the core application class.
 	 */
 	public function __construct(Tempest $app)
 	{
@@ -29,6 +28,17 @@ class Response
 	 * Override for custom response setup logic.
 	 */
 	public function setup(Request $request){ /**/ }
+
+
+	/**
+	 * Finalize output that this response will send to the client.
+	 * @param string|Output $output The output to finalize.
+	 * @return string|Output The finalized response data.
+	 */
+	public function finalize($output = null)
+	{
+		return $output;
+	}
 
 
 	/**
