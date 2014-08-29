@@ -2,6 +2,8 @@
 
 use Tempest\Base\Error;
 use Tempest\HTTP\Router;
+use Tempest\HTTP\Status;
+use Tempest\HTTP\Request;
 use Tempest\Templating\Template;
 
 
@@ -13,21 +15,10 @@ class Tempest
 {
 
 	private $router;
-	private $status = 200;
+	private $status = Status::OK;
 	private $mime = 'text/plain';
-	private $output = '';
+	private $output = null;
 	private $errors = array();
-
-
-	/**
-	 * Abort the application.
-	 * @param $code int The HTTP status code.
-	 */
-	public static function abort($code)
-	{
-		http_response_code($code);
-        exit;
-	}
 
 
 	/**
@@ -62,26 +53,8 @@ class Tempest
 		else
 		{
 			// No matching routes.
-			$this->status = 404;
+			$this->status = Status::NOT_FOUND;
 			trigger_error("Input route <code>{$request}</code> not handled.");
-		}
-		
-		if(count($this->errors) > 0)
-		{
-			if($this->status !== 404) $this->status = 500;
-
-			// Errors found, use error output.
-			$this->output = Template::load('/templates/tempest/shell.html')->bind(array(
-				"title" => "Application Error",
-				"version" => TEMPEST_VERSION,
-				"uri" => $request,
-				"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
-				"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
-				"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",
-				"content" => Template::load('/templates/tempest/errors.html')->bind(array(
-					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
-				))
-			));
 		}
 		
 		$this->finalize();
@@ -89,12 +62,23 @@ class Tempest
 
 
 	/**
+	 * Abort the application.
+	 * @param $code int The HTTP status code.
+	 */
+	public function abort($code = 400)
+	{
+		$this->status = $code;
+		$this->finalize();
+	}
+
+
+	/**
 	 * Handles an error triggered by the application. Errors are queued and presented together.
-	 * @param $number The error number.
-	 * @param $string The error text.
-	 * @param $file The file triggering the error.
-	 * @param $line The line number triggering the error.
-	 * @param $context The error context.
+	 * @param $number int The error number.
+	 * @param $string string The error text.
+	 * @param $file string The file triggering the error.
+	 * @param $line int The line number triggering the error.
+	 * @param $context Array The error context.
 	 */
 	public function error($number, $string, $file, $line, $context)
 	{
@@ -108,6 +92,20 @@ class Tempest
 	 */
 	private function finalize()
 	{
+		if($this->status <= 300 && count($this->errors) > 0)
+		{
+			// If the HTTP Response code is in the OK range but there are errors.
+			$this->status = Status::INTERNAL_SERVER_ERROR;
+		}
+
+		if($this->status >= 300)
+		{
+			// If the HTTP Response code does not fall in the OK range, transform the output to an alternate value.
+			// The alternate value is defined in App::getErrorOutput().
+			$this->output = $this->getErrorOutput($this->router->getRequest(), $this->status);
+		}
+
+
 		if(is_a($this->output, 'Tempest\HTTP\Output'))
 		{
 			// Final output is an instance of <code>Tempest/Routing/Output</code> - get the final
@@ -116,12 +114,45 @@ class Tempest
 			$this->output = $this->output->getFinalOutput($this);
 		}
 
-		http_response_code($this->status);
+		header($_SERVER["HTTP_PROTOCOL"] . "$this->status", true, $this->status);
 		header("Content-Type: $this->mime; charset=utf-8");
 
-		echo $this->output;
+		if($this->output !== null) echo $this->output;
 
 		exit;
+	}
+
+
+	/**
+	 * @param $r Request The request made.
+	 * @param $code int The HTTP status code - used to determine what the result should be.
+	 * @return string|Output The resulting output.
+	 */
+	protected function getErrorOutput(Request $r, $code)
+	{
+		if($code === 404)
+		{
+			// Typical 404 error.
+			return '404 - Not Found.';
+		}
+
+		if($code >= 500)
+		{
+			// Server-side errors.
+			return Template::load('/templates/tempest/shell.html')->bind(array(
+				"title" => "Application Error",
+				"version" => TEMPEST_VERSION,
+				"uri" => $r,
+				"get" => count($r->data(GET)) > 0 ? json_encode($r->data(GET), JSON_PRETTY_PRINT) : "-",
+				"post" => count($r->data(POST)) > 0 ? json_encode($r->data(POST), JSON_PRETTY_PRINT) : "-",
+				"named" => count($r->data(NAMED)) > 0 ? json_encode($r->data(NAMED), JSON_PRETTY_PRINT) : "-",
+				"content" => Template::load('/templates/tempest/errors.html')->bind(array(
+					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
+				))
+			));
+		}
+
+		return null;
 	}
 
 

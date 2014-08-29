@@ -17,11 +17,11 @@ class Error
 
 	/**
 	 * Constructor.
-	 * @param $number The error number.
-	 * @param $string The error text.
-	 * @param $file The file triggering the error.
-	 * @param $line The line number triggering the error.
-	 * @param $context The error context.
+	 * @param $number int The error number.
+	 * @param $string string The error text.
+	 * @param $file string The file triggering the error.
+	 * @param $line int The line number triggering the error.
+	 * @param $context Array The error context.
 	 */
 	public function __construct($number, $string, $file, $line, $context)
 	{

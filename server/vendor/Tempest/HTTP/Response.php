@@ -50,7 +50,15 @@ class Response
 
 
 	/**
-	 * Returns the <code>Request</code> instance.
+	 * The main application.
+	 * @return Tempest
+	 */
+	public function getApp(){ return $this->app; }
+
+
+	/**
+	 * The current Request.
+	 * @return Request
 	 */
 	public function getRequest(){ return $this->app->getRouter()->getRequest(); }
 

@@ -27,7 +27,7 @@ class Router
 	
 	/**
 	 * Registers the Routes that will be managed by this Router.
-	 * @param $routes An Array of Routes.
+	 * @param $routes Array An Array of Routes.
 	 */
 	public function register(Array $routes)
 	{
