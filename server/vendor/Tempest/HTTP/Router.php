@@ -1,7 +1,7 @@
-<?php namespace Tempest\Routing;
+<?php namespace Tempest\HTTP;
 
-use Tempest\Routing\Route;
-use Tempest\Routing\Request;
+use Tempest\HTTP\Route;
+use Tempest\HTTP\Request;
 
 
 /**

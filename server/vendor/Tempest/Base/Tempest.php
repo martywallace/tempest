@@ -1,7 +1,7 @@
 <?php namespace Tempest\Base;
 
 use Tempest\Base\Error;
-use Tempest\Routing\Router;
+use Tempest\HTTP\Router;
 use Tempest\Templating\Template;
 
 
@@ -12,7 +12,6 @@ use Tempest\Templating\Template;
 class Tempest
 {
 
-	private $config;
 	private $router;
 	private $status = 200;
 	private $mime = 'text/plain';
@@ -36,11 +35,9 @@ class Tempest
 	 */
 	public function start()
 	{
-		$this->config = new Config();
 		$this->router = new Router();
 
-		$this->router->register($this->config->data("routes"));
-		$this->setup();
+		$this->setup($this->router);
 
 		$request = $this->router->getRequest();
 		$match = $this->router->getMatch();
@@ -111,7 +108,7 @@ class Tempest
 	 */
 	private function finalize()
 	{
-		if(is_a($this->output, 'Tempest\Routing\Output'))
+		if(is_a($this->output, 'Tempest\HTTP\Output'))
 		{
 			// Final output is an instance of <code>Tempest/Routing/Output</code> - get the final
 			// output first, as well as a the relevant MIME type.
@@ -130,20 +127,16 @@ class Tempest
 
 	/**
 	 * Called by <code>start()</code> after the configuration and router have been initialized.
-	 * Override  for custom initialization logic in <code>Application</code>.
+	 * Override  for custom initialization logic in <code>App</code>.
+	 * @param $router Router The application router.
 	 */
-	protected function setup(){ /**/ }
+	protected function setup(Router $router){ /**/ }
 
 
 	/**
 	 * Returns the active <code>Router</code> instance.
+	 * @return Router
 	 */
 	public function getRouter(){ return $this->router; }
-
-
-	/**
-	 * Returns the active <code>Config</code> instance.
-	 */
-	public function getConfig(){ return $this->config; }
 
 }

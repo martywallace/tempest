@@ -1,7 +1,8 @@
 <?php namespace Tempest\Templating;
 
 use Tempest\Base\Tempest;
-use Tempest\Routing\Output;
+use Tempest\Base\Config;
+use Tempest\HTTP\Output;
 
 
 /**
@@ -72,7 +73,7 @@ class Template extends Output
 
 		return $this->bind(array(
 			"T_REQUEST_DATA" => json_encode($reqData, JSON_NUMERIC_CHECK),
-			"T_SITE_TITLE" => $app->getConfig()->data("title")
+			"T_SITE_TITLE" => Config::data("title")
 
 		))->finalize();
 	}

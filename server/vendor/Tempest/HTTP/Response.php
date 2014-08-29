@@ -1,4 +1,4 @@
-<?php namespace Tempest\Routing;
+<?php namespace Tempest\HTTP;
 
 use Tempest\Base\Tempest;
 
@@ -26,6 +26,7 @@ class Response
 	/**
 	 * Sets up the basic response needs.
 	 * Override for custom response setup logic.
+	 * @param $request Request The Request made to the application.
 	 */
 	public function setup(Request $request){ /**/ }
 
@@ -43,20 +44,9 @@ class Response
 
 	/**
 	 * The default handler method is <code>index</code>.
+	 * @param $request Request The Request made to the application.
 	 */
 	public function index(Request $request){ /**/ }
-
-
-	/**
-	 * Returns the core application instance.
-	 */
-	public function getApp(){ return $this->app; }
-
-
-	/**
-	 * Returns the active <code>Config</code> instance.
-	 */
-	public function getConfig(){ return $this->app->getConfig(); }
 
 
 	/**

@@ -1,7 +1,7 @@
 <?php namespace Responses\Base;
 
 use Responses\Base\Adapter;
-use Tempest\Routing\Request;
+use Tempest\HTTP\Request;
 use Tempest\Templating\Template;
 
 

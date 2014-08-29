@@ -1,7 +1,7 @@
 <?php namespace Responses\Pages;
 
 use Responses\Base\HTMLPage;
-use Tempest\Routing\Request;
+use Tempest\HTTP\Request;
 use Tempest\Templating\Template;
 
 

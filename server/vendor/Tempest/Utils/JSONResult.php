@@ -1,6 +1,6 @@
 <?php namespace Tempest\Utils;
 
-use Tempest\Routing\Output;
+use Tempest\HTTP\Output;
 use Tempest\Utils\IResult;
 
 

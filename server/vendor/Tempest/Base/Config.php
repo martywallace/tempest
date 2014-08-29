@@ -8,41 +8,34 @@
 class Config
 {
 
-	private $required = array('title', 'timezone', 'routes');
-	private $data;
+	private static $data = array();
 
-	
+
 	/**
-	 * Constructor.
+	 * Loads a configuration file.
+	 * @param string $file The target PHP file to load data from. The file must 'return' an array of the config data.
 	 */
-	public function __construct()
+	public static function load($file = 'config.php')
 	{
-		$this->data = require_once(APP_ROOT . 'config.php');
-
-		foreach($this->required as $r)
-		{
-			if(!array_key_exists($r, $this->data))
-				trigger_error("Missing configuration requirement: <code>$r</code>.");
-		}
-
+		self::$data = require_once(APP_ROOT . $file);
 
 		// General configuration.
-		date_default_timezone_set($this->data["timezone"]);
+		if(array_key_exists("timezone", self::$data)) date_default_timezone_set(self::$data["timezone"]);
 	}
 
 
 	/**
 	 * Returns configuration data.
-	 * @param $field Optional inner field to capture data from. Dot delimited values can be supplied
-	 * when searching for nested values.
+	 * @param $field string The configuration data to get.
+	 * @return mixed The result data.
 	 */
-	public function data($field = null)
+	public static function data($field = null)
 	{
-		if($field === null) return $this->data;
+		if($field === null) return self::$data;
 
 		$path = preg_split('/\.+/', $field);
 		$valid = array();
-		$target = $this->data;
+		$target = self::$data;
 
 		foreach($path as $p)
 		{

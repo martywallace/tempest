@@ -17,8 +17,7 @@
         {{ @page.getScripts() }}
 
         <script>
-            if(window.Application)
-				Application.init('{{ T_REQUEST_DATA }}');
+            if(typeof Application !== "undefined") Application.init('{{ T_REQUEST_DATA }}');
         </script>
 	</body>
 </html>

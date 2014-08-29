@@ -1,7 +1,7 @@
 <?php namespace Responses\Base;
 
-use Tempest\Routing\Request;
-use Tempest\Routing\Response;
+use Tempest\HTTP\Request;
+use Tempest\HTTP\Response;
 
 
 class Adapter extends Response
