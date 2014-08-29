@@ -33,6 +33,23 @@ module Tempest
 		}
 	}
 
+
+	export module Utils
+	{
+		export function trim(input:string):string
+		{
+			return input.replace(/^\s+|\s+$/g, '');
+		}
+
+		export function buildQuery(data:Object):string
+		{
+			var base:string[] = [];
+			for(var param in data) base.push(encodeURIComponent(param) + "=" + encodeURIComponent(data[param]));
+
+			return base.join("&");
+		}
+	}
+
 	export function api(method:string, endpoint:string, data:Object, callback:(response:JSONResponse) => void):void
 	{
 		$.ajax({
@@ -74,7 +91,7 @@ module Tempest
 	}
 
 
-	export function path(value:string[] = []):string
+	export function path(value:string[] = [], query:Object = null):string
 	{
 		var base = value.join("/");
 		if(base.indexOf(Tempest.getRoot()) < 0 && base.match(/^\w*:\/\//) === null)
@@ -84,7 +101,7 @@ module Tempest
 			base = Tempest.getRoot() + base;
 		}
 
-		return base.replace(/\/+/g, '/').replace(/:\//g, '://');
+		return base.replace(/\/+/g, '/').replace(/:\//g, '://') + (query !== null ? "?" + Tempest.Utils.buildQuery(query) : '');
 	}
 
 

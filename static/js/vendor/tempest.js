@@ -39,6 +39,23 @@ var Tempest;
     })(Tempest.Request || (Tempest.Request = {}));
     var Request = Tempest.Request;
 
+    (function (Utils) {
+        function trim(input) {
+            return input.replace(/^\s+|\s+$/g, '');
+        }
+        Utils.trim = trim;
+
+        function buildQuery(data) {
+            var base = [];
+            for (var param in data)
+                base.push(encodeURIComponent(param) + "=" + encodeURIComponent(data[param]));
+
+            return base.join("&");
+        }
+        Utils.buildQuery = buildQuery;
+    })(Tempest.Utils || (Tempest.Utils = {}));
+    var Utils = Tempest.Utils;
+
     function api(method, endpoint, data, callback) {
         $.ajax({
             url: endpoint,
@@ -70,8 +87,9 @@ var Tempest;
     }
     Tempest.getRoot = getRoot;
 
-    function path(value) {
+    function path(value, query) {
         if (typeof value === "undefined") { value = []; }
+        if (typeof query === "undefined") { query = null; }
         var base = value.join("/");
         if (base.indexOf(Tempest.getRoot()) < 0 && base.match(/^\w*:\/\//) === null) {
             // Append baseUri if it's not present and if the request is not to
@@ -79,7 +97,7 @@ var Tempest;
             base = Tempest.getRoot() + base;
         }
 
-        return base.replace(/\/+/g, '/').replace(/:\//g, '://');
+        return base.replace(/\/+/g, '/').replace(/:\//g, '://') + (query !== null ? "?" + Tempest.Utils.buildQuery(query) : '');
     }
     Tempest.path = path;
 
