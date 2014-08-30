@@ -20,18 +20,20 @@ class Config
 		self::$data = require_once(APP_ROOT . $file);
 
 		// General configuration.
-		if(array_key_exists("timezone", self::$data)) date_default_timezone_set(self::$data["timezone"]);
+		date_default_timezone_set(self::data("timezone", "Australia/Sydney"));
 	}
 
 
 	/**
 	 * Returns configuration data.
 	 * @param $field string The configuration data to get.
-	 * @return mixed The result data.
+	 * @param $default mixed A default value to use, if the data was not found.
+	 * @return mixed The result data, or the default value if it was not found.
 	 */
-	public static function data($field = null)
+	public static function data($field = null, $default = null)
 	{
 		if($field === null) return self::$data;
+		if(!array_key_exists($field, self::$data)) return $default;
 
 		$path = preg_split('/\.+/', $field);
 		$valid = array();
@@ -46,8 +48,7 @@ class Config
 			}
 			else
 			{
-				// Field was invalid.
-				trigger_error("Configuration property <code>$p</code> does not exist at <code>" . implode('.', $valid) . "</code>.");
+				return $default;
 			}
 		}
 

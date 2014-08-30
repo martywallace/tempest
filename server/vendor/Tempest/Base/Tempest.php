@@ -4,6 +4,7 @@ use Tempest\Base\Error;
 use Tempest\HTTP\Router;
 use Tempest\HTTP\Status;
 use Tempest\HTTP\Request;
+use Tempest\Output\BaseOutput;
 use Tempest\Templating\Template;
 
 
@@ -16,7 +17,6 @@ class Tempest
 
 	private $router;
 	private $status = Status::OK;
-	private $mime = 'text/plain';
 	private $output = null;
 	private $errors = array();
 
@@ -42,7 +42,7 @@ class Tempest
 			if(method_exists($response, $method))
 			{
 				$response->setup($request);
-				$this->output = $response->finalize($response->$method($request));
+				$this->setOutput($response->finalize($response->$method($request)));
 			}
 			else
 			{
@@ -101,40 +101,30 @@ class Tempest
 		if($this->status >= 300)
 		{
 			// If the HTTP Response code does not fall in the OK range, transform the output to an alternate value.
-			// The alternate value is defined in App::getErrorOutput().
-			$this->output = $this->getErrorOutput($this->router->getRequest(), $this->status);
+			// The alternate value is defined in App::showErrors().
+			$this->setOutput($this->errorOutput($this->router->getRequest(), $this->status));
 		}
 
-
-		if(is_a($this->output, 'Tempest\HTTP\Output'))
-		{
-			// Final output is an instance of <code>Tempest/Routing/Output</code> - get the final
-			// output first, as well as a the relevant MIME type.
-			$this->mime = $this->output->getMime();
-			$this->output = $this->output->getFinalOutput($this);
-		}
-
+		// Send the HTTP status, content-type and final output.
 		header($_SERVER["HTTP_PROTOCOL"] . "$this->status", true, $this->status);
-		header("Content-Type: $this->mime; charset=utf-8");
+		header("Content-Type: {$this->output->getMime()}; charset={$this->output->getCharset()}");
 
-		if($this->output !== null) echo $this->output;
+		if($this->output !== null)
+			echo $this->output->getFinalOutput($this, $this->router->getRequest());
 
 		exit;
 	}
 
 
 	/**
-	 * @param $r Request The request made.
+	 * Defines alternate output for HTTP status codes that are not in the 2xx range.
+	 * @param $request Request The request made.
 	 * @param $code int The HTTP status code - used to determine what the result should be.
 	 * @return string|Output The resulting output.
 	 */
-	protected function getErrorOutput(Request $r, $code)
+	protected function errorOutput(Request $request, $code)
 	{
-		if($code === 404)
-		{
-			// Typical 404 error.
-			return '404 - Not Found.';
-		}
+		if($code === Status::NOT_FOUND) return '404 - Not Found.';
 
 		if($code >= 500)
 		{
@@ -142,10 +132,10 @@ class Tempest
 			return Template::load('/templates/tempest/shell.html')->bind(array(
 				"title" => "Application Error",
 				"version" => TEMPEST_VERSION,
-				"uri" => $r,
-				"get" => count($r->data(GET)) > 0 ? json_encode($r->data(GET), JSON_PRETTY_PRINT) : "-",
-				"post" => count($r->data(POST)) > 0 ? json_encode($r->data(POST), JSON_PRETTY_PRINT) : "-",
-				"named" => count($r->data(NAMED)) > 0 ? json_encode($r->data(NAMED), JSON_PRETTY_PRINT) : "-",
+				"uri" => $request,
+				"get" => count($request->data(GET)) > 0 ? json_encode($r->data(GET), JSON_PRETTY_PRINT) : "-",
+				"post" => count($request->data(POST)) > 0 ? json_encode($r->data(POST), JSON_PRETTY_PRINT) : "-",
+				"named" => count($request->data(NAMED)) > 0 ? json_encode($r->data(NAMED), JSON_PRETTY_PRINT) : "-",
 				"content" => Template::load('/templates/tempest/errors.html')->bind(array(
 					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
 				))
@@ -153,6 +143,22 @@ class Tempest
 		}
 
 		return null;
+	}
+
+
+	/**
+	 * Sets the application output. If the input is not an instance of BaseOutput, it will be converted to one.
+	 * @param $value string|Output The output value.
+	 */
+	protected function setOutput($value)
+	{
+		if($value !== null && !is_a($value, 'Tempest\Output\BaseOutput'))
+		{
+			// Transform existing output to an output object, if not already.
+			$value = new BaseOutput('text/plain', $value);
+		}
+
+		$this->output = $value;
 	}
 
 

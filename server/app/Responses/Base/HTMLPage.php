@@ -33,13 +33,13 @@ class HTMLPage extends Adapter
 
 	public function getStyles()
 	{
-		return Template::create('<link rel="stylesheet" href="~/static/{{ value }}" />')->batch($this->styles);
+		return Template::create('<link rel="stylesheet" href="~/client/{{ value }}" />')->batch($this->styles);
 	}
 
 
 	public function getScripts()
 	{
-		return Template::create('<script src="~/static/{{ value }}"></script>')->batch($this->scripts);
+		return Template::create('<script src="~/client/{{ value }}"></script>')->batch($this->scripts);
 	}
 
 }

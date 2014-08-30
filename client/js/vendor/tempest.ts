@@ -1,5 +1,4 @@
 /// <reference path="jquery.d.ts" />
-/// <reference path="jquery.base64.d.ts" />
 
 /**
  * Provides front-end tools that are designed to work well with the Tempest backend.

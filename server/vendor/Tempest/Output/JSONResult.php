@@ -1,6 +1,6 @@
-<?php namespace Tempest\Utils;
+<?php namespace Tempest\Output;
 
-use Tempest\HTTP\Output;
+use Tempest\Output\BaseOutput;
 use Tempest\Utils\IResult;
 
 
@@ -8,7 +8,7 @@ use Tempest\Utils\IResult;
  * A JSONResponse is typically sent as the output for an API call.
  * @author Marty Wallace.
  */
-class JSONResult extends Output implements IResult
+class JSONResult extends BaseOutput implements IResult
 {
 
 	private $body = array();
@@ -21,7 +21,7 @@ class JSONResult extends Output implements IResult
 	 */
 	public function __construct()
 	{
-		$this->setMime('application/json');
+		parent::__construct('application/json');
 	}
 
 

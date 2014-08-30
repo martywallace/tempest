@@ -29,6 +29,7 @@ class Path
 	/**
 	 * Returns a chunk of this Path at a given index.
 	 * @param $index The index.
+	 * @return string The chunk.
 	 */
 	public function chunk($index)
 	{

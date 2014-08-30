@@ -2,7 +2,8 @@
 
 use Tempest\Base\Tempest;
 use Tempest\Base\Config;
-use Tempest\HTTP\Output;
+use Tempest\HTTP\Request;
+use Tempest\Output\HTMLOutput;
 
 
 /**
@@ -10,17 +11,17 @@ use Tempest\HTTP\Output;
  * then replaced with the bound value for final output.
  * @author Marty Wallace.
  */
-class Template extends Output
+class Template extends HTMLOutput
 {
 
 	/**
 	 * Loads a new Template whose contents is the value of a specified file.
-	 * @param $file string The file to load, relative to /static/.
+	 * @param $file string The file to load, relative to /client/.
 	 * @return Template A new Template.
 	 */
 	public static function load($file)
 	{
-		$path = APP_ROOT . 'static' . SEP . path_normalize($file, SEP, false, false);
+		$path = APP_ROOT . 'client' . SEP . path_normalize($file, SEP, false, false);
 		return new static(file_get_contents($path));
 	}
 
@@ -48,24 +49,13 @@ class Template extends Output
 
 
 	/**
-	 * Constructor.
-	 * @param $content string The starting Template content.
-	 */
-	public function __construct($content = '')
-	{
-		$this->setMime('text/html');
-		$this->setContent($content);
-	}
-
-
-	/**
 	 * Returns the final output data for this Template. Binds application data.
 	 * @param $app Tempest A reference to the core application instance.
+	 * @param $request Request The request to the application.
 	 * @return string The final output for this Template.
 	 */
-	public function getFinalOutput(Tempest $app)
+	public function getFinalOutput(Tempest $app, Request $request)
 	{
-		$request = $app->getRouter()->getRequest();
 		$reqData = array_merge($request->data(), array(
 			"base" => PUB_ROOT,
 			"uri" => array("base" => $request->getBase(), "chunks" => $request->getChunks())

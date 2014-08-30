@@ -5,6 +5,7 @@ use Tempest\Base\Config;
 use Tempest\HTTP\Router;
 use Tempest\HTTP\Request;
 use Tempest\HTTP\Status;
+use Tempest\Output\BaseOutput;
 
 
 class App extends Tempest
@@ -20,7 +21,7 @@ class App extends Tempest
 	}
 
 
-	protected function getErrorOutput(Request $r, $code)
+	protected function errorOutput(Request $r, $code)
 	{
 		if($code === Status::NOT_FOUND)
 		{
@@ -28,7 +29,9 @@ class App extends Tempest
 			return '404 - Not Found.';
 		}
 
-		return parent::getErrorOutput($r, $code);
+
+		// Use default error output if the code hasn't been handled.
+		return parent::errorOutput($r, $code);
 	}
 
 }
