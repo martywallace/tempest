@@ -33,23 +33,15 @@ class Config
 	public static function data($field = null, $default = null)
 	{
 		if($field === null) return self::$data;
-		if(!array_key_exists($field, self::$data)) return $default;
 
 		$path = preg_split('/\.+/', $field);
-		$valid = array();
-		$target = self::$data;
+		if(!array_key_exists($path[0], self::$data)) return $default;
 
+		$target = self::$data;
 		foreach($path as $p)
 		{
-			if(array_key_exists($p, $target))
-			{
-				$target = $target[$p];
-				$valid[] = $p;
-			}
-			else
-			{
-				return $default;
-			}
+			if(array_key_exists($p, $target)) $target = $target[$p];
+			else return $default;
 		}
 
 		return $target;
