@@ -152,7 +152,7 @@ class Tempest
 	 */
 	protected function setOutput($value)
 	{
-		if($value !== null && !is_a($value, 'Tempest\Output\BaseOutput'))
+		if(!is_a($value, 'Tempest\Output\BaseOutput'))
 		{
 			// Transform existing output to an output object, if not already.
 			$value = new BaseOutput('text/plain', $value);
