@@ -21,7 +21,7 @@ class Template extends HTMLOutput
 	 */
 	public static function load($file)
 	{
-		$path = APP_ROOT . 'client' . SEP . path_normalize($file, SEP, false, false);
+		$path = path_normalize(APP_ROOT . Config::data("paths.templates", "/client/templates/") . $file, SEP, false, false);
 		return new static(file_get_contents($path));
 	}
 

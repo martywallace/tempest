@@ -21,13 +21,6 @@ function path_split($path)
 }
 
 
-function dtrim($value, $left, $right)
-{
-	$base = ltrim($value, $left);
-	return rtrim($base, $right);
-}
-
-
 function array_keys_prepend($array, $prefix)
 {
 	$new = array();
@@ -43,25 +36,4 @@ function array_keys_prepend($array, $prefix)
 function set_or($value, $fallback = null)
 {
 	return isset($value) ? $value : $fallback;
-}
-
-function fetch_data($method, $url, $data = null)
-{
-	$options = array(
-		"http" => array(
-			"header" => "Content-type: application/x-www-form-urlencoded",
-			"method" => strtoupper($method),
-			"content" => http_build_query($data === null ? array() : $data)
-		)
-	);
-
-	return file_get_contents($url, false, stream_context_create($options));
-}
-
-
-function pre_print_r($data)
-{
-	echo '<pre>';
-	print_r($data);
-	echo '</pre>';
 }

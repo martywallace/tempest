@@ -129,15 +129,15 @@ class Tempest
 		if($code >= 500)
 		{
 			// Server-side errors.
-			return Template::load('/templates/tempest/shell.html')->bind(array(
+			return Template::load('tempest/shell.html')->bind(array(
 				"title" => "Application Error",
 				"version" => TEMPEST_VERSION,
 				"uri" => $request,
 				"get" => count($request->data(GET)) > 0 ? json_encode($r->data(GET), JSON_PRETTY_PRINT) : "-",
 				"post" => count($request->data(POST)) > 0 ? json_encode($r->data(POST), JSON_PRETTY_PRINT) : "-",
 				"named" => count($request->data(NAMED)) > 0 ? json_encode($r->data(NAMED), JSON_PRETTY_PRINT) : "-",
-				"content" => Template::load('/templates/tempest/errors.html')->bind(array(
-					"errors" => Template::load('/templates/tempest/error-item.html')->batch($this->errors)
+				"content" => Template::load('tempest/errors.html')->bind(array(
+					"errors" => Template::load('tempest/error-item.html')->batch($this->errors)
 				))
 			));
 		}

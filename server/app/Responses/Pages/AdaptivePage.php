@@ -27,10 +27,9 @@ class AdaptivePage extends HTMLPage
 
 	public function index(Request $request)
 	{
-		return new \Tempest\Output\JSONResult();
-		return Template::load("/templates/base.html")->bind(array(
-			"content" => Template::load("/templates/{$this->name}.html"
-		)));
+		return Template::load("base.html")->bind(array(
+			"content" => Template::load("{$this->name}.html")
+		));
 	}
 
 
