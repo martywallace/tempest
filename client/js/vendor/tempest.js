@@ -118,10 +118,10 @@ var Tempest;
             this.base = base;
         }
         JSONResponse.prototype.isOk = function () {
-            return this.base.errors.length === 0;
+            return this.base.head.errors.length === 0;
         };
         JSONResponse.prototype.getErrors = function () {
-            return this.base.errors;
+            return this.base.head.errors;
         };
         JSONResponse.prototype.getBody = function () {
             return this.base.body;

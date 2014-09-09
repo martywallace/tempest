@@ -121,8 +121,8 @@ module Tempest
 			this.base = base;
 		}
 
-		public isOk():boolean{ return this.base.errors.length === 0; }
-		public getErrors():string[]{ return this.base.errors; }
+		public isOk():boolean{ return this.base.head.errors.length === 0; }
+		public getErrors():string[]{ return this.base.head.errors; }
 		public getBody():any{ return this.base.body; }
 	}
 }
