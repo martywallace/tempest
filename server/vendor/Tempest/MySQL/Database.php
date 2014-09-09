@@ -36,19 +36,27 @@ class Database extends PDO
 	}
 
 
-	public function objects($query, Array $params = null, $model = null)
+	public function all($query, Array $params = null, $model = null)
 	{
 		$stmt = $this->prepare($query);
 		$this->execute($stmt);
 
-		return $stmt->fetchAll(PDO::FETCH_CLASS, $model === null ? 'stdclass' : $model);
+		$result = $stmt->fetchAll(PDO::FETCH_CLASS, $model === null ? 'stdclass' : $model);
+		return $result === false ? null : $result;
+	}
+
+
+	public function first($query, Array $params = null, $model = null)
+	{
+		$result = $this->all($query, $params, $model);
+		return count($result > 0) ? $result[0] : null;
 	}
 
 
 	public function assoc($query, Array $params = null)
 	{
 		$stmt = $this->prepare($query);
-		$this->execute($stmt);
+		$this->execute($stmt, $params);
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
@@ -57,7 +65,7 @@ class Database extends PDO
 	public function prop($query, Array $params = null)
 	{
 		$stmt = $this->prepare($query);
-		$this->execute($stmt);
+		$this->execute($stmt, $params);
 
 		return $stmt->fetch(PDO::FETCH_NUM)[0];
 	}

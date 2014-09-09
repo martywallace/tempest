@@ -4,6 +4,7 @@ use Tempest\Base\Error;
 use Tempest\HTTP\Router;
 use Tempest\HTTP\Status;
 use Tempest\HTTP\Request;
+use Tempest\HTTP\Response;
 use Tempest\Output\BaseOutput;
 use Tempest\Templating\Template;
 
@@ -15,9 +16,24 @@ use Tempest\Templating\Template;
 class Tempest
 {
 
+	/**
+	 * @var Router
+	 */
 	private $router;
+
+	/**
+	 * @var int
+	 */
 	private $status = Status::OK;
+
+	/**
+	 * @var BaseOutput
+	 */
 	private $output = null;
+
+	/**
+	 * @var array
+	 */
 	private $errors = array();
 
 
@@ -27,7 +43,6 @@ class Tempest
 	public function start()
 	{
 		$this->router = new Router();
-
 		$this->setup($this->router);
 
 		$request = $this->router->getRequest();
@@ -35,19 +50,22 @@ class Tempest
 
 		if($match !== null)
 		{
-			$class = preg_replace('/\.+/', '\\', 'Responses\\' . $match->getHandlerClass());
+			// Create the response class.
+			$response = Response::create(preg_replace('/\.+/', '\\', 'Responses\\' . $match->getHandlerClass()), $this);
 			$method = $match->getHandlerMethod();
-			$response = new $class($this);
 
-			if(method_exists($response, $method))
+			if($response !== null)
 			{
-				$response->setup($request);
-				$this->setOutput($response->finalize($response->$method($request)));
-			}
-			else
-			{
-				// Response class was constructed successfully, but the target method was not defined.
-				trigger_error("Response class <code>$class</code> does not have the method <code>$method()</code>.");
+				if(method_exists($response, $method))
+				{
+					$response->setup($request);
+					$this->setOutput($response->finalize($response->$method($request)));
+				}
+				else
+				{
+					// Response class was constructed successfully, but the target method was not defined.
+					trigger_error("Response class <code>" . get_class($response) . "</code> does not have the method <code>$method()</code>.");
+				}
 			}
 		}
 		else
@@ -120,7 +138,7 @@ class Tempest
 	 * Defines alternate output for HTTP status codes that are not in the 2xx range.
 	 * @param $request Request The request made.
 	 * @param $code int The HTTP status code - used to determine what the result should be.
-	 * @return string|Output The resulting output.
+	 * @return string|BaseOutput The resulting output.
 	 */
 	protected function errorOutput(Request $request, $code)
 	{
@@ -133,9 +151,9 @@ class Tempest
 				"title" => "Application Error",
 				"version" => TEMPEST_VERSION,
 				"uri" => $request,
-				"get" => count($request->data(GET)) > 0 ? json_encode($r->data(GET), JSON_PRETTY_PRINT) : "-",
-				"post" => count($request->data(POST)) > 0 ? json_encode($r->data(POST), JSON_PRETTY_PRINT) : "-",
-				"named" => count($request->data(NAMED)) > 0 ? json_encode($r->data(NAMED), JSON_PRETTY_PRINT) : "-",
+				"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
+				"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
+				"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",
 				"content" => Template::load('tempest/errors.html')->bind(array(
 					"errors" => Template::load('tempest/error-item.html')->batch($this->errors)
 				))
@@ -148,7 +166,7 @@ class Tempest
 
 	/**
 	 * Sets the application output. If the input is not an instance of BaseOutput, it will be converted to one.
-	 * @param $value string|Output The output value.
+	 * @param $value string|BaseOutput The output value.
 	 */
 	protected function setOutput($value)
 	{

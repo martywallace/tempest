@@ -1,6 +1,7 @@
 <?php namespace Tempest\HTTP;
 
 use Tempest\Base\Tempest;
+use Tempest\Output\BaseOutput;
 
 
 /**
@@ -10,7 +11,26 @@ use Tempest\Base\Tempest;
 class Response
 {
 
+	/**
+	 * @var Tempest
+	 */
 	private $app;
+
+
+	/**
+	 * @param $name string The name of the Response class to create.
+	 * @param Tempest $app A reference to the core application.
+	 * @return Response The resulting Response class.
+	 */
+	public static function create($name, Tempest $app)
+	{
+		if(class_exists($name)) return new $name($app);
+		else
+		{
+			trigger_error("Response class <code>$name</code> does not exist.");
+			return null;
+		}
+	}
 
 
 	/**
@@ -33,8 +53,8 @@ class Response
 
 	/**
 	 * Finalize output that this response will send to the client.
-	 * @param string|Output $output The output to finalize.
-	 * @return string|Output The finalized response data.
+	 * @param string|BaseOutput $output The output to finalize.
+	 * @return string|BaseOutput The finalized response data.
 	 */
 	public function finalize($output = null)
 	{

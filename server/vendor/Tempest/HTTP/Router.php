@@ -11,8 +11,19 @@ use Tempest\HTTP\Request;
 class Router
 {
 
+	/**
+	 * @var Request
+	 */
 	private $request;
+
+	/**
+	 * @var Route
+	 */
 	private $match;
+
+	/**
+	 * @var Array
+	 */
 	private $params = array();
 
 
@@ -108,19 +119,19 @@ class Router
 
 
 	/**
-	 * Returns the current Request.
+	 * @return Request The current Request.
 	 */
 	public function getRequest(){ return $this->request; }
 
 
 	/**
-	 * Returns the matched Route.
+	 * @return Route The matched Route.
 	 */
 	public function getMatch(){ return $this->match; }
 
 
 	/**
-	 * Returns the named parameters and values for this Request, if any.
+	 * @return Array The named parameters and values for this Request, if any.
 	 */
 	public function getParams(){ return $this->params; }
 
