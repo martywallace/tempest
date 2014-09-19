@@ -131,6 +131,17 @@ class Model
 
 
 	/**
+	 * Updates the value of multiple fields / columns.
+	 * @param array $data An array of potentially related data to set on this Model.
+	 * @param bool $readonly Whether or not readonly values should be included in the update.
+	 */
+	public function multiset(Array $data, $readonly = false)
+	{
+		//
+	}
+
+
+	/**
 	 * Obtain a JSON representation of this Model.
 	 * @return string A JSON string representing this Model.
 	 */
