@@ -79,10 +79,7 @@ class Model
 	{
 		if($data !== null)
 		{
-			foreach($data as $field => $value)
-			{
-				$this->set($field, $value);
-			}
+			$this->multiset($data, true);
 		}
 	}
 
@@ -137,7 +134,20 @@ class Model
 	 */
 	public function multiset(Array $data, $readonly = false)
 	{
-		//
+		foreach($data as $field => $value)
+		{
+			if($this->defines($field))
+			{
+				if(in_array($field, $this->readonly) && !$readonly)
+				{
+					// This field is included in the readonly list, but we haven't said that we want to
+					// update readonly values; skip it.
+					continue;
+				}
+
+				$this->set($field, $value);
+			}
+		}
 	}
 
 
