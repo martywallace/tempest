@@ -42,14 +42,14 @@ class Database extends PDO
 		$this->execute($stmt, $params);
 
 		$result = $stmt->fetchAll(PDO::FETCH_CLASS, $model === null ? 'stdclass' : $model);
-		return $result === false ? null : $result;
+		return $result === false ? array() : $result;
 	}
 
 
 	public function first($query, Array $params = null, $model = null)
 	{
 		$result = $this->all($query, $params, $model);
-		return count($result > 0) ? $result[0] : null;
+		return count($result) > 0 ? $result[0] : null;
 	}
 
 
