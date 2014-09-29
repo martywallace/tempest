@@ -39,7 +39,7 @@ class Database extends PDO
 	public function all($query, Array $params = null, $model = null)
 	{
 		$stmt = $this->prepare($query);
-		$this->execute($stmt);
+		$this->execute($stmt, $params);
 
 		$result = $stmt->fetchAll(PDO::FETCH_CLASS, $model === null ? 'stdclass' : $model);
 		return $result === false ? null : $result;
