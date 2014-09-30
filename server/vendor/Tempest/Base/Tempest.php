@@ -124,7 +124,7 @@ class Tempest
 		}
 
 		// Send the HTTP status, content-type and final output.
-		header($_SERVER["HTTP_PROTOCOL"] . "$this->status", true, $this->status);
+		header($_SERVER["HTTP_PROTOCOL"] . " $this->status", true, $this->status);
 		header("Content-Type: {$this->output->getMime()}; charset={$this->output->getCharset()}");
 
 		if($this->output !== null)
