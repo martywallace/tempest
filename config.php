@@ -2,11 +2,13 @@
 
 return array(
 
-	"title" => "New App",
-	"timezone" => "Australia/Sydney",
+	'*' => array(
+		'title' => 'New App',
+		'timezone' => 'Australia/Sydney',
 
-	"routes" => array(
-		"/" => "Pages.AdaptivePage"
+		'routes' => array(
+			'/' => 'Pages.AdaptivePage'
+		)
 	)
 
 );

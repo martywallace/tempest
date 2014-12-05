@@ -13,7 +13,7 @@ define('GET', 'get');
 define('POST', 'post');
 define('NAMED', 'named');
 
-define('IS_LOCAL', in_array($_SERVER["HTTP_HOST"], array('localhost', '127.0.0.1')));
+define('HOST', $_SERVER['HTTP_HOST']);
 
 define('RGX_PATH_DELIMITER', '/[\/\\\\]+/');
 define('RGX_TEMPLATE_TOKEN', '/\{\{\s*([\!\?\*]*)(@\w+)*([\w\.\(\)]+)([\w\s\:]*)\s*\}\}/');

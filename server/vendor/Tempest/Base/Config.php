@@ -17,7 +17,15 @@ class Config
 	 */
 	public static function load($file = 'config.php')
 	{
-		self::$data = require_once(APP_ROOT . "$file");
+		$data = require_once(APP_ROOT . "$file");
+
+		self::$data = $data['*'];
+
+		if(array_key_exists(HOST, $data))
+		{
+			// Consume host-specific configation and overwrite where necessary.
+			self::$data = array_merge(self::$data, $data[HOST]);
+		}
 
 		// General configuration.
 		date_default_timezone_set(self::data("timezone", "Australia/Sydney"));
