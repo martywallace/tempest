@@ -1,6 +1,6 @@
 # For PHPStorm users.
 .idea
 
-# Don't carry around composer dependencies.
-server/vendor/*
-!help.md
+# Don't carry around Composer dependencies.
+composer.lock
+server/vendor
