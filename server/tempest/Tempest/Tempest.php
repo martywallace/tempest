@@ -5,7 +5,10 @@ use Tempest\HTTP\Status;
 use Tempest\HTTP\Request;
 use Tempest\HTTP\Response;
 use Tempest\Output\BaseOutput;
+use Tempest\Services\Database;
 use Tempest\Services\Service;
+use Tempest\Services\Templates;
+use Tempest\Services\Config;
 
 
 /**
@@ -71,6 +74,8 @@ class Tempest
 	 */
 	public function start()
 	{
+		$this->services = $this->defineServices();
+
 		$this->router = new Router();
 		$this->setup($this->router);
 
@@ -109,22 +114,17 @@ class Tempest
 
 
 	/**
-	 * Adds a service to the application.
+	 * Defines the services used by the application.
 	 *
-	 * @param string $name The name used to reference the service.
-	 * @param Service $service The service to add.
+	 * @return array
 	 */
-	public function addService($name, Service $service)
+	protected function defineServices()
 	{
-		if(!array_key_exists($name, $this->services))
-		{
-			$this->services[$name] = $service;
-		}
-		else
-		{
-			// Cannot have multiple services with the same name.
-			trigger_error("A service named <code>$name</code> already exists.");
-		}
+		return array(
+			'config' => new Config($this),
+			'twig' => new Templates($this),
+			'db' => new Database($this)
+		);
 	}
 
 
@@ -141,6 +141,7 @@ class Tempest
 
 	/**
 	 * Handles an error triggered by the application. Errors are queued and presented together.
+	 *
 	 * @param $number int The error number.
 	 * @param $string string The error text.
 	 * @param $file string The file triggering the error.
@@ -185,30 +186,34 @@ class Tempest
 
 	/**
 	 * Defines alternate output for HTTP status codes that are not in the 2xx range.
+	 *
 	 * @param $request Request The request made.
 	 * @param $code int The HTTP status code - used to determine what the result should be.
+	 *
 	 * @return string|BaseOutput The resulting output.
 	 */
 	protected function errorOutput(Request $request, $code)
 	{
-		if($code === Status::NOT_FOUND) return '404 - Not Found.';
+		if($code === Status::NOT_FOUND)
+		{
+			return '404 - Page not found.';
+		}
 
 		if($code >= 500)
 		{
-			print_r($this->errors);
-
-			// Server-side errors.
-			$data = array(
-				"title" => "Application Error",
-				"version" => TEMPEST_VERSION,
-				"uri" => $request,
-				"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
-				"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
-				"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",
-				'errors' => $this->errors
-			);
-
-			// TODO: Output with Twig.
+			if($this->config->data('dev'))
+			{
+				// Server-side errors.
+				return $this->twig->render('tempest/errors.html', array(
+					"title" => "Application Error",
+					"version" => TEMPEST_VERSION,
+					"uri" => $request,
+					"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
+					"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
+					"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",
+					'errors' => $this->errors
+				));
+			}
 		}
 
 		return null;

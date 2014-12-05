@@ -24,11 +24,9 @@ class Templates extends Service
 
 	public function render($file, $context = array())
 	{
-		return new HTMLOutput($this->environment->render($file, $context));
+		return new HTMLOutput($this->environment->render($file, array_merge($context, array(
+			'title' => tempest()->config->data('title')
+		))));
 	}
-
-
-	public function getTwig(){ return $this->environment; }
-	public function getServiceName(){ return 'templates'; }
 
 }

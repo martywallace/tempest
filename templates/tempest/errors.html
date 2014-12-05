@@ -1,1 +1,12 @@
-<ul id="errors">{{ errors }}</ul>
+{% extends 'tempest/_layout.html' %}
+
+{% block content %}
+	<ul id="errors">
+		{% for error in errors %}
+			<li>
+				<pre>{{ error.getString() }}</pre>
+				<p><small><span title="{{ error.getFile() }}">{{ error.getShortFile() }}</span> &middot; Line {{ error.getLine() }}</small></p>
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

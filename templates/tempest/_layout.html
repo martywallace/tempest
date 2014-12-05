@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>{{ T_SITE_TITLE }} - {{ title }}</title>
+		<title>{{ title }}</title>
 
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -19,25 +19,23 @@
 		<div id="content">
 			<div class="grid">
 				<div class="column sixty">
-					{{ content }}
+					{% block content %}{% endblock %}
 				</div>
 				<div class="column thirty-five right">
 					<div id="request">
 						<h2>REQUEST DATA</h2>
-						<h6>ROOT</h6>
-						<p>~/</p>
 
 						<h6>URI</h6>
-						<p>{{ !uri : stripslashes }}</p>
+						<p>{{ uri }}</p>
 						
 						<h6>GET</h6>
-						<pre>{{ !get : stripslashes }}</pre>
+						<pre>{{ get }}</pre>
 						
 						<h6>POST</h6>
-						<pre>{{ !post : stripslashes }}</pre>
+						<pre>{{ post }}</pre>
 						
 						<h6>NAMED</h6>
-						<pre>{{ !named : stripslashes }}</pre>
+						<pre>{{ named }}</pre>
 					</div>
 				</div>
 

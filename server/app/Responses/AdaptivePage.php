@@ -18,7 +18,7 @@ class AdaptivePage extends Response
 
 	public function index(Request $request)
 	{
-		return tempest()->templates->render('home.html', []);
+		return tempest()->twig->render('home.html', []);
 	}
 
 }
