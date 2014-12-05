@@ -5,7 +5,7 @@ spl_autoload_register(function($class)
 {
 	foreach(array('tempest', 'vendor', 'app') as $path)
 	{
-		$path = APP_ROOT . 'server' . SEP . $path . SEP . str_replace('\\', SEP, $class) . '.php';
+		$path = APP_ROOT . "server/$path/" . str_replace('\\', '/', $class) . '.php';
 
 		if(is_file($path))
 		{

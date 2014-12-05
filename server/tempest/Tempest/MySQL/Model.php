@@ -38,17 +38,18 @@ class Model
 
 	/**
 	 * Search for an instance of a Model stores in the database using its primary key value.
-	 * @param Database $db A reference to a Database object.
+	 *
 	 * @param mixed $primary The primary key value to search for.
 	 * @param array $fields An optional array of fields that should be returned by the query.
+	 *
 	 * @return Model The resulting Model instance.
 	 */
-	public static function find(Database $db, $primary, Array $fields = null)
+	public static function find($primary, Array $fields = null)
 	{
 		$i = new static();
 
-		$stmt = $db->prepare("SELECT " . ($fields === null ? '*' : implode(',', $fields)) . " FROM {$i->getTable()} WHERE {$i->getPrimary()} = :primary");
-		$db->execute($stmt, array(":primary" => $primary));
+		$stmt = tempest()->db->prepare("SELECT " . ($fields === null ? '*' : implode(',', $fields)) . " FROM {$i->getTable()} WHERE {$i->getPrimary()} = :primary");
+		tempest()->db->execute($stmt, array(":primary" => $primary));
 
 		return $stmt->fetchObject(get_class($i));
 	}
@@ -56,16 +57,17 @@ class Model
 
 	/**
 	 * Deletes a record from the database.
-	 * @param Database $db A reference to the Database object.
+	 *
 	 * @param mixed $primary The primary key value of the record to delete.
+	 *
 	 * @return PDOStatement The PDOStatement used to delete the record.
 	 */
-	public static function delete(Database $db, $primary)
+	public static function delete($primary)
 	{
 		$i = new static();
 
-		$stmt = $db->prepare("DELETE FROM {$i->getTable()} WHERE {$i->getPrimary()} = :primary");
-		$db->execute($stmt, array(":primary" => $primary));
+		$stmt = tempest()->db->prepare("DELETE FROM {$i->getTable()} WHERE {$i->getPrimary()} = :primary");
+		tempest()->db->execute($stmt, array(":primary" => $primary));
 
 		return $stmt;
 	}
@@ -170,20 +172,21 @@ class Model
 
 	/**
 	 * Validate this model and return the errors in an array.
-	 * @param Database $db Reference to a Database object.
+	 *
 	 * @return array An array containing any validation errors.
 	 */
-	public function validate(Database $db)
+	public function validate()
 	{
 		return array();
 	}
 
 
 	/**
-	 * @param Database $db Reference to a Database object.
+	 * Save this Model in the database.
+	 *
 	 * @return PDOStatement The PDOStatement used to save this model to MySQL.
 	 */
-	public function save(Database $db)
+	public function save()
 	{
 		$data = array();
 		$updates = array();
@@ -205,15 +208,15 @@ class Model
 			ON DUPLICATE KEY UPDATE " . implode(',', $updates);
 
 
-		$stmt = $db->prepare($query);
+		$stmt = tempest()->db->prepare($query);
 
 		// Execute the PDOStatement via Database to enable Tempest errors.
-		$db->execute($stmt, $data);
+		tempest()->db->execute($stmt, $data);
 
 		if($this->get($this->primary) === null && $this->autoIncrement)
 		{
 			// Update the primary key if this is a new instance and the column is AUTO_INCREMENT.
-			$this->set($this->primary, $db->lastInsertId());
+			$this->set($this->primary, tempest()->db->lastInsertId());
 		}
 
 		return $stmt;

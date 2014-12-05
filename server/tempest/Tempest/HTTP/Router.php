@@ -1,7 +1,7 @@
 <?php namespace Tempest\HTTP;
 
 /**
- * The Router directs a Request to the relevant Response.
+ * The Router directs a Request to the relevant Responder.
  * @author Marty Wallace.
  */
 class Router
@@ -46,14 +46,14 @@ class Router
 			$score = 0;
 			$named = array();
 
-			if($this->request->getLength() === 0 && $route->getLength() === 0)
+			if(count($this->request->segments()) === 0 && count($route->segments()) === 0)
 			{
 				// Exact match on index route.
 				$score = 1;
 			}
 
 
-			if($this->request->getLength() !== $route->getLength())
+			if(count($this->request->segments()) !== count($route->segments()))
 			{
 				// Route lengths do not match, move onto the next route.
 				continue;
@@ -61,10 +61,10 @@ class Router
 
 
 			// Compare each chunk in the request path with each chunk in the route.
-			for($i = 0; $i < $this->request->getLength(); $i++)
+			for($i = 0; $i < count($this->request->segments()); $i++)
 			{
-				$chunkA = $this->request->chunk($i);
-				$chunkB = $route->chunk($i);
+				$chunkA = $this->request->segment($i);
+				$chunkB = $route->segment($i);
 
 				if($chunkA === $chunkB)
 				{

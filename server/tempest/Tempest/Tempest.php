@@ -3,8 +3,8 @@
 use Tempest\HTTP\Router;
 use Tempest\HTTP\Status;
 use Tempest\HTTP\Request;
+use Tempest\HTTP\Responder;
 use Tempest\HTTP\Response;
-use Tempest\Output\BaseOutput;
 use Tempest\MySQL\Database;
 use Tempest\Twig\Twig;
 
@@ -48,9 +48,9 @@ class Tempest
 	private $status = Status::OK;
 
 	/**
-	 * @var BaseOutput
+	 * @var Response
 	 */
-	private $output = null;
+	private $response = null;
 
 	/**
 	 * @var Error[]
@@ -79,7 +79,10 @@ class Tempest
 	 */
 	public function start()
 	{
-		$this->services = $this->defineServices();
+		$this->services = array_merge($this->defineServices(), array(
+			'twig' => new Twig($this),
+			'db' => new Database($this)
+		));
 
 		$this->router = new Router();
 		$this->setup($this->router);
@@ -90,20 +93,20 @@ class Tempest
 		if($match !== null)
 		{
 			// Create the response class.
-			$response = Response::create(preg_replace('/\.+/', '\\', 'Responses\\' . $match->getHandlerClass()), $this);
+			$responder = Responder::create(preg_replace('/\.+/', '\\', 'Responses\\' . $match->getHandlerClass()), $this);
 			$method = $match->getHandlerMethod();
 
-			if($response !== null)
+			if($responder !== null)
 			{
-				if(method_exists($response, $method))
+				if(method_exists($responder, $method))
 				{
-					$response->setup($request);
-					$this->setOutput($response->finalize($response->$method($request)));
+					$responder->setup($request);
+					$this->setResponse($responder->finalize($responder->$method($request)));
 				}
 				else
 				{
-					// Response class was constructed successfully, but the target method was not defined.
-					trigger_error("Response class <code>" . get_class($response) . "</code> does not have the method <code>$method()</code>.");
+					// Responder class was constructed successfully, but the target method was not defined.
+					trigger_error("Responder class <code>" . get_class($responder) . "</code> does not have the method <code>$method()</code>.");
 				}
 			}
 		}
@@ -134,14 +137,14 @@ class Tempest
 
 	/**
 	 * Defines the services used by the application.
+	 * Override in your application class to define additional services.
 	 *
 	 * @return array
 	 */
 	protected function defineServices()
 	{
 		return array(
-			'twig' => new Twig($this),
-			'db' => new Database($this)
+			//
 		);
 	}
 
@@ -180,23 +183,25 @@ class Tempest
 	{
 		if($this->status <= 300 && count($this->errors) > 0)
 		{
-			// If the HTTP Response code is in the OK range but there are errors.
+			// If the HTTP Responder code is in the OK range but there are errors.
 			$this->status = Status::INTERNAL_SERVER_ERROR;
 		}
 
 		if($this->status >= 300)
 		{
-			// If the HTTP Response code does not fall in the OK range, transform the output to an alternate value.
+			// If the HTTP Responder code does not fall in the OK range, transform the output to an alternate value.
 			// The alternate value is defined in App::showErrors().
-			$this->setOutput($this->errorOutput($this->router->getRequest(), $this->status));
+			$this->setResponse($this->errorOutput($this->router->getRequest(), $this->status));
 		}
 
 		// Send the HTTP status, content-type and final output.
 		http_response_code($this->status);
-		header("Content-Type: {$this->output->getMime()}; charset={$this->output->getCharset()}");
+		header("Content-Type: {$this->response->getMime()}; charset={$this->response->getCharset()}");
 
-		if($this->output !== null)
-			echo $this->output->getFinalOutput($this, $this->router->getRequest());
+		if($this->response !== null)
+		{
+			echo $this->response->getFinalOutput($this->router->getRequest());
+		}
 
 		exit;
 	}
@@ -208,7 +213,7 @@ class Tempest
 	 * @param $request Request The request made.
 	 * @param $code int The HTTP status code - used to determine what the result should be.
 	 *
-	 * @return string|BaseOutput The resulting output.
+	 * @return string|array|Response The resulting output.
 	 */
 	protected function errorOutput(Request $request, $code)
 	{
@@ -219,13 +224,12 @@ class Tempest
 
 		if($code >= 500)
 		{
-			if($this->config->data('dev'))
+			if($this->config('dev'))
 			{
 				// Server-side errors.
 				return $this->twig->render('tempest/errors.html', array(
 					"title" => "Application Error",
 					"version" => TEMPEST_VERSION,
-					"uri" => $request,
 					"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
 					"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
 					"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",
@@ -258,18 +262,26 @@ class Tempest
 
 
 	/**
-	 * Sets the application output. If the input is not an instance of BaseOutput, it will be converted to one.
-	 * @param $value string|BaseOutput The output value.
+	 * Sets the application response. If the input is not an instance of Response, it will be converted to one.
+	 * If the input is an array, it will be converted to JSON.
+	 *
+	 * @param $value string|array|Response The Response or primitive output value.
 	 */
-	protected function setOutput($value)
+	protected function setResponse($value)
 	{
-		if(!is_a($value, 'Tempest\Output\BaseOutput'))
+		if(is_array($value))
 		{
-			// Transform existing output to an output object, if not already.
-			$value = new BaseOutput('text/plain', $value);
+			// Transform returned array into JSON.
+			$value = new Response('application/json', json_encode($value, JSON_NUMERIC_CHECK));
 		}
 
-		$this->output = $value;
+		if(!is_a($value, 'Tempest\HTTP\Response'))
+		{
+			// Transform existing output to an output object, if not already.
+			$value = new Response('text/plain', $value);
+		}
+
+		$this->response = $value;
 	}
 
 
@@ -287,7 +299,7 @@ class Tempest
 	 *
 	 * @return Router
 	 */
-	protected function getRouter(){ return $this->router; }
+	public function getRouter(){ return $this->router; }
 
 
 	/**

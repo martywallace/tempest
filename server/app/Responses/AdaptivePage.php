@@ -1,10 +1,10 @@
 <?php namespace Responses;
 
-use Tempest\HTTP\Response;
+use Tempest\HTTP\Responder;
 use Tempest\HTTP\Request;
 
 
-class AdaptivePage extends Response
+class AdaptivePage extends Responder
 {
 
 	protected $name;
@@ -12,13 +12,22 @@ class AdaptivePage extends Response
 
 	public function setup(Request $r)
 	{
-		//
+		$this->name = $r->last();
+		$this->name = $this->name === null ? 'home' : $this->name;
 	}
 
 
 	public function index(Request $request)
 	{
-		return tempest()->twig->render('home.html', []);
+		$result = tempest()->twig->render($this->name . '.html', []);
+
+		if($result === null)
+		{
+			// NULL is provided if the template could not be loaded.
+			tempest()->abort(404);
+		}
+
+		return $result;
 	}
 
 }

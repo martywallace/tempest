@@ -1,14 +1,14 @@
 <?php
 
-function path_normalize($path, $separator = DIRECTORY_SEPARATOR, $head = false, $tail = false)
+function path_normalize($path, $head = false, $tail = false)
 {
-	if(strlen($path) === 0 || $path === '/' || $path === '\\' || $path === $separator) return $separator;
+	if(strlen($path) === 0 || $path === '/' || $path === '\\') return '/';
 
-	$base = preg_replace(RGX_PATH_DELIMITER, $separator, $path);
-	$base = trim($base, $separator);
+	$base = preg_replace('/\\\+/', '/', $path);
+	$base = trim($base, '/');
 
-	$base = $head ? $separator . $base : $base;
-	$base = $tail ? $base . $separator : $base;
+	$base = $head ? '/' . $base : $base;
+	$base = $tail ? $base . '/' : $base;
 
 	return $base;
 }
@@ -17,7 +17,7 @@ function path_normalize($path, $separator = DIRECTORY_SEPARATOR, $head = false, 
 function path_split($path)
 {
 	$base = trim($path, '/\\ ');
-	return preg_split(RGX_PATH_DELIMITER, $base);
+	return preg_split('/\\\+/', $base);
 }
 
 

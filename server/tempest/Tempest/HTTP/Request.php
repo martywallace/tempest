@@ -5,6 +5,7 @@ use Tempest\Utils\Path;
 
 /**
  * A request made to the application by the client.
+ *
  * @author Marty Wallace.
  */
 class Request extends Path
@@ -17,22 +18,21 @@ class Request extends Path
 
 	/**
 	 * Constructor.
-	 * @param $router The Router managing this Request.
 	 */
-	public function __construct($router)
+	public function __construct()
 	{
-		$this->router = $router;
+		$this->router = tempest()->getRouter();
 
-		$requ = preg_replace('/\..*$/', '', APP_REQUEST_URI);
+		$requ = preg_replace('/\..*$/', '', REQUEST_URI);
 
-		if(strlen($requ) !== strlen(APP_REQUEST_URI))
+		if(strlen($requ) !== strlen(REQUEST_URI))
 		{
 			// Using alternate format.
-			preg_match('/\.(.+)$/', APP_REQUEST_URI, $match);
+			preg_match('/\.(.+)$/', REQUEST_URI, $match);
 			$this->format = $match[1];
 		}
 
-		parent::__construct($requ);
+		parent::__construct(REQUEST_URI, Path::DELIMITER_LEFT);
 	}
 
 
@@ -64,7 +64,7 @@ class Request extends Path
 		header($_SERVER["HTTP_PROTOCOL"] . " $status", true, $status);
 
 		if(preg_match('/^\w*:\/\//', $dest)) header("Location: " . $dest);
-		else header("Location: " . PUB_ROOT . $dest);
+		else header("Location: " . $dest);
 
 		exit;
 	}
