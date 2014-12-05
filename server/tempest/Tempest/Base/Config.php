@@ -19,12 +19,20 @@ class Config
 	{
 		$data = require_once(APP_ROOT . "$file");
 
-		self::$data = $data['*'];
-
-		if(array_key_exists(HOST, $data))
+		if(array_key_exists('*', $data))
 		{
-			// Consume host-specific configation and overwrite where necessary.
-			self::$data = array_merge(self::$data, $data[HOST]);
+			self::$data = $data['*'];
+
+			if(array_key_exists(HOST, $data))
+			{
+				// Consume host-specific configation and overwrite where necessary.
+				self::$data = array_replace_recursive(self::$data, $data[HOST]);
+			}
+		}
+		else
+		{
+			// No cascading config - use the entire top level set.
+			self::$data = $data;
 		}
 
 		// General configuration.
