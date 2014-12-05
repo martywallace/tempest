@@ -24,7 +24,7 @@ class Database extends Service
 	public function insert($table, Array $params)
 	{
 		$p2 = array_keys_prepend($params, ':');
-		$stmt = $this->provider->prepare("INSERT INTO {$table} (" . implode(',', array_keys($params)) . ") VALUES(" . implode(',', array_keys($p2)) . ")");
+		$stmt = $this->prepare("INSERT INTO {$table} (" . implode(',', array_keys($params)) . ") VALUES(" . implode(',', array_keys($p2)) . ")");
 		$this->execute($stmt, $params);
 
 		return $stmt;
@@ -33,7 +33,7 @@ class Database extends Service
 
 	public function all($query, Array $params = null, $model = null)
 	{
-		$stmt = $this->provider->prepare($query);
+		$stmt = $this->prepare($query);
 		$this->execute($stmt, $params);
 
 		$result = $stmt->fetchAll(PDO::FETCH_CLASS, $model === null ? 'stdclass' : $model);
@@ -50,7 +50,7 @@ class Database extends Service
 
 	public function assoc($query, Array $params = null)
 	{
-		$stmt = $this->provider->prepare($query);
+		$stmt = $this->prepare($query);
 		$this->execute($stmt, $params);
 
 		return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -59,10 +59,29 @@ class Database extends Service
 
 	public function prop($query, Array $params = null)
 	{
-		$stmt = $this->provider->prepare($query);
+		$stmt = $this->prepare($query);
 		$this->execute($stmt, $params);
 
 		return $stmt->fetch(PDO::FETCH_NUM)[0];
+	}
+
+
+	/**
+	 * Prepares a MySQL query statement.
+	 *
+	 * @param string $query The query.
+	 *
+	 * @return PDOStatement
+	 */
+	public function prepare($query)
+	{
+		return $this->provider->prepare($query);
+	}
+
+
+	public function lastInsertId()
+	{
+		return $this->provider->lastInsertId();
 	}
 
 
@@ -74,7 +93,10 @@ class Database extends Service
 		$error = $stmt->errorInfo();
 
 		if($error[0] !== "00000")
+		{
+			// Append errors to application error log.
 			trigger_error($error[2]);
+		}
 
 
 		return $stmt;
