@@ -1,6 +1,6 @@
 <?php namespace Tempest\HTTP;
 
-use Tempest\Base\Tempest;
+use Tempest\Tempest;
 use Tempest\Output\BaseOutput;
 
 

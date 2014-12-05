@@ -1,7 +1,5 @@
 <?php namespace Tempest\Output;
 
-use Tempest\Output\BaseOutput;
-
 
 /**
  * Typical HTML output.

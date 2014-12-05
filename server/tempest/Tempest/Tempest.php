@@ -1,12 +1,11 @@
-<?php namespace Tempest\Base;
+<?php namespace Tempest;
 
-use Tempest\Base\Error;
 use Tempest\HTTP\Router;
 use Tempest\HTTP\Status;
 use Tempest\HTTP\Request;
 use Tempest\HTTP\Response;
 use Tempest\Output\BaseOutput;
-use Tempest\Templating\Template;
+use Tempest\Services\Service;
 
 
 /**
@@ -15,6 +14,22 @@ use Tempest\Templating\Template;
  */
 class Tempest
 {
+
+	/**
+	 * @var Tempest
+	 */
+	protected static $instance;
+
+
+	/**
+	 * Gets the current Tempest instance.
+	 * @return Tempest
+	 */
+	public static function getInstance()
+	{
+		return static::$instance;
+	}
+
 
 	/**
 	 * @var Router
@@ -32,9 +47,23 @@ class Tempest
 	private $output = null;
 
 	/**
-	 * @var array
+	 * @var Error[]
 	 */
 	private $errors = array();
+
+	/**
+	 * @var Service[]
+	 */
+	private $services = array();
+
+
+	/**
+	 * Constructor.
+	 */
+	public function __construct()
+	{
+		static::$instance = $this;
+	}
 
 
 	/**
@@ -76,6 +105,26 @@ class Tempest
 		}
 		
 		$this->finalize();
+	}
+
+
+	/**
+	 * Adds a service to the application.
+	 *
+	 * @param string $name The name used to reference the service.
+	 * @param Service $service The service to add.
+	 */
+	public function addService($name, Service $service)
+	{
+		if(!array_key_exists($name, $this->services))
+		{
+			$this->services[$name] = $service;
+		}
+		else
+		{
+			// Cannot have multiple services with the same name.
+			trigger_error("A service named <code>$name</code> already exists.");
+		}
 	}
 
 
@@ -124,7 +173,7 @@ class Tempest
 		}
 
 		// Send the HTTP status, content-type and final output.
-		header($_SERVER["HTTP_PROTOCOL"] . " $this->status", true, $this->status);
+		http_response_code($this->status);
 		header("Content-Type: {$this->output->getMime()}; charset={$this->output->getCharset()}");
 
 		if($this->output !== null)
@@ -146,18 +195,45 @@ class Tempest
 
 		if($code >= 500)
 		{
+			print_r($this->errors);
+
 			// Server-side errors.
-			return Template::load('tempest/shell.html')->bind(array(
+			$data = array(
 				"title" => "Application Error",
 				"version" => TEMPEST_VERSION,
 				"uri" => $request,
 				"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
 				"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
 				"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",
-				"content" => Template::load('tempest/errors.html')->bind(array(
-					"errors" => Template::load('tempest/error-item.html')->batch($this->errors)
-				))
-			));
+				'errors' => $this->errors
+			);
+
+			// TODO: Output with Twig.
+		}
+
+		return null;
+	}
+
+
+	/**
+	 * Magic getter.
+	 *
+	 * @param string $prop
+	 *
+	 * @return mixed
+	 */
+	public function __get($prop)
+	{
+		if($prop === 'router')
+		{
+			// Return the router.
+			return $this->router;
+		}
+
+		if(array_key_exists($prop, $this->services))
+		{
+			// Returns a service with the name.
+			return $this->services[$prop];
 		}
 
 		return null;
@@ -186,12 +262,5 @@ class Tempest
 	 * @param $router Router The application router.
 	 */
 	protected function setup(Router $router){ /**/ }
-
-
-	/**
-	 * Returns the active <code>Router</code> instance.
-	 * @return Router
-	 */
-	public function getRouter(){ return $this->router; }
 
 }

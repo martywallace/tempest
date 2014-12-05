@@ -1,6 +1,5 @@
 <?php namespace Tempest\Output;
 
-use Tempest\Output\BaseOutput;
 use Tempest\Utils\IResult;
 
 

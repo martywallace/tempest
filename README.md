@@ -9,6 +9,7 @@ I am currently making major revisions to the framework for a 1.0.0 release. It w
 ## Getting Started
 
 1. Download and extract the files to your server - `public` should be set as the server root.
+	* For XAMPP users - refer to [these instructions](http://sawmac.com/xampp/virtualhosts/) for setting up a virtual host to run Tempest.
 2. Tempest has some dependencies that are managed via [composer](https://getcomposer.org). You will need to run `composer install` once the files are extracted.
 3. Good to go.
 

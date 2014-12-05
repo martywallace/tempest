@@ -7,7 +7,7 @@ return array(
 		'timezone' => 'Australia/Sydney',
 
 		'routes' => array(
-			'/' => 'Pages.AdaptivePage'
+			'/' => 'AdaptivePage'
 		)
 	)
 

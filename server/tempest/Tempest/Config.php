@@ -1,4 +1,4 @@
-<?php namespace Tempest\Base;
+<?php namespace Tempest;
 
 
 /**

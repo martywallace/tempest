@@ -1,9 +1,5 @@
 <?php namespace Tempest\HTTP;
 
-use Tempest\HTTP\Route;
-use Tempest\HTTP\Request;
-
-
 /**
  * The Router directs a Request to the relevant Response.
  * @author Marty Wallace.

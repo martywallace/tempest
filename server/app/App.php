@@ -1,11 +1,11 @@
 <?php
 
-use Tempest\Base\Tempest;
-use Tempest\Base\Config;
+use Tempest\Tempest;
+use Tempest\Config;
 use Tempest\HTTP\Router;
 use Tempest\HTTP\Request;
 use Tempest\HTTP\Status;
-use Tempest\Output\BaseOutput;
+use Tempest\Services\Templates;
 
 
 class App extends Tempest
@@ -13,6 +13,9 @@ class App extends Tempest
 	
 	protected function setup(Router $router)
 	{
+		// Load components.
+		$this->addService('templates', new Templates($this));
+
 		// Load application configuration data.
 		Config::load("config.php");
 

@@ -19,8 +19,9 @@ define('RGX_PATH_DELIMITER', '/[\/\\\\]+/');
 define('RGX_TEMPLATE_TOKEN', '/\{\{\s*([\!\?\*]*)(@\w+)*([\w\.\(\)]+)([\w\s\:]*)\s*\}\}/');
 
 
-foreach(array('functions', 'autoloader') as $inc)
-	require_once APP_ROOT . 'server' . SEP . 'tempest' . SEP . "$inc.php";
+require_once APP_ROOT . 'server/tempest/functions.php';
+require_once APP_ROOT . 'server/tempest/autoloader.php';
+require_once APP_ROOT . 'server/vendor/autoload.php';
 
 
 define('PUB_ROOT', path_normalize(dirname($_SERVER["PHP_SELF"]), '/', true, true));
@@ -32,5 +33,17 @@ define('APP_REQUEST_URI', path_normalize(PUB_ROOT !== '/' ? str_replace(PUB_ROOT
 $app = new App();
 
 set_error_handler(array($app, 'error'));
+
+/**
+ * Returns the active application instance, or a service that was added to that it.
+ *
+ * @param string $service The service name.
+ *
+ * @return App
+ */
+function tempest()
+{
+	return App::getInstance();
+}
 
 $app->start();
