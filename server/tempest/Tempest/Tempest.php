@@ -70,6 +70,8 @@ class Tempest
 	{
 		$this->config = new Config();
 
+		set_error_handler(array($this, 'error'));
+
 		static::$instance = $this;
 	}
 

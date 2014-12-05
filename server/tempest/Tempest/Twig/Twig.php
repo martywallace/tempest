@@ -41,6 +41,7 @@ class Twig extends Service
 		{
 			return new TwigResponse($this->environment->render($file, array_merge($context, array(
 				'tempest' => tempest()->getServices(),
+				'request' => tempest()->getRouter()->getRequest(),
 				'title' => tempest()->config('title')
 			))));
 		}

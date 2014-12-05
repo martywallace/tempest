@@ -80,7 +80,7 @@ class Request extends Path
 			$this->data = array(
 				GET => array_slice($_GET, 0),
 				POST => array_slice($_POST, 0),
-				NAMED => array_slice($this->router->getParams(), 0)
+				NAMED => array_slice(tempest()->getRouter()->getParams(), 0)
 			);
 		}
 

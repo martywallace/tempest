@@ -1,0 +1,10 @@
+{% extends '_layout.html' %}
+
+{% block content %}
+	<section id="intro" class="text-center">
+		<p><img src="/textures/the-tempest.jpg" alt="Ivan Aivazovsky - The Tempest" title="Ivan Aivazovsky - The Tempest" /></p>
+
+		<h1>About</h1>
+		{{ request.data('get', 'id') }}
+	</section>
+{% endblock %}
