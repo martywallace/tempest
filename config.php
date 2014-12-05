@@ -10,13 +10,6 @@ return array(
 
 		'routes' => array(
 			'/' => 'AdaptivePage'
-		),
-
-		'db' => array(
-			'host' => 'localhost',
-			'dbname' => 'test',
-			'user' => 'root',
-			'pass' => ''
 		)
 	)
 

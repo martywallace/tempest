@@ -5,10 +5,8 @@ use Tempest\HTTP\Status;
 use Tempest\HTTP\Request;
 use Tempest\HTTP\Response;
 use Tempest\Output\BaseOutput;
-use Tempest\Services\Database;
-use Tempest\Services\Service;
-use Tempest\Services\Templates;
-use Tempest\Services\Config;
+use Tempest\MySQL\Database;
+use Tempest\Twig\Twig;
 
 
 /**
@@ -40,6 +38,11 @@ class Tempest
 	private $router;
 
 	/**
+	 * @var Config
+	 */
+	private $config;
+
+	/**
 	 * @var int
 	 */
 	private $status = Status::OK;
@@ -65,6 +68,8 @@ class Tempest
 	 */
 	public function __construct()
 	{
+		$this->config = new Config();
+
 		static::$instance = $this;
 	}
 
@@ -114,6 +119,20 @@ class Tempest
 
 
 	/**
+	 * Returns configuration data.
+	 *
+	 * @param string $prop The configuration property to get.
+	 * @param mixed $fallback A fallback value to use if the property is not found.
+	 *
+	 * @return mixed
+	 */
+	public function config($prop, $fallback = null)
+	{
+		return $this->config->data($prop, $fallback);
+	}
+
+
+	/**
 	 * Defines the services used by the application.
 	 *
 	 * @return array
@@ -121,8 +140,7 @@ class Tempest
 	protected function defineServices()
 	{
 		return array(
-			'config' => new Config($this),
-			'twig' => new Templates($this),
+			'twig' => new Twig($this),
 			'db' => new Database($this)
 		);
 	}
@@ -221,20 +239,14 @@ class Tempest
 
 
 	/**
-	 * Magic getter.
+	 * Magic getter. Attempts to return a Service if a property was not found with the specified name.
 	 *
 	 * @param string $prop
 	 *
-	 * @return mixed
+	 * @return Service
 	 */
 	public function __get($prop)
 	{
-		if($prop === 'router')
-		{
-			// Return the router.
-			return $this->router;
-		}
-
 		if(array_key_exists($prop, $this->services))
 		{
 			// Returns a service with the name.
@@ -263,9 +275,26 @@ class Tempest
 
 	/**
 	 * Called by <code>start()</code> after the configuration and router have been initialized.
-	 * Override  for custom initialization logic in <code>App</code>.
+	 * Override for custom initialization logic in <code>App</code>.
+	 *
 	 * @param $router Router The application router.
 	 */
 	protected function setup(Router $router){ /**/ }
+
+
+	/**
+	 * Returns the active Router.
+	 *
+	 * @return Router
+	 */
+	protected function getRouter(){ return $this->router; }
+
+
+	/**
+	 * Returns the list of defined services.
+	 *
+	 * @return Service[]
+	 */
+	public function getServices(){ return $this->services; }
 
 }

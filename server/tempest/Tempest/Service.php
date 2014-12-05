@@ -1,8 +1,11 @@
-<?php namespace Tempest\Services;
-
-use Tempest\Tempest;
+<?php namespace Tempest;
 
 
+/**
+ * Defines an application service.
+ *
+ * @author Marty Wallace.
+ */
 class Service
 {
 
@@ -16,8 +19,5 @@ class Service
 
 
 	protected function getApp(){ return $this->app; }
-
-
-	public function getServiceName(){ return null; }
 
 }

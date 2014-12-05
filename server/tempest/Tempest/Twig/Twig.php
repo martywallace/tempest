@@ -1,12 +1,13 @@
-<?php namespace Tempest\Services;
+<?php namespace Tempest\Twig;
 
 use Tempest\Output\HTMLOutput;
 use Tempest\Tempest;
+use Tempest\Service;
 use \Twig_Loader_Filesystem;
 use \Twig_Environment;
 
 
-class Templates extends Service
+class Twig extends Service
 {
 
 	private $loader;
@@ -25,7 +26,8 @@ class Templates extends Service
 	public function render($file, $context = array())
 	{
 		return new HTMLOutput($this->environment->render($file, array_merge($context, array(
-			'title' => tempest()->config->data('title')
+			'tempest' => tempest()->getServices(),
+			'title' => tempest()->config('title')
 		))));
 	}
 

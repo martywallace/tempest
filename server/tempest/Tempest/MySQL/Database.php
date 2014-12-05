@@ -1,7 +1,8 @@
-<?php namespace Tempest\Services;
+<?php namespace Tempest\MySQL;
 
 use PDO;
 use PDOStatement;
+use Tempest\Service;
 
 
 class Database extends Service
@@ -15,7 +16,7 @@ class Database extends Service
 
 	public function connect($connection)
 	{
-		$connection = tempest()->config->data($connection);
+		$connection = tempest()->config($connection);
 		$this->provider = new PDO("mysql:host={$connection['host']};dbname={$connection['dbname']}", $connection["user"], $connection["pass"]);
 	}
 

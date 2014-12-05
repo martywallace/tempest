@@ -1,26 +1,18 @@
-<?php namespace Tempest\Services;
-use Tempest\Tempest;
+<?php namespace Tempest;
 
 
 /**
  * Manages application configuration, defined in <code>/config.php</code>.
  * @author Marty Wallace.
  */
-class Config extends Service
+class Config
 {
 
 	private $data = array();
 
 
-	/**
-	 * Loads a configuration file.
-	 *
-	 * @param Tempest $app
-	 */
-	public function __construct(Tempest $app)
+	public function __construct()
 	{
-		parent::__construct($app);
-
 		$data = require_once(APP_ROOT . 'config.php');
 
 		if(array_key_exists('*', $data))

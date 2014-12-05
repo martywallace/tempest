@@ -12,7 +12,7 @@ class App extends Tempest
 	protected function setup(Router $router)
 	{
 		// Define application routes.
-		$router->register($this->config->data("routes"));
+		$router->register($this->config("routes"));
 
 		tempest()->db->connect('db');
 	}
