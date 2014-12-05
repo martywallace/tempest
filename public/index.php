@@ -3,11 +3,11 @@
 session_start();
 error_reporting(-1);
 
-define('TEMPEST_VERSION', 'v0.2-alpha');
+define('TEMPEST_VERSION', 'v1.0.0');
 
 define('DIR', __DIR__);
 define('SEP', DIRECTORY_SEPARATOR);
-define('APP_ROOT', DIR . SEP);
+define('APP_ROOT', DIR . SEP . '../');
 
 define('GET', 'get');
 define('POST', 'post');
