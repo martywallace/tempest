@@ -12,7 +12,7 @@ class AdaptivePage extends Responder
 
 	public function setup(Request $r)
 	{
-		$this->name = $r->first();
+		$this->name = $r->last();
 		$this->name = $this->name === null ? 'home' : $this->name;
 	}
 

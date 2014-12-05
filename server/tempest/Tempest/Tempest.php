@@ -231,7 +231,6 @@ class Tempest
 				// Server-side errors.
 				return $this->twig->render('tempest/errors.html', array(
 					"title" => "Application Error",
-					"version" => TEMPEST_VERSION,
 					"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
 					"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
 					"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",

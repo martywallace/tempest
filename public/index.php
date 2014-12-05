@@ -5,9 +5,7 @@ error_reporting(-1);
 require_once __DIR__ . '/../server/boot.php';
 
 /**
- * Returns the active application instance, or a service that was added to that it.
- *
- * @param string $service The service name.
+ * Returns the active application instance.
  *
  * @return App
  */

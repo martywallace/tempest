@@ -1,13 +1,5 @@
 <?php
 
-
-function path_split($path)
-{
-	$base = trim($path, '/\\ ');
-	return preg_split('/\\\+/', $base);
-}
-
-
 function array_keys_prepend($array, $prefix)
 {
 	$new = array();
@@ -18,7 +10,6 @@ function array_keys_prepend($array, $prefix)
 
 	return $new;
 }
-
 
 function set_or($value, $fallback = null)
 {

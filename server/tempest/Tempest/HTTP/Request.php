@@ -11,9 +11,7 @@ use Tempest\Utils\Path;
 class Request extends Path
 {
 
-	private $router;
 	private $data;
-	private $format = '';
 
 
 	/**
@@ -21,26 +19,17 @@ class Request extends Path
 	 */
 	public function __construct()
 	{
-		$this->router = tempest()->getRouter();
-
-		$requ = preg_replace('/\..*$/', '', REQUEST_URI);
-
-		if(strlen($requ) !== strlen(REQUEST_URI))
-		{
-			// Using alternate format.
-			preg_match('/\.(.+)$/', REQUEST_URI, $match);
-			$this->format = $match[1];
-		}
-
 		parent::__construct(REQUEST_URI, Path::DELIMITER_LEFT);
 	}
 
 
 	/**
 	 * Returns data associated with the Request.
+	 *
 	 * @param $stack string The stack to return data from. Can be GET, POST or NAMED.
 	 * @param $key string The key holding the data within the selected stack.
 	 * @param $default mixed A default value to return if the key did not exist on the selected stack.
+	 *
 	 * @return mixed The requested data, or the default value if it could not be found.
 	 */
 	public function data($stack = null, $key = null, $default = null)
@@ -56,12 +45,13 @@ class Request extends Path
 
 	/**
 	 * Redirect the Request to a new URL.
+	 *
 	 * @param $dest string The destination URL. Acts intelligently enough to redirect relative to the application root if an external URL is not provided.
 	 * @param $status int The response code for the redirected request, e.g. 400 Bad Request or 302 Moved Permanently.
 	 */
 	public function redirect($dest, $status = 400)
 	{
-		header($_SERVER["HTTP_PROTOCOL"] . " $status", true, $status);
+		http_response_code($status);
 
 		if(preg_match('/^\w*:\/\//', $dest)) header("Location: " . $dest);
 		else header("Location: " . $dest);
@@ -89,20 +79,8 @@ class Request extends Path
 
 
 	/**
-	 * Shorthand for <code>if($format === 'some_format'){ ... }</code>.
-	 */
-	public function isFormat($format){ return $this->format === $format; }
-
-
-	/**
 	 * Returns the request method (GET, POST).
 	 */
 	public function getMethod(){ return strtolower($_SERVER["REQUEST_METHOD"]); }
-
-
-	/**
-	 * Returns the format (file extension) for this Request.
-	 */
-	public function getFormat(){ return $this->format; }
 
 }
