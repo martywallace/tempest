@@ -1,1 +1,6 @@
+# For PHPStorm users.
 .idea
+
+# Don't carry around composer dependencies.
+server/vendor/*
+!help.md
