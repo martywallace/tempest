@@ -2,10 +2,10 @@
 
 use PDO;
 use PDOStatement;
-use Tempest\Service;
+use Tempest\IService;
 
 
-class Database extends Service
+class Database extends PDO implements IService
 {
 
 	/**
@@ -14,10 +14,12 @@ class Database extends Service
 	private $provider;
 
 
-	public function connect($connection)
+	public function __construct()
 	{
-		$connection = tempest()->config($connection);
-		$this->provider = new PDO("mysql:host={$connection['host']};dbname={$connection['dbname']}", $connection["user"], $connection["pass"]);
+		$connection = tempest()->config('db');
+
+		if($connection !== null)
+			$this->__construct("mysql:host={$connection['host']};dbname={$connection['dbname']}", $connection["user"], $connection["pass"]);
 	}
 
 
@@ -63,25 +65,6 @@ class Database extends Service
 		$this->execute($stmt, $params);
 
 		return $stmt->fetch(PDO::FETCH_NUM)[0];
-	}
-
-
-	/**
-	 * Prepares a MySQL query statement.
-	 *
-	 * @param string $query The query.
-	 *
-	 * @return PDOStatement
-	 */
-	public function prepare($query)
-	{
-		return $this->provider->prepare($query);
-	}
-
-
-	public function lastInsertId()
-	{
-		return $this->provider->lastInsertId();
 	}
 
 

@@ -1,7 +1,6 @@
 <?php namespace Tempest\Twig;
 
-use Tempest\Tempest;
-use Tempest\Service;
+use Tempest\IService;
 use \Twig_Loader_Filesystem;
 use \Twig_Environment;
 
@@ -11,17 +10,15 @@ use \Twig_Environment;
  *
  * @author Marty Wallace.
  */
-class Twig extends Service
+class Twig implements IService
 {
 
 	private $loader;
 	private $environment;
 
 
-	public function __construct(Tempest $app)
+	public function __construct()
 	{
-		parent::__construct($app);
-
 		$this->loader = new Twig_Loader_Filesystem(array(APP_ROOT . 'templates/'));
 		$this->environment = new Twig_Environment($this->loader);
 	}

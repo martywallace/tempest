@@ -58,7 +58,7 @@ class Tempest
 	private $errors = array();
 
 	/**
-	 * @var Service[]
+	 * @var IService[]
 	 */
 	private $services = array();
 
@@ -306,7 +306,7 @@ class Tempest
 	/**
 	 * Returns the list of defined services.
 	 *
-	 * @return Service[]
+	 * @return IService[]
 	 */
 	public function getServices(){ return $this->services; }
 

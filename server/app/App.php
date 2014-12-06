@@ -13,8 +13,6 @@ class App extends Tempest
 	{
 		// Define application routes.
 		$router->register($this->config("routes"));
-
-		tempest()->db->connect('db');
 	}
 
 
