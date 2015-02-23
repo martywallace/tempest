@@ -1,6 +1,12 @@
 # For PHPStorm users.
 .idea
 
-# Don't carry around Composer dependencies.
+# Don't carry around Composer, Node & Grunt bits.
 composer.lock
 server/vendor
+node_modules
+
+# Don't carry around generated files.
+public/css
+public/js
+.sass-cache

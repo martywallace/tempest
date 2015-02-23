@@ -1,0 +1,5 @@
+var Tempest = (function() {
+	return {
+		//
+	};
+})();

@@ -1,0 +1,131 @@
+@charset "utf-8";
+@import "/public/type/opensans/config.css";
+
+.grid {
+	max-width: 1000px;
+	padding: 0 20px;
+}
+
+body {
+	background: #EEE;
+	font-family: 'OpenSansReg';
+}
+
+#head {
+	background: #F0603C;
+	color: #FFF;
+	padding: 30px 0;
+
+	a {
+		display: inline-block;
+		background: #DB3911;
+		color: #FFF;
+		padding: 8px 10px;
+		border-radius: 4px;
+		font-size: 12px;
+		font-family: 'OpenSansBold';
+		float: right;
+
+		&:hover {
+			background: #444;
+			color: #FFF;
+		}
+
+		&:active {
+			box-shadow: inset 0 1px 12px rgba(0, 0, 0, 0.2);
+		}
+	}
+}
+
+h1 {
+	display: inline-block;
+	font-size: 20px;
+	text-transform: uppercase;
+}
+
+#content {
+	padding: 70px 0;
+	background: #FFF;
+}
+
+ul {
+	margin: 0 auto;
+	text-align: left;
+	list-style: none;
+}
+
+ul > li + li {
+	border-top: 1px dotted #DADADA;
+	margin-top: 20px;
+	padding-top: 20px;
+}
+
+ul > li > pre {
+	background: none;
+	white-space: normal;
+	word-wrap: break-word;
+}
+
+ul > li > pre > code {
+	color: #A00;
+}
+
+small {
+	font-size: 11px;
+	color: #777;
+}
+
+#request {
+	background: #F0F0F0;
+	color: #333;
+	font-size: 11px;
+	word-wrap: break-word;
+	border-radius: 5px;
+
+	h2 {
+		background: #444;
+		color: #EEE;
+		padding: 14px 10px;
+		font-size: 13px;
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+	}
+
+	h6 {
+		padding: 10px;
+		font-size: 12px;
+		background: #E0E0E0;
+		color: #5F5F5F;
+	}
+
+	p,
+	pre {
+		padding: 10px;
+		background: none;
+	}
+}
+
+#foot {
+	padding: 20px 0;
+	font-size: 11px;
+	color: #777;
+
+	a {
+		color: #F0603C;
+
+		&:hover {
+			color: #000;
+		}
+	}
+}
+
+@media screen and (max-width: 800px) {
+	.column {
+		width: 100% !important;
+		float: none;
+	}
+
+	.column + .column {
+		margin-top: 60px;
+	}
+}

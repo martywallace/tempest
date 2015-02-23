@@ -1,0 +1,17 @@
+@charset "utf-8";
+
+body {
+	border-top: 8px solid #EEE;
+}
+
+#intro {
+	padding: 40px 20px;
+
+	img {
+		border-radius: 3px;
+		margin-bottom: 20px;
+		max-width: 440px;
+		width: 100%;
+		height: auto;
+	}
+}
