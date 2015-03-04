@@ -70,6 +70,7 @@ class Tempest
 	{
 		$this->config = new Config();
 
+		error_reporting($this->config('dev', false) ? -1 : 0);
 		set_error_handler(array($this, 'error'));
 
 		static::$instance = $this;
@@ -226,7 +227,7 @@ class Tempest
 
 		if($code >= 500)
 		{
-			if($this->config('dev'))
+			if($this->config('dev', false))
 			{
 				// Server-side errors.
 				return $this->twig->render('tempest/errors.html', array(
