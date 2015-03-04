@@ -1,5 +1,11 @@
-module Application {
-	export function hello():void {
-		//
+module Application
+{
+	export function init():void
+	{
+		// Initialize your application.
+		// ...
 	}
 }
+
+
+Application.init();

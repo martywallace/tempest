@@ -19,7 +19,7 @@ class Database extends PDO implements IService
 		$connection = tempest()->config('db');
 
 		if($connection !== null)
-			$this->__construct("mysql:host={$connection['host']};dbname={$connection['dbname']}", $connection["user"], $connection["pass"]);
+			parent::__construct("mysql:host={$connection['host']};dbname={$connection['dbname']}", $connection["user"], $connection["pass"]);
 	}
 
 

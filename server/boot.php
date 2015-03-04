@@ -15,4 +15,4 @@ define('NAMED', 'named');
 
 define('HOST', $_SERVER['HTTP_HOST']);
 define('REQUEST_CLEAN', preg_replace('/(\?|#)(.+)/', '', $_SERVER["REQUEST_URI"]));
-define('REQUEST_URI', Path::create($_SERVER['REQUEST_URI'], Path::DELIMITER_LEFT));
+define('REQUEST_URI', Path::create(REQUEST_CLEAN, Path::DELIMITER_LEFT));

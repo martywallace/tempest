@@ -39,12 +39,22 @@ module.exports = function(grunt) {
 		// Watch for changes to files that will need to be compiled.
 		watch: {
 			sass: {
-				files: 'sass/*.scss',
+				files: 'sass/**/*.scss',
 				tasks: ['sass:dist']
 			},
 			ts: {
-				files: 'js/*.ts',
+				files: 'js/**/*.ts',
 				tasks: ['ts:default']
+			}
+		},
+
+		// Concatenate generated CSS and JavaScript.
+		concat: {
+			css: {
+				//
+			},
+			js: {
+				//
 			}
 		}
 	});
@@ -53,6 +63,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-ts');
 
 	grunt.registerTask('default', ['clean:all', 'sass:dist', 'ts:default', 'watch']);
