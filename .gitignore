@@ -1,9 +1,10 @@
-# For PHPStorm users.
+# For PHPStorm / Eclipse users.
 .idea
 
-# Don't carry around Composer, Node & Grunt bits.
+# Don't carry around files handled by dependency managers.
 composer.lock
 server/vendor
+js/vendor
 node_modules
 
 # Don't carry around generated files.

@@ -1,17 +1,42 @@
 module.exports = function(grunt) {
+
+	var config = {
+		vendorJs: [
+			// Append additional vendor JavaScript files here.
+			'js/vendor/jquery/dist/jquery.min.js'
+		]
+	};
+
 	grunt.initConfig({
+		globalConfig: config,
 		pkg: grunt.file.readJSON('package.json'),
 
 		// Cleans up directories that grunt will compile files into.
 		clean: {
 			all: {
-				src: ['public/css', 'public/js']
+				src: [
+					'public/js/app',
+					'public/js/vendor',
+					'public/js/tempest'
+				]
 			}
 		},
 
 		// Compile SASS files into CSS files.
 		sass: {
-			dist: {
+			dev: {
+				files: [{
+					expand: true,
+					cwd: 'sass',
+					src: ['**/*.scss'],
+					dest: 'public/css',
+					ext: '.css'
+				}],
+				options: {
+					style: 'compressed'
+				}
+			},
+			prod: {
 				files: [{
 					expand: true,
 					cwd: 'sass',
@@ -24,7 +49,7 @@ module.exports = function(grunt) {
 
 		// Compile TypeScript.
 		ts: {
-			default: {
+			prod: {
 				files: [{
 					src: ['js/**/*.ts'],
 					dest: 'public/js'
@@ -40,31 +65,59 @@ module.exports = function(grunt) {
 		watch: {
 			sass: {
 				files: 'sass/**/*.scss',
-				tasks: ['sass:dist']
+				tasks: ['sass:prod', 'merge']
+			},
+			js: {
+				files: 'js/**/*.js',
+				tasks: ['merge']
 			},
 			ts: {
 				files: 'js/**/*.ts',
-				tasks: ['ts:default']
+				tasks: ['ts:prod', 'merge']
 			}
 		},
 
-		// Concatenate generated CSS and JavaScript.
+		// Concatenate generated JavaScript.
 		concat: {
-			css: {
-				//
+			vendor: {
+				src: config.vendorJs,
+				dest: 'public/js/vendor.js'
 			},
+			tempest: {
+				src: ['public/js/tempest/**/*.js'],
+				dest: 'public/js/tempest.js'
+			},
+			app: {
+				src: ['public/js/app/**/*.js'],
+				dest: 'public/js/app.js'
+			}
+		},
+
+		// Minify result files for production.
+		uglify: {
 			js: {
-				//
+				files: [{
+					expand: true,
+					cwd: 'public/js',
+					src: '**/*.js',
+					dest: 'public/js'
+				}]
 			}
 		}
 	});
 
 
+	grunt.loadNpmTasks('grunt-ts');
 	grunt.loadNpmTasks('grunt-contrib-sass');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-ts');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
 
-	grunt.registerTask('default', ['clean:all', 'sass:dist', 'ts:default', 'watch']);
+	grunt.registerTask('merge', ['concat', 'clean']);
+
+	grunt.registerTask('dev', ['sass:dev', 'ts:prod', 'merge', 'uglify', 'watch']);
+	grunt.registerTask('prod', ['sass:prod', 'ts:prod', 'merge']);
+
+	grunt.registerTask('default', ['dev']);
 }

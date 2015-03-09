@@ -1,0 +1,9 @@
+{
+	"name": "Tempest",
+	"authors": [
+		"Marty Wallace <martyaced@gmail.com>"
+	],
+	"dependencies": {
+		"jquery": "1.*"
+	}
+}

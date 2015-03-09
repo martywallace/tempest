@@ -19,7 +19,7 @@ class AdaptivePage extends Responder
 
 	public function index(Request $request)
 	{
-		$result = tempest()->twig->render($this->name . '.html', []);
+		$result = tempest()->twig->render($this->name . '.html', array());
 
 		if($result === null)
 		{

@@ -10,7 +10,8 @@
  *     tempest()->config(property, fallback)
  * </pre>
  *
- * where property is the key used here and fallback is the value to use if no matching key is found.
+ * Where 'property' is the key used here and 'fallback' is the value to use if no matching key is
+ * found after cascading the data.
  */
 
 return array(
