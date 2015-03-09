@@ -1,29 +1,56 @@
-# Tempest
+# Tempest.
 
 Tempest is a tiny PHP framework for developing small to medium sized websites and applications. It is a lightweight alternative to heavier frameworks like [Laravel](http://laravel.com/); for developers who only need basic routing and general project structure to get going.
 
-## What's happening?
-
-I am currently making major revisions to the framework for a 1.0.0 release. It will follow a modern project structure and drop its existing templating system for [Twig](http://twig.sensiolabs.org/).
-
-## Prerequisites
+## Pre-requisites.
 
 Tempest makes use of various tools to streamline the development process:
 
 * [Composer](https://getcomposer.org/), for managing PHP dependencies.
 * [NodeJS & Node Package Manager](http://nodejs.org/), for managing Grunt tasks.
+* [Bower](http://bower.io/), for managing front-end JavaScript dependencies.
 * [Grunt](http://gruntjs.com/), for running Grunt tasks.
 
-## Getting Started
+## Getting Started.
 
 1. Download and extract the files to your server - `public` should be set as the server root.
-	* For XAMPP users - refer to [these instructions](http://sawmac.com/xampp/virtualhosts/) for setting up a virtual host to run Tempest.
+	* Set up a virtual host; [these instructions](http://sawmac.com/xampp/virtualhosts/) may help beginners.
 	* Using PHP's [inbuilt server](http://php.net/manual/en/features.commandline.webserver.php) is much easier than the above.
-2. Tempest has some dependencies that are managed via [composer](https://getcomposer.org). You will need to run `composer install` once the files are extracted.
-3. Tempest also uses Grunt to compile SASS & JavaScript files into the public directory; you will need to run `npm install` to download the Grunt tasks and then run `grunt` to compile those files.
-4. Good to go.
+2. `cd` to your application directory and run the following commands:
 
-## Releases
+		$ npm install
+		$ composer install
+		$ bower install
+		$ grunt
+
+## Development Guide.
+
+#### JavaScript & TypeScript.
+
+* Put your JavaScript or TypeScript files into `js/app/`. They will be compiled down into `public/js/app.js`.
+* For JavaScript dependencies;
+	* Install via `bower` or download and place them into `js/vendor/`.
+	* Append required dependencies to the `Gruntfile` under `config.vendorJs`.
+	* These will be cocatenated down into `public/js/vendor.js`.
+* Tempest comes with some JavaScript of its own. It is compiled down into `public/js/tempest.js`.
+
+#### SASS.
+
+* Put your SASS into `css/`. Your SASS will be compiled down into `public/css/`.
+* Files beginning with `_` will not be compiled, following standard SASS rules.
+* Some useful boilerplate SASS is located in `css/vendor/`.
+
+#### HTML & Twig.
+
+* Tempest uses [Twig](http://twig.sensiolabs.org/) for templating.
+* Put your Twig & HTML files in `html/`.
+* These files are not manipulated or compiled in any way; Tempest will look in `html/` for Twig templates.
+
+#### Configuration.
+
+* Application configuration is stored in `config.php`. More instructions on configuration are provided at the top of the file.
+
+## Releases.
 
 * [0.0.1](https://github.com/MartyWallace/Tempest/releases/tag/0.0.1)
 	* This release is explained in the [wiki section](https://github.com/MartyWallace/Tempest/wiki).
@@ -31,6 +58,6 @@ Tempest makes use of various tools to streamline the development process:
     * Easy to set up (no need for Composer, Grunt, virtual host setup, etc.
     * Runs correctly in subdirectories as its own application.
 
-## License
+## License.
 
 Copyright 2015 Marty Wallace. This is a free & open source project licensed under [MIT](http://opensource.org/licenses/MIT).
