@@ -52,6 +52,11 @@ Tempest makes use of various tools to streamline the development process:
 
 ## Releases.
 
+* [1.0.0](https://github.com/MartyWallace/Tempest/releases/tag/1.0.0)
+	* Modern project structure (using `public` for public files).
+	* Using Twig for templating.
+	* Application services.
+	* General cleanup.
 * [0.0.1](https://github.com/MartyWallace/Tempest/releases/tag/0.0.1)
 	* This release is explained in the [wiki section](https://github.com/MartyWallace/Tempest/wiki).
     * Custom logicless templating.
