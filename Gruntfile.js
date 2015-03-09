@@ -1,23 +1,41 @@
 module.exports = function(grunt) {
 
 	var config = {
+		// Path configuration.
+		paths: {
+			js: {
+				app: 'js/app',
+				vendor: 'js/vendor',
+				tempest: 'js/tempest'
+			}
+		},
+
+		// Append additional vendor JavaScript files here.
 		vendorJs: [
-			// Append additional vendor JavaScript files here.
-			'js/vendor/jquery/dist/jquery.min.js'
-		]
+			'<%= config.paths.js.vendor %>/jquery/dist/jquery.min.js'
+		],
+
+		// SASS files to watch and compile.
+		sassFiles: [{
+			expand: true,
+			cwd: 'sass',
+			src: '**/*.scss',
+			dest: 'public/css',
+			ext: '.css'
+		}]
 	};
 
 	grunt.initConfig({
-		globalConfig: config,
+		config: config,
 		pkg: grunt.file.readJSON('package.json'),
 
 		// Cleans up directories that grunt will compile files into.
 		clean: {
 			all: {
 				src: [
-					'public/js/app',
-					'public/js/vendor',
-					'public/js/tempest'
+					'public/' + config.paths.js.app,
+					'public/' + config.paths.js.vendor,
+					'public/' + config.paths.js.tempest
 				]
 			}
 		},
@@ -25,25 +43,13 @@ module.exports = function(grunt) {
 		// Compile SASS files into CSS files.
 		sass: {
 			dev: {
-				files: [{
-					expand: true,
-					cwd: 'sass',
-					src: ['**/*.scss'],
-					dest: 'public/css',
-					ext: '.css'
-				}],
+				files: config.sassFiles
+			},
+			prod: {
+				files: config.sassFiles,
 				options: {
 					style: 'compressed'
 				}
-			},
-			prod: {
-				files: [{
-					expand: true,
-					cwd: 'sass',
-					src: ['**/*.scss'],
-					dest: 'public/css',
-					ext: '.css'
-				}]
 			}
 		},
 
@@ -51,7 +57,7 @@ module.exports = function(grunt) {
 		ts: {
 			prod: {
 				files: [{
-					src: ['js/**/*.ts'],
+					src: 'js/**/*.ts',
 					dest: 'public/js'
 				}],
 				options: {
@@ -65,11 +71,11 @@ module.exports = function(grunt) {
 		watch: {
 			sass: {
 				files: 'sass/**/*.scss',
-				tasks: ['sass:prod', 'merge']
+				tasks: ['sass:dev', 'merge']
 			},
 			js: {
 				files: 'js/**/*.js',
-				tasks: ['merge']
+				tasks: ['ts:prod', 'merge']
 			},
 			ts: {
 				files: 'js/**/*.ts',
@@ -84,12 +90,18 @@ module.exports = function(grunt) {
 				dest: 'public/js/vendor.js'
 			},
 			tempest: {
-				src: ['public/js/tempest/**/*.js'],
-				dest: 'public/js/tempest.js'
+				src: [
+					'js/tempest/**/*.js',
+					'public/<%= config.paths.js.tempest %>/**/*.js'
+				],
+				dest: 'public/<%= config.paths.js.tempest %>.js'
 			},
 			app: {
-				src: ['public/js/app/**/*.js'],
-				dest: 'public/js/app.js'
+				src: [
+					'js/app/**/*.js',
+					'public/<%= config.paths.js.app %>/**/*.js'
+				],
+				dest: 'public/<%= config.paths.js.app %>.js'
 			}
 		},
 
@@ -116,8 +128,12 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('merge', ['concat', 'clean']);
 
-	grunt.registerTask('dev', ['sass:dev', 'ts:prod', 'merge', 'uglify', 'watch']);
-	grunt.registerTask('prod', ['sass:prod', 'ts:prod', 'merge']);
+	// Use during development - does not minify files & runs a watch task.
+	grunt.registerTask('dev', ['sass:dev', 'ts:prod', 'merge', 'watch']);
 
+	// Run on production - minifies files.
+	grunt.registerTask('prod', ['sass:prod', 'ts:prod', 'merge', 'uglify']);
+
+	// Default to development mode.
 	grunt.registerTask('default', ['dev']);
 }
