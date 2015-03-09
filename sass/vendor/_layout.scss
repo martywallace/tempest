@@ -1,0 +1,82 @@
+.grid {
+	margin: 0 auto;
+	max-width: 1000px;
+
+	.column {
+		float: left;
+		width: 100%;
+
+		&.zero { width: 0%; }
+		&.five { width: 5%; }
+		&.ten { width: 10%; }
+		&.fifteen { width: 15%; }
+		&.twenty { width: 20%; }
+		&.twenty-five { width: 25%; }
+		&.thirty { width: 30%; }
+		&.thirty-five { width: 35%; }
+		&.forty { width: 40%; }
+		&.forty-five { width: 45%; }
+		&.fifty { width: 50%; }
+		&.fifty-five { width: 55%; }
+		&.sixty { width: 60%; }
+		&.sixty-five { width: 65%; }
+		&.seventy { width: 70%; }
+		&.seventy-five { width: 75%; }
+		&.eighty { width: 80%; }
+		&.eighty-five { width: 85%; }
+		&.ninety { width: 90%; }
+		&.ninety-five { width: 95%; }
+		&.one-hundred { width: 100%; }
+
+		&.float-left {
+			@extend .float-left;
+		}
+
+		&.float-right {
+			@extend .float-right;
+		}
+	}
+
+	&::after {
+		@extend .clear;
+		content: '';
+	}
+}
+
+.clear {
+	clear: both;
+	display: block;
+	width: auto;
+}
+
+.float-left { float :left; }
+.float-right { float: right; }
+
+.display-block { display: block; }
+.display-inline-block { display: inline-block; }
+.display-inline { display: inline; }
+
+.content {
+	h1, h2, h3, h4, h5, h6, p, ul, ol, pre, img {
+		+ h1, + h2, + h3, + h4, + h5, + h6, + p, + ul, + ol, + pre, + img {
+			padding-top: 10px;
+		}
+	}
+}
+
+h1 { font-size: 400%; }
+h2 { font-size: 350%; }
+h3 { font-size: 300%; }
+h4 { font-size: 250%; }
+h5 { font-size: 200%; }
+h6 { font-size: 150%; }
+
+a {
+	text-decoration: none;
+}
+
+a,
+button,
+input[type='button'] {
+	cursor: pointer;
+}

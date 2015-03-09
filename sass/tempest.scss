@@ -1,5 +1,7 @@
 @charset "utf-8";
-@import "/public/type/opensans/config.css";
+@import "vendor/base";
+@import "vendor/layout";
+@import "../../type/opensans/config.css";
 
 .grid {
 	max-width: 1000px;
@@ -17,14 +19,14 @@ body {
 	padding: 30px 0;
 
 	a {
-		display: inline-block;
 		background: #DB3911;
-		color: #FFF;
-		padding: 8px 10px;
 		border-radius: 4px;
-		font-size: 12px;
-		font-family: 'OpenSansBold';
+		color: #FFF;
+		display: inline-block;
 		float: right;
+		font-family: 'OpenSansBold';
+		font-size: 12px;
+		padding: 8px 10px;
 
 		&:hover {
 			background: #444;
@@ -44,14 +46,14 @@ h1 {
 }
 
 #content {
-	padding: 70px 0;
 	background: #FFF;
+	padding: 70px 0;
 }
 
 ul {
+	list-style: none;
 	margin: 0 auto;
 	text-align: left;
-	list-style: none;
 }
 
 ul > li + li {
@@ -71,44 +73,44 @@ ul > li > pre > code {
 }
 
 small {
-	font-size: 11px;
 	color: #777;
+	font-size: 11px;
 }
 
 #request {
 	background: #F0F0F0;
+	border-radius: 5px;
 	color: #333;
 	font-size: 11px;
 	word-wrap: break-word;
-	border-radius: 5px;
 
 	h2 {
 		background: #444;
-		color: #EEE;
-		padding: 14px 10px;
-		font-size: 13px;
 		border-top-left-radius: 5px;
 		border-top-right-radius: 5px;
+		color: #EEE;
+		font-size: 13px;
+		padding: 14px 10px;
 	}
 
 	h6 {
-		padding: 10px;
-		font-size: 12px;
 		background: #E0E0E0;
 		color: #5F5F5F;
+		font-size: 12px;
+		padding: 10px;
 	}
 
 	p,
 	pre {
-		padding: 10px;
 		background: none;
+		padding: 10px;
 	}
 }
 
 #foot {
-	padding: 20px 0;
-	font-size: 11px;
 	color: #777;
+	font-size: 11px;
+	padding: 20px 0;
 
 	a {
 		color: #F0603C;
@@ -121,8 +123,8 @@ small {
 
 @media screen and (max-width: 800px) {
 	.column {
-		width: 100% !important;
 		float: none;
+		width: 100% !important;
 	}
 
 	.column + .column {
