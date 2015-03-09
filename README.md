@@ -1,6 +1,6 @@
 # Tempest.
 
-Tempest is a tiny PHP framework for developing small to medium sized websites and applications. It is a lightweight alternative to heavier frameworks like [Laravel](http://laravel.com/); for developers who only need basic routing and general project structure to get going.
+Tempest is a tiny PHP framework for developing small to medium sized websites and applications. It is a lightweight alternative to heavier frameworks like [Laravel](http://laravel.com/); for developers who only need basic routing and general project structure to get going. Tempest also includes some useful tools for front-end development; automatic TypeScript, JavaScript and SASS compilation and minifaction to name a few.
 
 ## Pre-requisites.
 
@@ -36,9 +36,9 @@ Tempest makes use of various tools to streamline the development process:
 
 #### SASS.
 
-* Put your SASS into `css/`. Your SASS will be compiled down into `public/css/`.
+* Put your SASS into `sass/`. Your SASS will be compiled down into `public/css/`.
 * Files beginning with `_` will not be compiled, following standard SASS rules.
-* Some useful boilerplate SASS is located in `css/vendor/`.
+* Some useful boilerplate SASS is located in `sass/vendor/`.
 
 #### HTML & Twig.
 
