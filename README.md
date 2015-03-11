@@ -60,7 +60,7 @@ Tempest makes use of various tools to streamline the development process:
 * [0.0.1](https://github.com/MartyWallace/Tempest/releases/tag/0.0.1)
 	* This release is explained in the [wiki section](https://github.com/MartyWallace/Tempest/wiki).
     * Custom logicless templating.
-    * Easy to set up (no need for Composer, Grunt, virtual host setup, etc.
+    * Easy to set up (no need for Composer, Grunt, virtual host setup, etc).
     * Runs correctly in subdirectories as its own application.
 
 ## License.
