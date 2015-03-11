@@ -311,4 +311,12 @@ class Tempest
 	 */
 	public function getServices(){ return $this->services; }
 
+
+	/**
+	 * Returns the current version of Tempest.
+	 *
+	 * @return string
+	 */
+	public function getVersion(){ return '1.0.0'; }
+
 }
