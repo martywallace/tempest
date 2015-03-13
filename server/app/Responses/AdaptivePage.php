@@ -19,10 +19,6 @@ class AdaptivePage extends Responder
 
 	public function index(Request $request)
 	{
-		trigger_error('fdsfs');
-		trigger_error('fdsfs');
-		trigger_error('fdsfs');
-		
 		$result = tempest()->twig->render($this->name . '.html', array());
 
 		if ($result === null)

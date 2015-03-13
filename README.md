@@ -67,8 +67,8 @@ Tempest makes use of various tools to streamline the development process:
 
 * [1.1.0](https://github.com/MartyWallace/Tempest/releases/tag/1.1.0)
 	* Greatly improved error handling; you can now handle specific HTTP errors buy placing a Twig template with the same name into `/html/_status/`.
-	* Cleant up templates.
-	* Cleant up SASS.
+	* Cleaned up templates.
+	* Cleaned up SASS.
 
 * [1.0.0](https://github.com/MartyWallace/Tempest/releases/tag/1.0.0)
 	* Modern project structure (using `public` for public files).
