@@ -12,7 +12,8 @@ module.exports = function(grunt) {
 
 		// Append additional vendor JavaScript files here.
 		vendorJs: [
-			'<%= config.paths.js.vendor %>/jquery/dist/jquery.min.js'
+			'<%= config.paths.js.vendor %>/jquery/dist/jquery.min.js',
+			'<%= config.paths.js.vendor %>/modernizr/modernizr.js',
 		],
 
 		// SASS files to watch and compile.
