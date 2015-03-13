@@ -2,8 +2,6 @@
 
 use Tempest\Tempest;
 use Tempest\HTTP\Router;
-use Tempest\HTTP\Request;
-use Tempest\HTTP\Status;
 
 
 class App extends Tempest
@@ -16,17 +14,12 @@ class App extends Tempest
 	}
 
 
-	protected function errorOutput(Request $r, $code)
+	protected function defineServices()
 	{
-		if($code === Status::NOT_FOUND)
-		{
-			// You are able to implement a custom 404 page here.
-			return '404 - Not Found.';
-		}
-
-
-		// Use default error output if the code hasn't been handled.
-		return parent::errorOutput($r, $code);
+		return array(
+			// Add services here. Services are accessible in Twig via {{ tempest.<serviceName> }}.
+			// ...
+		);
 	}
 
 }

@@ -15,11 +15,11 @@ class Config
 	{
 		$data = require_once(APP_ROOT . 'config.php');
 
-		if(array_key_exists('*', $data))
+		if (array_key_exists('*', $data))
 		{
 			$this->data = $data['*'];
 
-			if(array_key_exists(HOST, $data))
+			if (array_key_exists(HOST, $data))
 			{
 				// Consume host-specific configuration and overwrite where necessary.
 				$this->data = array_replace_recursive($this->data, $data[HOST]);
@@ -32,7 +32,7 @@ class Config
 		}
 
 		// General configuration.
-		date_default_timezone_set($this->data("timezone", "Australia/Sydney"));
+		if ($this->data('timezone')) date_default_timezone_set($this->data('timezone'));
 	}
 
 
@@ -46,15 +46,15 @@ class Config
 	 */
 	public function data($field = null, $default = null)
 	{
-		if($field === null) return $this->data;
+		if ($field === null) return $this->data;
 
 		$path = preg_split('/\.+/', $field);
-		if(!array_key_exists($path[0], $this->data)) return $default;
+		if (!array_key_exists($path[0], $this->data)) return $default;
 
 		$target = $this->data;
-		foreach($path as $p)
+		foreach ($path as $p)
 		{
-			if(array_key_exists($p, $target)) $target = $target[$p];
+			if (array_key_exists($p, $target)) $target = $target[$p];
 			else return $default;
 		}
 

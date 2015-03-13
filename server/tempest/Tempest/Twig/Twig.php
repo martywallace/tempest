@@ -1,6 +1,7 @@
 <?php namespace Tempest\Twig;
 
 use Tempest\IService;
+use Tempest\Utils\Path;
 use \Twig_Loader_Filesystem;
 use \Twig_Environment;
 
@@ -19,8 +20,13 @@ class Twig implements IService
 
 	public function __construct()
 	{
-		$this->loader = new Twig_Loader_Filesystem(array(APP_ROOT . 'html/'));
-		$this->environment = new Twig_Environment($this->loader);
+		$this->loader = new Twig_Loader_Filesystem(array(
+			Path::create(APP_ROOT . 'html', Path::DELIMITER_RIGHT)
+		));
+
+		$this->environment = new Twig_Environment($this->loader, array(
+			'debug' => tempest()->config('dev', false)
+		));
 	}
 
 
@@ -37,9 +43,9 @@ class Twig implements IService
 		if($this->loader->exists($file))
 		{
 			return new TwigResponse($this->environment->render($file, array_merge($context, array(
+				'config' => tempest()->config('twig', array()),
 				'tempest' => tempest()->getServices(),
-				'request' => tempest()->getRouter()->getRequest(),
-				'title' => tempest()->config('title')
+				'request' => tempest()->getRouter()->getRequest()
 			))));
 		}
 

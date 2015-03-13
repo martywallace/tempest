@@ -36,8 +36,8 @@ class Request extends Path
 	{
 		$data = $this->getData();
 
-		if($stack === null) return $data;
-		if($key === null) return $data[$stack];
+		if ($stack === null) return $data;
+		if ($key === null) return $data[$stack];
 
 		return array_key_exists($key, $data[$stack]) ? $data[$stack][$key] : $default;
 	}
@@ -53,7 +53,7 @@ class Request extends Path
 	{
 		http_response_code($status);
 
-		if(preg_match('/^\w*:\/\//', $dest)) header("Location: " . $dest);
+		if (preg_match('/^\w*:\/\//', $dest)) header("Location: " . $dest);
 		else header("Location: " . $dest);
 
 		exit;
@@ -65,7 +65,7 @@ class Request extends Path
 	 */
 	private function getData()
 	{
-		if($this->data === null)
+		if ($this->data === null)
 		{
 			$this->data = array(
 				GET => array_slice($_GET, 0),

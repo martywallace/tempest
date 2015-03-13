@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>{{ title }} - Success!</title>
+		<title>{{ title is defined ? title : config.title }}</title>
 
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		{% block meta %}
+			<meta charset="utf-8">
+			{% if meta is defined %}
+				{% for item in meta %}
+					<meta name="{{ item.name }}" content="{{ item.content }}" />
+				{% endfor %}
+			{% endif %}
+		{% endblock %}
 
 		{% block css %}
 			<link rel="stylesheet" href="/css/app.css">
 		{% endblock %}
 	</head>
 	<body>
-		<div id="content">
-			{% block content %}{% endblock %}
-		</div>
+		{% block body %}{% endblock %}
 
 		{% block js %}
 			<script src="/js/vendor.js"></script>

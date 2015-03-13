@@ -1,0 +1,63 @@
+{% set title = config.title ~ ' - Internal Server Error' %}
+
+{% set meta = [
+	{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
+	{ name: 'robots', context: 'noindex, nofollow' }
+] %}
+
+{% extends '_layouts/doc.html' %}
+
+{% block css %}
+	<link rel="stylesheet" href="/css/tempest.css">
+{% endblock %}
+
+{% block body %}
+	<div id="head">
+		<div class="grid">
+			<h1>{{ title }}</h1>
+			<a href="/">Return</a>
+		</div>
+	</div>
+
+	<div id="content">
+		<div class="grid">
+			<div class="column sixty">
+				{% block content %}
+					<ul id="errors">
+						{% for error in errors %}
+							<li>
+								<pre>{{ error.getString() }}</pre>
+								<p><small><span title="{{ error.getFile() }}">{{ error.getShortFile() }}</span> &middot; Line {{ error.getLine() }}</small></p>
+							</li>
+						{% endfor %}
+					</ul>
+				{% endblock %}
+			</div>
+			<div class="column thirty-five float-right">
+				<div id="request">
+					<h2>REQUEST DATA</h2>
+
+					<h6>URI</h6>
+					<p>{{ request.value }}</p>
+					
+					<h6>GET</h6>
+					<pre>{{ request.data('get') | json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+					
+					<h6>POST</h6>
+					<pre>{{ request.data('post') | json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+					
+					<h6>NAMED</h6>
+					<pre>{{ request.data('named') | json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+				</div>
+			</div>
+
+			<div class="clear"></div>
+		</div>
+	</div>
+
+	<div id="foot">
+		<div class="grid">
+			<p><a target="_blank" href="https://github.com/MartyWallace/Tempest">Tempest Framework</a> &middot; Developed by Marty Wallace.</p>
+		</div>
+	</div>
+{% endblock %}

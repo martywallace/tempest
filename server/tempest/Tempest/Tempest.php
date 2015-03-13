@@ -7,6 +7,7 @@ use Tempest\HTTP\Responder;
 use Tempest\HTTP\Response;
 use Tempest\MySQL\Database;
 use Tempest\Twig\Twig;
+use Tempest\Utils\Path;
 
 
 /**
@@ -93,15 +94,15 @@ class Tempest
 		$request = $this->router->getRequest();
 		$match = $this->router->getMatch();
 
-		if($match !== null)
+		if ($match !== null)
 		{
 			// Create the response class.
 			$responder = Responder::create(preg_replace('/\.+/', '\\', 'Responses\\' . $match->getHandlerClass()), $this);
 			$method = $match->getHandlerMethod();
 
-			if($responder !== null)
+			if ($responder !== null)
 			{
-				if(method_exists($responder, $method))
+				if (method_exists($responder, $method))
 				{
 					$responder->setup($request);
 					$this->setResponse($responder->finalize($responder->$method($request)));
@@ -184,13 +185,13 @@ class Tempest
 	 */
 	private function finalize()
 	{
-		if($this->status <= 300 && count($this->errors) > 0)
+		if ($this->status <= 300 && count($this->errors) > 0)
 		{
 			// If the HTTP Responder code is in the OK range but there are errors.
 			$this->status = Status::INTERNAL_SERVER_ERROR;
 		}
 
-		if($this->status >= 300)
+		if ($this->status >= 300)
 		{
 			// If the HTTP Responder code does not fall in the OK range, transform the output to an alternate value.
 			// The alternate value is defined in App::showErrors().
@@ -201,7 +202,7 @@ class Tempest
 		http_response_code($this->status);
 		header("Content-Type: {$this->response->getMime()}; charset={$this->response->getCharset()}");
 
-		if($this->response !== null)
+		if ($this->response !== null)
 		{
 			echo $this->response->getFinalOutput($this->router->getRequest());
 		}
@@ -218,26 +219,20 @@ class Tempest
 	 *
 	 * @return string|array|Response The resulting output.
 	 */
-	protected function errorOutput(Request $request, $code)
+	private function errorOutput(Request $request, $code)
 	{
-		if($code === Status::NOT_FOUND)
+		if (Path::create(APP_ROOT . 'html/_status/' . $code . '.html')->isFile())
 		{
-			return '404 - Page not found.';
-		}
-
-		if($code >= 500)
-		{
-			if($this->config('dev', false))
+			if ($code >= 500 && !$this->config('dev', false))
 			{
-				// Server-side errors.
-				return $this->twig->render('tempest/errors.html', array(
-					"title" => "Application Error",
-					"get" => count($request->data(GET)) > 0 ? json_encode($request->data(GET), JSON_PRETTY_PRINT) : "-",
-					"post" => count($request->data(POST)) > 0 ? json_encode($request->data(POST), JSON_PRETTY_PRINT) : "-",
-					"named" => count($request->data(NAMED)) > 0 ? json_encode($request->data(NAMED), JSON_PRETTY_PRINT) : "-",
-					'errors' => $this->errors
-				));
+				// Don't show server errors unless dev mode is turned on.
+				return null;
 			}
+
+			// We can create Twig templates to render errors specific to certain HTTP status codes.
+			return $this->twig->render('_status/' . $code . '.html', array(
+				'errors' => $this->errors
+			));
 		}
 
 		return null;
@@ -253,7 +248,7 @@ class Tempest
 	 */
 	public function __get($prop)
 	{
-		if(array_key_exists($prop, $this->services))
+		if (array_key_exists($prop, $this->services))
 		{
 			// Returns a service with the name.
 			return $this->services[$prop];
@@ -271,13 +266,13 @@ class Tempest
 	 */
 	protected function setResponse($value)
 	{
-		if(is_array($value))
+		if (is_array($value))
 		{
 			// Transform returned array into JSON.
 			$value = new Response('application/json', json_encode($value, JSON_NUMERIC_CHECK));
 		}
 
-		if(!is_a($value, 'Tempest\HTTP\Response'))
+		if (!is_a($value, 'Tempest\HTTP\Response'))
 		{
 			// Transform existing output to an output object, if not already.
 			$value = new Response('text/plain', $value);
@@ -317,6 +312,6 @@ class Tempest
 	 *
 	 * @return string
 	 */
-	public function getVersion(){ return '1.0.0'; }
+	public function getVersion(){ return '1.1.0'; }
 
 }

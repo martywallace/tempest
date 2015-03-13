@@ -17,15 +17,22 @@
 return array(
 
 	'*' => array(
-		'title' => 'New App',
+		// The application timezone.
 		'timezone' => 'Australia/Sydney',
 
+		// Variables that are accessible within Twig templates via {{ config.<key> }}.
+		// Do not put sensitive data in this block!
+		'twig' => array(
+			'title' => 'New App'
+		),
+
+		// Routes that the application can respond to.
 		'routes' => array(
 			'/' => 'AdaptivePage'
 		)
 	),
 
-	'localhost' => array(
+	'tempest.local' => array(
 		// Dev mode shows more verbose errors.
 		'dev' => true
 	)
