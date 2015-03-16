@@ -117,9 +117,22 @@ class Tempest
 		}
 		else
 		{
-			// No matching routes.
-			$this->status = Status::NOT_FOUND;
-			trigger_error("Input route <code>{$request}</code> not handled.");
+			// Let's peek at what templates are available in <code>/html/</code>. If we find one with a name that
+			// matches the request, let's use it!
+			$template = REQUEST_URI === '/' ? 'home' : preg_replace(Path::PATTERN_SLASHES, '-',REQUEST_URI);
+			$twigResponse = $this->twig->render($template . '.html');
+
+			if ($twigResponse !== null)
+			{
+				// Found a template that might work.
+				$this->setResponse($twigResponse);
+			}
+			else
+			{
+				// No matching routes or templates.
+				$this->status = Status::NOT_FOUND;
+				trigger_error("Input route <code>{$request}</code> not handled.");
+			}
 		}
 		
 		$this->finalize();

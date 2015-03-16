@@ -27,8 +27,11 @@ return array(
 		),
 
 		// Routes that your application will handle and respond to.
+		// If not routes are matched, Tempest will look in the <code>/html/</code> directory for templates that match
+		// the request URI.
+		// If no templates are found, a 404 will be sent.
 		'routes' => array(
-			'/' => array('controller' => 'TemplatePage', 'vars' => array('template' => 'home'))
+			'/sample' => array('controller' => 'SampleController', 'vars' => array('property' => 'value'))
 		)
 	),
 
