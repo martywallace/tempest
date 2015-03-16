@@ -1,6 +1,7 @@
 .grid {
 	margin: 0 auto;
 	max-width: 1000px;
+	padding: 20px 0;
 
 	.column {
 		float: left;
@@ -35,6 +36,10 @@
 		&.float-right {
 			@extend .float-right;
 		}
+
+		&.float-none {
+			@extend .float-none;
+		}
 	}
 
 	&::after {
@@ -49,12 +54,51 @@
 	width: auto;
 }
 
-.float-left { float :left; }
-.float-right { float: right; }
+.float {
+	&-left { float: left; }
+	&-right { float: right; }
+	&-none { float: none; }
+}
 
-.display-block { display: block; }
-.display-inline-block { display: inline-block; }
-.display-inline { display: inline; }
+.display {
+	&-block { display: block; }
+	&-inline-block { display: inline-block; }
+	&-inline { display: inline; }
+}
+
+.text {
+	&-left { text-align: left; }
+	&-center { text-align: center; }
+	&-right { text-align: right; }
+}
+
+.pad {
+	&-top-none,
+	&-vertical-none { padding-top: 0; }
+
+	&-bottom-none,
+	&-vertical-none { padding-bottom: 0; }
+
+	&-left-none,
+	&-horizontal-none { padding-left: 0; }
+
+	&-right-none,
+	&-horizontal-none { padding-right: 0; }
+}
+
+.margin {
+	&-top-none,
+	&-vertical-none { margin-top: 0; }
+
+	&-bottom-none,
+	&-vertical-none { margin-bottom: 0; }
+
+	&-left-none,
+	&-horizontal-none { margin-left: 0; }
+
+	&-right-none,
+	&-horizontal-none { margin-right: 0; }
+}
 
 .content {
 	h1, h2, h3, h4, h5, h6, p, ul, ol, pre, img {
@@ -62,21 +106,4 @@
 			padding-top: 10px;
 		}
 	}
-}
-
-h1 { font-size: 400%; }
-h2 { font-size: 350%; }
-h3 { font-size: 300%; }
-h4 { font-size: 250%; }
-h5 { font-size: 200%; }
-h6 { font-size: 150%; }
-
-a {
-	text-decoration: none;
-}
-
-a,
-button,
-input[type='button'] {
-	cursor: pointer;
 }

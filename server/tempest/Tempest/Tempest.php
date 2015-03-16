@@ -97,7 +97,7 @@ class Tempest
 		if ($match !== null)
 		{
 			// Create the response class.
-			$responder = Responder::create(preg_replace('/\.+/', '\\', 'Responses\\' . $match->getHandlerClass()), $this);
+			$responder = Responder::create(preg_replace('/\.+/', '\\', 'Responders\\' . $match->getHandlerClass()), $this);
 			$method = $match->getHandlerMethod();
 
 			if ($responder !== null)

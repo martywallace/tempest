@@ -1,4 +1,4 @@
-<?php namespace Responses;
+<?php namespace Responders;
 
 use Tempest\HTTP\Responder;
 use Tempest\HTTP\Request;

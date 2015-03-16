@@ -3,3 +3,29 @@
 	margin: 0;
 	padding: 0;
 }
+
+h1, h2, h3, h4, h5, h6,
+strong, b, th, thead {
+	font-weight: normal;
+}
+
+em, i {
+	font-style: normal;
+}
+
+h1 { font-size: 400%; }
+h2 { font-size: 350%; }
+h3 { font-size: 300%; }
+h4 { font-size: 250%; }
+h5 { font-size: 200%; }
+h6 { font-size: 150%; }
+
+a {
+	text-decoration: none;
+}
+
+a,
+button,
+input[type='button'] {
+	cursor: pointer;
+}

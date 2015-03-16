@@ -1,8 +1,19 @@
 {% set title = config.title ~ ' - Page Not Found' %}
 
+{% set meta = [
+	{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
+	{ name: 'robots', context: 'noindex, nofollow' }
+] %}
+
 {% extends '_layouts/doc.html' %}
 
+{% block css %}
+	<link rel="stylesheet" href="/css/tempest.css">
+{% endblock %}
+
 {% block body %}
-	<h1>404</h1>
-	<p>This resource does not exist. Go back to our <a href="/">homepage</a>.</p>
+	<div class="error content text-center">
+		<h1>404</h1>
+		<p>This resource does not exist. Go back to our <a href="/">homepage</a>.</p>
+	</div>
 {% endblock %}

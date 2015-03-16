@@ -32,7 +32,7 @@ return array(
 		)
 	),
 
-	'tempest.local' => array(
+	'localhost' => array(
 		// Dev mode shows more verbose errors.
 		'dev' => true
 	)

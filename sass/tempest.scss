@@ -1,16 +1,17 @@
 @charset "utf-8";
 @import "vendor/base";
 @import "vendor/layout";
-@import "../../type/opensans/config.css";
-
-.grid {
-	max-width: 1000px;
-	padding: 0 20px;
-}
+@import "../../type/opensans/opensans.css";
 
 body {
 	background: #EEE;
 	font-family: 'OpenSansReg';
+}
+
+h1, h2, h3, h4, h5, h6,
+strong, th, thead {
+	font-family: 'OpenSansBold';
+	font-weight: bold;
 }
 
 #head {
@@ -107,6 +108,10 @@ small {
 		background: none;
 		padding: 10px;
 	}
+}
+
+.error {
+	padding: 50px 0;
 }
 
 #foot {
