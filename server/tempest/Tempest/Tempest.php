@@ -119,7 +119,7 @@ class Tempest
 		{
 			// Let's peek at what templates are available in <code>/html/</code>. If we find one with a name that
 			// matches the request, let's use it!
-			$template = REQUEST_URI === '/' ? 'home' : preg_replace(Path::PATTERN_SLASHES, '-',REQUEST_URI);
+			$template = REQUEST_URI === '/' ? 'home' : trim(preg_replace(Path::PATTERN_SLASHES, '-',REQUEST_URI), '-');
 			$twigResponse = $this->twig->render($template . '.html');
 
 			if ($twigResponse !== null)
