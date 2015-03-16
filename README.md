@@ -65,6 +65,11 @@ Tempest makes use of various tools to streamline the development process:
 
 ## Releases.
 
+* [1.2.0](https://github.com/MartyWallace/Tempest/releases/tag/1.2.0)
+	* Renamed Responder to Controller.
+	* Added ability to pass arbitrary data to controllers via route definitions.
+	* Added behaviour where Tempest will look for templates with a file-name matching the request URI if no route definitions matched.
+
 * [1.1.0](https://github.com/MartyWallace/Tempest/releases/tag/1.1.0)
 	* Greatly improved error handling; you can now handle specific HTTP errors buy placing a Twig template with the same name into `/html/_status/`.
 	* Cleaned up templates.
