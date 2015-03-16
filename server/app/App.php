@@ -7,10 +7,17 @@ use Tempest\HTTP\Router;
 class App extends Tempest
 {
 	
-	protected function setup(Router $router)
+	protected function setup()
 	{
-		// Define application routes.
-		$router->register($this->config("routes"));
+		// Application setup.
+		// ...
+	}
+
+
+	protected function defineRoutes(Router $router)
+	{
+		// Use the routes defined in the app configuration.
+		return tempest()->config('routes', array());
 	}
 
 

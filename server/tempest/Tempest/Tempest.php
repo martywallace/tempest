@@ -3,7 +3,7 @@
 use Tempest\HTTP\Router;
 use Tempest\HTTP\Status;
 use Tempest\HTTP\Request;
-use Tempest\HTTP\Responder;
+use Tempest\HTTP\Controller;
 use Tempest\HTTP\Response;
 use Tempest\MySQL\Database;
 use Tempest\Twig\Twig;
@@ -89,7 +89,8 @@ class Tempest
 		));
 
 		$this->router = new Router();
-		$this->setup($this->router);
+		$this->router->register($this->defineRoutes($this->router));
+		$this->setup();
 
 		$request = $this->router->getRequest();
 		$match = $this->router->getMatch();
@@ -97,20 +98,20 @@ class Tempest
 		if ($match !== null)
 		{
 			// Create the response class.
-			$responder = Responder::create(preg_replace('/\.+/', '\\', 'Responders\\' . $match->getHandlerClass()), $this);
-			$method = $match->getHandlerMethod();
+			$controller = Controller::create(preg_replace('/\.+/', '\\', 'Controllers\\' . $match->getControllerClass()), $this);
+			$method = $match->getControllerAction();
 
-			if ($responder !== null)
+			if ($controller !== null)
 			{
-				if (method_exists($responder, $method))
+				if (method_exists($controller, $method))
 				{
-					$responder->setup($request);
-					$this->setResponse($responder->finalize($responder->$method($request)));
+					$controller->setup($request, $match->getVars());
+					$this->setResponse($controller->finalize($controller->$method($request, $match->getVars())));
 				}
 				else
 				{
 					// Responder class was constructed successfully, but the target method was not defined.
-					trigger_error("Responder class <code>" . get_class($responder) . "</code> does not have the method <code>$method()</code>.");
+					trigger_error("Controller <code>" . get_class($controller) . "</code> does not have the method <code>$method()</code>.");
 				}
 			}
 		}
@@ -140,12 +141,35 @@ class Tempest
 
 
 	/**
+	 * Called by <code>start()</code> after the configuration and router have been initialized.
+	 * Override for custom initialization logic in your application class.
+	 */
+	protected function setup(){ /**/ }
+
+
+	/**
 	 * Defines the services used by the application.
 	 * Override in your application class to define additional services.
 	 *
 	 * @return array
 	 */
 	protected function defineServices()
+	{
+		return array(
+			//
+		);
+	}
+
+
+	/**
+	 * Defines the routes that this application will handle.
+	 * Override in your application class to defined additional routes.
+	 *
+	 * @param Router $router The Router managing the returned routes.
+	 *
+	 * @return array
+	 */
+	protected function defineRoutes(Router $router)
 	{
 		return array(
 			//
@@ -187,7 +211,7 @@ class Tempest
 	{
 		if ($this->status <= 300 && count($this->errors) > 0)
 		{
-			// If the HTTP Responder code is in the OK range but there are errors.
+			// If the HTTP response code is in the OK range but there are errors.
 			$this->status = Status::INTERNAL_SERVER_ERROR;
 		}
 
@@ -244,7 +268,7 @@ class Tempest
 	 *
 	 * @param string $prop
 	 *
-	 * @return Service
+	 * @return IService
 	 */
 	public function __get($prop)
 	{
@@ -280,15 +304,6 @@ class Tempest
 
 		$this->response = $value;
 	}
-
-
-	/**
-	 * Called by <code>start()</code> after the configuration and router have been initialized.
-	 * Override for custom initialization logic in <code>App</code>.
-	 *
-	 * @param $router Router The application router.
-	 */
-	protected function setup(Router $router){ /**/ }
 
 
 	/**

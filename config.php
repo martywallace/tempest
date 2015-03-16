@@ -26,9 +26,9 @@ return array(
 			'title' => 'New App'
 		),
 
-		// Routes that the application can respond to.
+		// Routes that your application will handle and respond to.
 		'routes' => array(
-			'/' => 'AdaptivePage'
+			'/' => array('controller' => 'TemplatePage', 'vars' => array('template' => 'home'))
 		)
 	),
 

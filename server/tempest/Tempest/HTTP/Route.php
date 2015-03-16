@@ -9,31 +9,54 @@ use Tempest\Utils\Path;
  */
 class Route extends Path
 {
-	
-	private $handler;
+
+	private $vars;
+	private $controller;
 
 
 	/**
 	 * Constructor.
-	 * @param $base The base path.
-	 * @param $handler The handler associated with this Route.
+	 *
+	 * @param string $base The base path.
+	 * @param array $detail The data attached to the route URI.
 	 */
-	public function __construct($base, $handler)
+	public function __construct($base, Array $detail)
 	{
-		$this->handler = preg_split('/\:+/', $handler);
+		if (!array_key_exists('controller', $detail))
+		{
+			trigger_error('Route definitions must point to a controller.');
+		}
+		else
+		{
+			$this->vars = array_key_exists('vars', $detail) ? $detail['vars'] : array();
+			$this->controller = preg_split('/\:+/', $detail['controller']);
+		}
+
 		parent::__construct($base);
 	}
 
 
 	/**
-	 * Returns the response class handing this Route.
+	 * Returns custom variables associated with the route definition.
+	 *
+	 * @return array
 	 */
-	public function getHandlerClass(){ return $this->handler[0]; }
+	public function getVars(){ return $this->vars; }
+
+
+	/**
+	 * Returns the response class handing this Route.
+	 *
+	 * @return string
+	 */
+	public function getControllerClass(){ return $this->controller[0]; }
 
 
 	/**
 	 * Returns the method within the response class handling this Route.
+	 *
+	 * @return string
 	 */
-	public function getHandlerMethod(){ return count($this->handler) > 1 ? $this->handler[1] : 'index'; }
+	public function getControllerAction(){ return count($this->controller) > 1 ? $this->controller[1] : 'index'; }
 
 }
