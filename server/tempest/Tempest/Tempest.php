@@ -8,6 +8,7 @@ use Tempest\HTTP\Response;
 use Tempest\MySQL\Database;
 use Tempest\Twig\Twig;
 use Tempest\Utils\Path;
+use Tempest\Services\Platform;
 
 
 /**
@@ -84,8 +85,9 @@ class Tempest
 	public function start()
 	{
 		$this->services = array_merge($this->defineServices(), array(
-			'twig' => new Twig($this),
-			'db' => new Database($this)
+			'twig' => new Twig(),
+			'db' => new Database(),
+			'platform' => new Platform()
 		));
 
 		$this->router = new Router();
