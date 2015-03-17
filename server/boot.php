@@ -1,6 +1,6 @@
 <?php
 
-define('APP_ROOT', __DIR__ . '/../');
+define('APP_ROOT', realpath(__DIR__ . '/../') . '/');
 
 require_once APP_ROOT . 'server/tempest/autoload.php';
 require_once APP_ROOT . 'server/vendor/autoload.php';

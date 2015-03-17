@@ -21,7 +21,7 @@ class Twig implements IService
 	public function __construct()
 	{
 		$this->loader = new Twig_Loader_Filesystem(array(
-			Path::create(APP_ROOT . 'html', Path::DELIMITER_RIGHT)
+			Path::create(APP_ROOT . 'html', Path::DELIMITER_RETAIN)->rpad()
 		));
 
 		$this->environment = new Twig_Environment($this->loader, array(
