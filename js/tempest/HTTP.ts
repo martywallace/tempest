@@ -1,10 +1,16 @@
 module Tempest
 {
-    export module HTTP
-    {
-        export enum Methods
-        {
-            GET, POST, PUT, DELETE
-        }
-    }
+	/**
+	* HTTP values & methods.
+	*/
+	export module HTTP
+	{
+		/**
+		* HTTP methods (e.g. GET, POST).
+		*/
+		export enum Methods
+		{
+			GET, POST, PUT, DELETE
+		}
+	}
 }
