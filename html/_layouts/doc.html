@@ -13,7 +13,7 @@
 		{% endblock %}
 
 		{% block css %}
-			<link rel="stylesheet" href="/css/app.css">
+			<link rel="stylesheet" href="{{ link('/css/app.css') }}">
 		{% endblock %}
 
 		{% if ga is defined %}
@@ -24,9 +24,9 @@
 		{% block body %}{% endblock %}
 
 		{% block js %}
-			<script src="/js/vendor.js"></script>
-			<script src="/js/tempest.js"></script>
-			<script src="/js/app.js"></script>
+			<script src="{{ link('/js/vendor.js') }}"></script>
+			<script src="{{ link('/js/tempest.js') }}"></script>
+			<script src="{{ link('/js/app.js') }}"></script>
 		{% endblock %}
 	</body>
 </html>

@@ -3,7 +3,7 @@
 	max-width: 1000px;
 	padding: 20px 0;
 
-	.column {
+	> .column {
 		float: left;
 		width: 100%;
 
@@ -103,7 +103,17 @@
 .content {
 	h1, h2, h3, h4, h5, h6, p, ul, ol, pre, img {
 		+ h1, + h2, + h3, + h4, + h5, + h6, + p, + ul, + ol, + pre, + img {
-			padding-top: 10px;
+			padding-top: 20px;
+		}
+	}
+}
+
+.reset {
+	ul.& {
+		list-style: none;
+
+		li {
+			display: inline;
 		}
 	}
 }

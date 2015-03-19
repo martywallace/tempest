@@ -85,15 +85,15 @@ class Path
 	{
 		$path = preg_replace(self::PATTERN_SLASHES, self::DELIMITER, $path);
 
-		if($strategy !== self::DELIMITER_RETAIN)
+		if ($strategy !== self::DELIMITER_RETAIN)
 		{
 			// Trim delimiters if we using any strategy other than DELIMITER_RETAIN.
 			$path = trim($path, self::DELIMITER);
 		}
 
-		if(strlen($path) === 0)
+		if (strlen($path) === 0)
 		{
-			if($strategy === self::DELIMITER_LEFT ||
+			if ($strategy === self::DELIMITER_LEFT ||
 			   $strategy === self::DELIMITER_RIGHT ||
 			   $strategy === self::DELIMITER_BOTH)
 			{
@@ -102,8 +102,8 @@ class Path
 			}
 		}
 
-		if($strategy === self::DELIMITER_LEFT || $strategy === self::DELIMITER_BOTH) $path = self::DELIMITER . $path;
-		if($strategy === self::DELIMITER_RIGHT || $strategy === self::DELIMITER_BOTH) $path = $path . self::DELIMITER;
+		if ($strategy === self::DELIMITER_LEFT || $strategy === self::DELIMITER_BOTH) $path = self::DELIMITER . $path;
+		if ($strategy === self::DELIMITER_RIGHT || $strategy === self::DELIMITER_BOTH) $path = $path . self::DELIMITER;
 
 		return $path;
 	}
@@ -269,14 +269,17 @@ class Path
 	 */
 	public function relativeTo($path)
 	{
-		if(empty($path)) return static::create($this);
+		if (empty($path)) return static::create($this);
 
 		$target = static::create($path, Path::DELIMITER_RETAIN)->ltrim();
 		$self = static::create($this->path, Path::DELIMITER_RETAIN)->ltrim();
 
-		if(strpos($self->__toString(), $target->__toString()) === 0)
+		if (strlen($self->value()) > 0 && strlen($target->value()) > 0)
 		{
-			return static::create(substr($self, strlen($target)), self::DELIMITER_LEFT);
+			if (strpos($self->value(), $target->value()) === 0)
+			{
+				return static::create(substr($self, strlen($target)), self::DELIMITER_LEFT);
+			}
 		}
 
 		return $self;
@@ -290,7 +293,7 @@ class Path
 	 */
 	public function segments()
 	{
-		if(strlen($this->path) === 0 || $this->path === self::DELIMITER)
+		if (strlen($this->path) === 0 || $this->path === self::DELIMITER)
 		{
 			// The path string is empty or the delimiter on its own.
 			return array();
@@ -331,9 +334,10 @@ class Path
 	 */
 	public function segment($index)
 	{
-		if($index < 0 || $index >= count($this->segments())) return null;
+		if ($index < 0 || $index >= count($this->segments())) return null;
 
-		return $this->segments()[$index];
+		$segments = $this->segments();
+		return $segments[$index];
 	}
 
 
@@ -372,7 +376,7 @@ class Path
 	{
 		$path = dirname($this->path);
 
-		if(strlen($path) === 0 || $path === '.') $path = self::DELIMITER;
+		if (strlen($path) === 0 || $path === '.') $path = self::DELIMITER;
 
 		return self::normalize($path);
 	}

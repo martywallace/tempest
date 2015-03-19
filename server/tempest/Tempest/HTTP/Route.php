@@ -32,7 +32,11 @@ class Route extends Path
 			$this->controller = preg_split('/\:+/', $detail['controller']);
 		}
 
-		parent::__construct($base);
+		parent::__construct(
+			Path::create($base)
+				->prepend(tempest()->getRoot())
+				->setStrategy(Path::DELIMITER_LEFT)
+		);
 	}
 
 

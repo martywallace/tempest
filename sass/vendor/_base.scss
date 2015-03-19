@@ -13,6 +13,10 @@ em, i {
 	font-style: normal;
 }
 
+img {
+	max-width: 100%;
+}
+
 h1 { font-size: 400%; }
 h2 { font-size: 350%; }
 h3 { font-size: 300%; }
@@ -22,6 +26,10 @@ h6 { font-size: 150%; }
 
 a {
 	text-decoration: none;
+
+	img {
+		border: none;
+	}
 }
 
 a,

@@ -8,12 +8,12 @@
 {% extends '_layouts/doc.html' %}
 
 {% block css %}
-	<link rel="stylesheet" href="/css/tempest.css">
+	<link rel="stylesheet" href="{{ link('/css/tempest.css') }}">
 {% endblock %}
 
 {% block body %}
 	<div class="error content text-center">
 		<h1>404</h1>
-		<p>This resource does not exist. Go back to our <a href="/">homepage</a>.</p>
+		<p>This resource does not exist. Go back to our <a href="{{ link('/') }}">homepage</a>.</p>
 	</div>
 {% endblock %}

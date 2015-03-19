@@ -8,14 +8,14 @@
 {% extends '_layouts/doc.html' %}
 
 {% block css %}
-	<link rel="stylesheet" href="/css/tempest.css">
+	<link rel="stylesheet" href="{{ link('/css/tempest.css') }}">
 {% endblock %}
 
 {% block body %}
 	<div id="head">
 		<div class="grid">
 			<h1>{{ title }}</h1>
-			<a href="/">Return</a>
+			<a href="{{ link('/') }}">Return</a>
 		</div>
 	</div>
 

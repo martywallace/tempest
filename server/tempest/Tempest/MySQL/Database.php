@@ -64,7 +64,8 @@ class Database extends PDO implements IService
 		$stmt = $this->prepare($query);
 		$this->execute($stmt, $params);
 
-		return $stmt->fetch(PDO::FETCH_NUM)[0];
+		$result = $stmt->fetch(PDO::FETCH_NUM);
+		return $result[0];
 	}
 
 

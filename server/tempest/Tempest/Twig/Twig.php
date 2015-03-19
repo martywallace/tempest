@@ -16,6 +16,8 @@ class Twig implements IService
 
 	private $loader;
 	private $environment;
+	private $functions;
+	private $filters;
 
 
 	public function __construct()
@@ -27,6 +29,9 @@ class Twig implements IService
 		$this->environment = new Twig_Environment($this->loader, array(
 			'debug' => tempest()->config('dev', false)
 		));
+
+		$this->functions = new Functions($this->environment);
+		$this->filters = new Filters($this->environment);
 	}
 
 
@@ -51,5 +56,21 @@ class Twig implements IService
 
 		return null;
 	}
+
+
+	/**
+	 * A reference to the Twig_Environment instance.
+	 *
+	 * @return Twig_Environment
+	 */
+	public function getEnvironment() { return $this->environment; }
+
+
+	/**
+	 * A reference to the Twig_Loader instance.
+	 *
+	 * @return Twig_Loader
+	 */
+	public function getLoader() { return $this->loader; }
 
 }

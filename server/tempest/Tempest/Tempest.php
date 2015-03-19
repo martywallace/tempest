@@ -40,6 +40,11 @@ class Tempest
 	private $router;
 
 	/**
+	 * @var Path
+	 */
+	private $root;
+
+	/**
 	 * @var Config
 	 */
 	private $config;
@@ -121,7 +126,12 @@ class Tempest
 		{
 			// Let's peek at what templates are available in <code>/html/</code>. If we find one with a name that
 			// matches the request, let's use it!
-			$template = REQUEST_URI === '/' ? 'home' : trim(preg_replace(Path::PATTERN_SLASHES, '-',REQUEST_URI), '-');
+			$uri = Path::create(REQUEST_URI)
+				->relativeTo($this->getRoot())
+				->setStrategy(Path::DELIMITER_LEFT)
+				->value();
+
+			$template = $uri === '/' ? 'home' : trim(preg_replace(Path::PATTERN_SLASHES, '-', $uri), '-');
 			$twigResponse = $this->twig->render($template . '.html');
 
 			if ($twigResponse !== null)
@@ -194,6 +204,7 @@ class Tempest
 
 	/**
 	 * Abort the application.
+	 *
 	 * @param $code int The HTTP status code.
 	 */
 	public function abort($code = 400)
@@ -238,7 +249,9 @@ class Tempest
 		}
 
 		// Send the HTTP status, content-type and final output.
-		http_response_code($this->status);
+		if (function_exists('http_response_code')) http_response_code($this->status);
+		else header('X-PHP-Response-Code: '. $this->status, true, $this->status);
+
 		header("Content-Type: {$this->response->getMime()}; charset={$this->response->getCharset()}");
 
 		if ($this->response !== null)
@@ -330,11 +343,30 @@ class Tempest
 
 
 	/**
+	 * Returns the client-side application root.
+	 *
+	 * @return Path
+	 */
+	public function getRoot()
+	{
+		if ($this->root === null)
+		{
+			$this->root = Path::create(
+				$this->config('root', '/'),
+				Path::DELIMITER_LEFT
+			);
+		}
+
+		return $this->root;
+	}
+
+
+	/**
 	 * Returns the list of defined services.
 	 *
 	 * @return IService[]
 	 */
-	public function getServices(){ return $this->services; }
+	public function getServices() { return $this->services; }
 
 
 	/**
@@ -342,6 +374,6 @@ class Tempest
 	 *
 	 * @return string
 	 */
-	public function getVersion(){ return '1.2.0'; }
+	public function getVersion() { return '1.2.0'; }
 
 }
