@@ -1,19 +1,15 @@
 @charset "utf-8";
+
 @import "vendor/base";
 @import "vendor/layout";
 
+
 body {
-	border-top: 8px solid #EEE;
+	background: #FAFAFA;
+	color: #333;
 }
 
-.content {
-	padding: 40px 20px;
-
-	img {
-		border-radius: 3px;
-		height: auto;
-		margin-bottom: 20px;
-		max-width: 440px;
-		width: 100%;
-	}
+h1 {
+	font-weight: bold;
+	padding: 100px;
 }
