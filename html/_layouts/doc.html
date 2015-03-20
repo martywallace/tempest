@@ -27,6 +27,10 @@
 			<script src="{{ link('/js/vendor.js') }}"></script>
 			<script src="{{ link('/js/tempest.js') }}"></script>
 			<script src="{{ link('/js/app.js') }}"></script>
+
+			<script>
+				if (Application !== undefined) Application.init();
+			</script>
 		{% endblock %}
 	</body>
 </html>

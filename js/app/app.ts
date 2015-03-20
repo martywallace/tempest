@@ -6,6 +6,3 @@ module Application
 		// ...
 	}
 }
-
-
-Application.init();

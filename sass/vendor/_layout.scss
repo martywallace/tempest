@@ -100,6 +100,18 @@
 	&-horizontal-none { margin-right: 0; }
 }
 
+.position {
+	&-relative { position: relative; }
+	&-absolute { position: absolute; }
+	&-fixed { position: fixed; }
+	&-static { position: static; }
+
+	&.snap-top { top: 0; }
+	&.snap-left{ left: 0; }
+	&.snap-bottom { bottom: 0; }
+	&.snap-right { right: 0; }
+}
+
 .content {
 	h1, h2, h3, h4, h5, h6, p, ul, ol, pre, img {
 		+ h1, + h2, + h3, + h4, + h5, + h6, + p, + ul, + ol, + pre, + img {
