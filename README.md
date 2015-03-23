@@ -65,7 +65,7 @@ Tempest makes use of various tools to streamline the development process:
 
 ## Releases.
 
-* [1.3.0](https://github.com/MartyWallace/Tempest/releases/tag/1.2.0)
+* [1.3.0](https://github.com/MartyWallace/Tempest/releases/tag/1.3.0)
 	* Split site configuration into multiple files.
 	* Can define an alternate site root.
 	* Added Modernizr & Browser detection kit.
