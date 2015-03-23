@@ -49,6 +49,7 @@ class Twig implements IService
 		{
 			return new TwigResponse($this->environment->render($file, array_merge($context, array(
 				'T' => tempest()->getServices(),
+				'root' => tempest()->getRoot(),
 				'config' => tempest()->config('twig', array()),
 				'request' => tempest()->getRouter()->getRequest()
 			))));

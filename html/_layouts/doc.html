@@ -7,7 +7,7 @@
 			<meta charset="utf-8">
 			{% if meta is defined %}
 				{% for item in meta %}
-					<meta name="{{ item.name }}" content="{{ item.content }}" />
+					<meta name="{{ item.name }}" content="{{ item.content }}">
 				{% endfor %}
 			{% endif %}
 		{% endblock %}
