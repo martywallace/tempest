@@ -15,6 +15,9 @@ class Config
 	{
 		$data = require_once(APP_ROOT . 'config.php');
 
+		// Also allow www.{SERVER_NAME}, a common ServerAlias in Apache.
+		$compareHost = preg_replace('/^www\./', '', HOST);
+
 		if (array_key_exists('*', $data))
 		{
 			$this->data = $data['*'];
