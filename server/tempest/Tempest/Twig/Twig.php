@@ -1,6 +1,7 @@
 <?php namespace Tempest\Twig;
 
 use Tempest\IService;
+use Tempest\Config;
 use Tempest\Utils\Path;
 use \Twig_Loader_Filesystem;
 use \Twig_Environment;
@@ -18,10 +19,13 @@ class Twig implements IService
 	private $environment;
 	private $functions;
 	private $filters;
+	private $config;
 
 
 	public function __construct()
 	{
+		$this->config = new Config('twig');
+
 		$this->loader = new Twig_Loader_Filesystem(array(
 			Path::create(APP_ROOT . 'html', Path::DELIMITER_RETAIN)->rpad()
 		));
@@ -50,12 +54,26 @@ class Twig implements IService
 			return new TwigResponse($this->environment->render($file, array_merge($context, array(
 				'T' => tempest()->getServices(),
 				'root' => tempest()->getRoot(),
-				'config' => tempest()->config('twig', array()),
+				'config' => $this->config->data(),
 				'request' => tempest()->getRouter()->getRequest()
 			))));
 		}
 
 		return null;
+	}
+
+
+	/**
+	 * Returns configuration data stored in <code>/config/twig.php</code>.
+	 *
+	 * @param string $prop The config property to get.
+	 * @param mixed $fallback A fallback value to use if the property is not defined.
+	 *
+	 * @return mixed
+	 */
+	public function config($prop = null, $fallback = null)
+	{
+		return $this->config->data($prop, $fallback);
 	}
 
 

@@ -2,7 +2,8 @@
 
 
 /**
- * Manages application configuration, defined in <code>/config.php</code>.
+ * Manages application configuration, defined in <code>/config/*.php</code>.
+ *
  * @author Marty Wallace.
  */
 class Config
@@ -11,9 +12,14 @@ class Config
 	private $data = array();
 
 
-	public function __construct()
+	/**
+	 * Constructor.
+	 *
+	 * @param string $name The name of the config file being managed by this instace.
+	 */
+	public function __construct($name)
 	{
-		$data = require_once(APP_ROOT . 'config.php');
+		$data = require_once(APP_ROOT . 'config/' . $name . '.php');
 
 		// Also allow www.{SERVER_NAME}, a common ServerAlias in Apache.
 		$compareHost = preg_replace('/^www\./', '', HOST);
@@ -33,9 +39,6 @@ class Config
 			// No cascading config - use the entire top level set.
 			$this->data = $data;
 		}
-
-		// General configuration.
-		if ($this->data('timezone')) date_default_timezone_set($this->data('timezone'));
 	}
 
 

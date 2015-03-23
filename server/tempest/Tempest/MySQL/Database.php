@@ -8,12 +8,6 @@ use Tempest\IService;
 class Database extends PDO implements IService
 {
 
-	/**
-	 * @var PDO
-	 */
-	private $provider;
-
-
 	public function __construct()
 	{
 		$connection = tempest()->config('db');

@@ -61,7 +61,7 @@ Tempest makes use of various tools to streamline the development process:
 
 ### Configuration.
 
-* Application configuration is stored in `config.php`. More instructions on configuration are provided at the top of the file.
+* Application configuration is stored in `/config/*.php`. More instructions on configuration are provided at the top of the file.
 
 ## Releases.
 

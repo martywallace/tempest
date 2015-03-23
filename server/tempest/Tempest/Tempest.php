@@ -75,9 +75,10 @@ class Tempest
 	 */
 	public function __construct()
 	{
-		$this->config = new Config();
+		$this->config = new Config('general');
 
 		error_reporting($this->config('dev', false) ? -1 : 0);
+		date_default_timezone_set($this->config('timezone', 'Australia/Sydney'));
 		set_error_handler(array($this, 'error'));
 
 		static::$instance = $this;
@@ -89,6 +90,8 @@ class Tempest
 	 */
 	public function start()
 	{
+		$routes = new Config('routes');
+		
 		$this->services = array_merge($this->defineServices(), array(
 			'twig' => new Twig(),
 			'db' => new Database(),
@@ -96,7 +99,7 @@ class Tempest
 		));
 
 		$this->router = new Router();
-		$this->router->register($this->defineRoutes($this->router));
+		$this->router->register($routes->data());
 		$this->setup();
 
 		$request = $this->router->getRequest();
@@ -159,7 +162,7 @@ class Tempest
 	 *
 	 * @return mixed
 	 */
-	public function config($prop, $fallback = null)
+	public function config($prop = null, $fallback = null)
 	{
 		return $this->config->data($prop, $fallback);
 	}
@@ -179,22 +182,6 @@ class Tempest
 	 * @return array
 	 */
 	protected function defineServices()
-	{
-		return array(
-			//
-		);
-	}
-
-
-	/**
-	 * Defines the routes that this application will handle.
-	 * Override in your application class to defined additional routes.
-	 *
-	 * @param Router $router The Router managing the returned routes.
-	 *
-	 * @return array
-	 */
-	protected function defineRoutes(Router $router)
 	{
 		return array(
 			//

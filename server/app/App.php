@@ -14,13 +14,6 @@ class App extends Tempest
 	}
 
 
-	protected function defineRoutes(Router $router)
-	{
-		// Use the routes defined in the app configuration.
-		return tempest()->config('routes', array());
-	}
-
-
 	protected function defineServices()
 	{
 		return array(
