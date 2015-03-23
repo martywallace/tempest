@@ -1,8 +1,6 @@
-module Application
-{
-	export function init():void
-	{
-		// Initialize your application.
+module App {
+	export function init():void {
+		// Initialize your application and its companion modules.
 		// ...
 	}
 }

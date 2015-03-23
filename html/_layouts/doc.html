@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js {{ tempest.platform.getClasses() }}">
+<html lang="en" class="no-js {{ T.platform.getClasses() }}">
 	<head>
 		<title>{{ title is defined ? title : config.title }}</title>
 
@@ -29,7 +29,7 @@
 			<script src="{{ link('/js/app.js') }}"></script>
 
 			<script>
-				if (Application !== undefined) Application.init();
+				if (typeof App !== 'undefined') App.init();
 			</script>
 		{% endblock %}
 	</body>

@@ -48,8 +48,8 @@ class Twig implements IService
 		if($this->loader->exists($file))
 		{
 			return new TwigResponse($this->environment->render($file, array_merge($context, array(
+				'T' => tempest()->getServices(),
 				'config' => tempest()->config('twig', array()),
-				'tempest' => tempest()->getServices(),
 				'request' => tempest()->getRouter()->getRequest()
 			))));
 		}
