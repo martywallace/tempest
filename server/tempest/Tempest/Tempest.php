@@ -361,6 +361,6 @@ class Tempest
 	 *
 	 * @return string
 	 */
-	public function getVersion() { return '1.2.0'; }
+	public function getVersion() { return '1.3.0'; }
 
 }

@@ -65,6 +65,14 @@ Tempest makes use of various tools to streamline the development process:
 
 ## Releases.
 
+* [1.3.0](https://github.com/MartyWallace/Tempest/releases/tag/1.2.0)
+	* Split site configuration into multiple files.
+	* Can define an alternate site root.
+	* Added Modernizr & Browser detection kit.
+	* `www.` ServerAlias is still matched when cascading configuration.
+	* Minor bug fixes around competing SASS & TypeScript compilation.
+	* Added various Twig functions and filters.
+
 * [1.2.0](https://github.com/MartyWallace/Tempest/releases/tag/1.2.0)
 	* Renamed Responder to Controller.
 	* Added ability to pass arbitrary data to controllers via route definitions.
