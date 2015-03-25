@@ -51,7 +51,7 @@ class Request extends Path
 	 */
 	public function redirect($dest, $status = 400)
 	{
-		http_response_code($status);
+		tempest()->setStatus($status);
 
 		if (preg_match('/^\w*:\/\//', $dest)) header("Location: " . $dest);
 		else header("Location: " . $dest);

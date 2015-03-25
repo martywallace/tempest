@@ -235,10 +235,7 @@ class Tempest
 			$this->setResponse($this->errorOutput($this->router->getRequest(), $this->status));
 		}
 
-		// Send the HTTP status, content-type and final output.
-		if (function_exists('http_response_code')) http_response_code($this->status);
-		else header('X-PHP-Response-Code: '. $this->status, true, $this->status);
-
+		$this->setStatus($this->status);
 		header("Content-Type: {$this->response->getMime()}; charset={$this->response->getCharset()}");
 
 		if ($this->response !== null)
@@ -345,6 +342,17 @@ class Tempest
 		}
 
 		return $this->root;
+	}
+
+
+	/**
+	 * Sends a HTTP status code.
+	 * @param number $code The status code.
+	 */
+	public function setStatus($code)
+	{
+		if (function_exists('http_response_code')) http_response_code($this->status);
+		else header('X-PHP-Response-Code: '. $this->status, true, $this->status);
 	}
 
 
