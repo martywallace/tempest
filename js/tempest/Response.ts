@@ -9,9 +9,9 @@ module Tempest {
 	export class Response {
 
 		private _xhr:JQueryXHR;
-		private _data:Object;
+		private _data:any;
 
-		constructor(xhr:JQueryXHR, data:Object) {
+		constructor(xhr:JQueryXHR, data:any) {
 			this._xhr = xhr;
 			this._data = data;
 		}
@@ -24,7 +24,7 @@ module Tempest {
 		/**
 		 * The response data.
 		 */
-		public getData():Object { return this._data; }
+		public getData():any { return this._data; }
 
 	}
 
