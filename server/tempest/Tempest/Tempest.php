@@ -40,6 +40,11 @@ class Tempest
 	private $router;
 
 	/**
+	 * @var Session
+	 */
+	private $session;
+
+	/**
 	 * @var Path
 	 */
 	private $root;
@@ -76,6 +81,7 @@ class Tempest
 	public function __construct()
 	{
 		$this->config = new Config('general');
+		$this->session = new Session();
 
 		error_reporting($this->config('dev', false) ? -1 : 0);
 		date_default_timezone_set($this->config('timezone', 'Australia/Sydney'));
@@ -172,7 +178,7 @@ class Tempest
 	 * Called by <code>start()</code> after the configuration and router have been initialized.
 	 * Override for custom initialization logic in your application class.
 	 */
-	protected function setup(){ /**/ }
+	protected function setup() { /**/ }
 
 
 	/**
@@ -278,12 +284,14 @@ class Tempest
 	/**
 	 * Magic getter. Attempts to return a Service if a property was not found with the specified name.
 	 *
-	 * @param string $prop
+	 * @param string $prop The name of the property that the user is trying to get.
 	 *
 	 * @return IService
 	 */
 	public function __get($prop)
 	{
+		if ($prop === 'session') return $this->getSession();
+
 		if (array_key_exists($prop, $this->services))
 		{
 			// Returns a service with the name.
@@ -323,7 +331,15 @@ class Tempest
 	 *
 	 * @return Router
 	 */
-	public function getRouter(){ return $this->router; }
+	public function getRouter() { return $this->router; }
+
+
+	/**
+	 * Returns the active Session object.
+	 *
+	 * @return Session
+	 */
+	public function getSession() { return $this->session; }
 
 
 	/**

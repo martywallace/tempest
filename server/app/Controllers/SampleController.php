@@ -7,17 +7,17 @@ use Tempest\HTTP\Request;
 class SampleController extends Controller
 {
 
-	public function setup(Request $request, Array $vars)
+	public function setup(Request $request, Array $detail)
 	{
 		// Custom controller setup.
 		// ...
 	}
 
 
-	public function index(Request $request, Array $vars)
+	public function index(Request $request, Array $detail)
 	{
 		// Handle request to SampleController::index.
-		return $vars;
+		return $detail;
 	}
 
 }
