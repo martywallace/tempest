@@ -4,11 +4,3 @@
 # Don't carry around files handled by dependency managers.
 composer.lock
 server/vendor
-js/vendor
-node_modules
-
-# Don't carry around generated files.
-public/css
-public/js
-.sass-cache
-.tscache

@@ -1,18 +1,7 @@
 # Tempest.
 
-Tempest is a tiny PHP framework for developing small to medium sized websites and applications. It is a lightweight alternative to heavier frameworks like [Laravel](http://laravel.com/); for developers who only need basic routing and general project structure to get going. Tempest also includes some useful tools for front-end development; automatic TypeScript, JavaScript and SASS compilation and minifaction to name a few.
+Tempest is a tiny PHP framework for developing small to medium sized websites and applications. It is a lightweight alternative to heavier frameworks like [Laravel](http://laravel.com/); for developers who only need basic routing and general project structure to get going.
 
-## Pre-requisites.
-
-Tempest makes use of various tools to streamline the development process:
-
-* [Composer](https://getcomposer.org/), for managing PHP dependencies.
-* [NodeJS & Node Package Manager](http://nodejs.org/), for managing Grunt tasks.
-* [Bower](http://bower.io/), for managing front-end JavaScript dependencies.
-* [Grunt](http://gruntjs.com/), for running Grunt tasks.
-* [Ruby](http://rubyinstaller.org/), required by SASS.
-* [SASS](http://sass-lang.com/install), for compiling SASS.
-* [TypeScript](http://www.typescriptlang.org/#Download), for compiling TypeScript.
 
 ## Getting Started.
 
@@ -24,42 +13,14 @@ Tempest makes use of various tools to streamline the development process:
 
 2. `cd` to your application directory and run the following commands:
 
-		$ npm install
 		$ composer install
-		$ bower install
-		$ grunt
 
-## Development Guide.
-
-### Grunt.
-
-[Grunt](http://gruntjs.com/) is used to automate the compilation of various files into the public directory (e.g. `/sass` into `/public/css`). There are two grunt tasks available:
-
-1. `grunt dev` (default) - compiles files without minification and runs a watch task for use during development.
-2. `grunt prod` - compiles and minifies files for production use.
-
-### JavaScript & TypeScript.
-
-* Put your JavaScript or TypeScript files into `js/app/`. They will be compiled down into `public/js/app.js`.
-* For JavaScript dependencies;
-	* Install via `bower` or download and place them into `js/vendor/`.
-	* Append required dependencies to the `Gruntfile` under `config.vendorJs`.
-	* These will be cocatenated down into `public/js/vendor.js`.
-* Tempest comes with some JavaScript of its own. It is compiled down into `public/js/tempest.js`.
-
-### SASS.
-
-* Put your SASS into `sass/`. Your SASS will be compiled down into `public/css/`.
-* Files beginning with `_` will not be compiled, following standard SASS rules.
-* Some useful boilerplate SASS is located in `sass/vendor/`.
-
-### HTML & Twig.
+## HTML & Twig.
 
 * Tempest uses [Twig](http://twig.sensiolabs.org/) for templating.
-* Put your Twig & HTML files in `html/`.
-* These files are not manipulated or compiled in any way; Tempest will look in `html/` for Twig templates.
+* Put your Twig & HTML files in `html`.
 
-### Configuration.
+## Configuration.
 
 * Application configuration is stored in `/config/*.php`. More instructions on configuration are provided at the top of the file.
 

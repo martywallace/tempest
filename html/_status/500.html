@@ -7,57 +7,43 @@
 
 {% extends '_layouts/doc.html' %}
 
-{% block css %}
-	<link rel="stylesheet" href="{{ link('/css/tempest.css') }}">
-{% endblock %}
-
 {% block body %}
-	<div id="head">
-		<div class="grid">
-			<h1>{{ title }}</h1>
-			<a href="{{ link('/') }}">Return</a>
-		</div>
-	</div>
+	<h1><a href="{{ link('/') }}">{{ title }}</a></h1>
 
-	<div id="content">
-		<div class="grid">
-			<div class="column sixty">
-				{% block content %}
-					<ul id="errors">
-						{% for error in errors %}
-							<li>
-								<pre>{{ error.getString() }}</pre>
-								<p><small><span title="{{ error.getFile() }}">{{ error.getShortFile() }}</span> &middot; Line {{ error.getLine() }}</small></p>
-							</li>
-						{% endfor %}
-					</ul>
-				{% endblock %}
-			</div>
-			<div class="column thirty-five float-right">
-				<div id="request">
-					<h2>REQUEST DATA</h2>
+	{% block content %}
+		<ul>
+			{% for error in errors %}
+				<li>
+					<pre>{{ error.getString() }}</pre>
+					<p><small><span title="{{ error.getFile() }}">{{ error.getShortFile() }}</span> &middot; Line {{ error.getLine() }}</small></p>
+				</li>
+			{% endfor %}
+		</ul>
+	{% endblock %}
 
-					<h6>URI</h6>
-					<p>{{ request.value }}</p>
-					
-					<h6>GET</h6>
-					<pre>{{ request.data('get') | json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
-					
-					<h6>POST</h6>
-					<pre>{{ request.data('post') | json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
-					
-					<h6>NAMED</h6>
-					<pre>{{ request.data('named') | json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
-				</div>
-			</div>
-
-			<div class="clear"></div>
-		</div>
-	</div>
-
-	<div id="foot">
-		<div class="grid">
-			<p><a target="_blank" href="https://github.com/MartyWallace/Tempest">Tempest Framework</a> &middot; Developed by Marty Wallace.</p>
-		</div>
-	</div>
+	<table border="1" cellpadding="4">
+		<thead>
+			<tr>
+				<th colspan="2">Request data</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th>URI</th>
+				<td>{{ request.value }}</td>
+			</tr>
+			<tr>
+				<th>Get</th>
+				<td>{{ request.data('get') | json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
+			</tr>
+			<tr>
+				<th>Post</th>
+				<td>{{ request.data('post') | json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
+			</tr>
+			<tr>
+				<th>Named</th>
+				<td>{{ request.data('named') | json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
+			</tr>
+		</tbody>
+	</table>
 {% endblock %}

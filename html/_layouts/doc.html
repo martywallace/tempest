@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js {{ T.platform.getClasses() }}">
+<html lang="en-GB" class="{{ T.platform.getClasses() }}">
 	<head>
 		<title>{{ title is defined ? title : config.title }}</title>
 
@@ -13,7 +13,7 @@
 		{% endblock %}
 
 		{% block css %}
-			<link rel="stylesheet" href="{{ link('/css/app.css') }}">
+			{# Include common CSS here. #}
 		{% endblock %}
 
 		{% if ga is defined %}
@@ -24,13 +24,7 @@
 		{% block body %}{% endblock %}
 
 		{% block js %}
-			<script src="{{ link('/js/vendor.js') }}"></script>
-			<script src="{{ link('/js/tempest.js') }}"></script>
-			<script src="{{ link('/js/app.js') }}"></script>
-
-			<script>
-				if (typeof App !== 'undefined') App.init();
-			</script>
+			{# Include common JavaScript here. #}
 		{% endblock %}
 	</body>
 </html>
