@@ -1,8 +1,8 @@
 <?php namespace Tempest\Twig;
 
-use Tempest\IService;
 use Tempest\Config;
 use Tempest\Utils\Path;
+use Tempest\Services\IService;
 use \Twig_Loader_Filesystem;
 use \Twig_Environment;
 
@@ -52,7 +52,7 @@ class Twig implements IService
 		if($this->loader->exists($file))
 		{
 			return new TwigResponse($this->environment->render($file, array_merge($context, array(
-				'T' => tempest()->getServices(),
+				't' => tempest()->getServices(true),
 				'root' => tempest()->getRoot(),
 				'config' => $this->config->data(),
 				'request' => tempest()->getRouter()->getRequest()
@@ -91,5 +91,13 @@ class Twig implements IService
 	 * @return Twig_Loader
 	 */
 	public function getLoader() { return $this->loader; }
+
+
+	/**
+	 * Whether or not this service is accessible within Twig templates.
+	 *
+	 * @return bool
+	 */
+	public function isTwigAccessible() { return false; }
 
 }

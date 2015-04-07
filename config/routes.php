@@ -6,7 +6,7 @@
 return array(
 
 	'*' => array(
-		'/sample' => array('controller' => 'SampleController', 'vars' => array('property' => 'value'))
+		'/sample' => array('controller' => 'SampleController', 'example' => 5)
 	)
 
 );

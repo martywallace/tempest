@@ -17,13 +17,16 @@ class Controller
 
 
 	/**
+	 * Create a Controller instance.
+	 *
 	 * @param $name string The name of the Controller class to create.
 	 * @param Tempest $app A reference to the core application.
+	 *
 	 * @return Controller The resulting Controller class.
 	 */
 	public static function create($name, Tempest $app)
 	{
-		if(class_exists($name)) return new $name($app);
+		if (class_exists($name)) return new $name($app);
 		else
 		{
 			trigger_error("Controller <code>$name</code> does not exist.");
@@ -48,9 +51,9 @@ class Controller
 	 * Override for custom response setup logic.
 	 *
 	 * @param Request $request The Request made to the application.
-	 * @param array $vars Custom variables defined alongside the route.
+	 * @param array $detail Route definition details.
 	 */
-	public function setup(Request $request, Array $vars){ /**/ }
+	public function setup(Request $request, Array $detail) { /**/ }
 
 
 	/**
@@ -70,9 +73,9 @@ class Controller
 	 * The default handler method is <code>index</code>.
 	 *
 	 * @param $request Request The Request made to the application.
-	 * @param array $vars Custom variables defined alongside the route.
+	 * @param array $detail Route definition details.
 	 */
-	public function index(Request $request, Array $vars){ /**/ }
+	public function index(Request $request, Array $detail) { /**/ }
 
 
 	/**
@@ -80,7 +83,7 @@ class Controller
 	 *
 	 * @return Tempest
 	 */
-	public function getApp(){ return $this->app; }
+	public function getApp() { return $this->app; }
 
 
 	/**
@@ -88,6 +91,6 @@ class Controller
 	 *
 	 * @return Request
 	 */
-	public function getRequest(){ return tempest()->getRouter()->getRequest(); }
+	public function getRequest() { return tempest()->getRouter()->getRequest(); }
 
 }

@@ -1,18 +1,20 @@
 <?php namespace Tempest\Services;
 
-use Tempest\IService;
 use Tempest\Utils\StringUtil;
 
 
 /**
  * Assists with extracting information about the client's browser and platform.
+ *
  * @author Marty Wallace.
  */
-class Platform extends \Browser implements IService
+class PlatformService extends \Browser implements IService
 {
 
 	/**
 	 * Returns a list of classes for adding to the <html> element on the page.
+	 *
+	 * @return array
 	 */
 	public function getClasses()
 	{
@@ -30,5 +32,13 @@ class Platform extends \Browser implements IService
 			StringUtil::hyphenate(($this->isFacebook() ? 'facebook' : 'not-facebook'))
 		));
 	}
+
+
+	/**
+	 * Whether or not this service is accessible within Twig templates.
+	 *
+	 * @return bool
+	 */
+	public function isTwigAccessible() { return true; }
 
 }

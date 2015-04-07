@@ -8,7 +8,7 @@ use Tempest\HTTP\Response;
 use Tempest\MySQL\Database;
 use Tempest\Twig\Twig;
 use Tempest\Utils\Path;
-use Tempest\Services\Platform;
+use Tempest\Services\PlatformService;
 
 
 /**
@@ -95,7 +95,7 @@ class Tempest
 		$this->services = array_merge($this->defineServices(), array(
 			'twig' => new Twig(),
 			'db' => new Database(),
-			'platform' => new Platform()
+			'platform' => new PlatformService()
 		));
 
 		$this->router = new Router();
@@ -115,8 +115,8 @@ class Tempest
 			{
 				if (method_exists($controller, $method))
 				{
-					$controller->setup($request, $match->getVars());
-					$this->setResponse($controller->finalize($controller->$method($request, $match->getVars())));
+					$controller->setup($request, $match->getDetail());
+					$this->setResponse($controller->finalize($controller->$method($request, $match->getDetail())));
 				}
 				else
 				{
@@ -359,9 +359,29 @@ class Tempest
 	/**
 	 * Returns the list of defined services.
 	 *
+	 * @param bool $twigOnly Whether or not to only fetch services that are accessible in Twig.
+	 *
 	 * @return IService[]
 	 */
-	public function getServices() { return $this->services; }
+	public function getServices($twigOnly = false)
+	{
+		if ($twigOnly)
+		{
+			$output = array();
+			foreach ($this->services as $serviceName => $service)
+			{
+				if ($service->isTwigAccessible())
+				{
+					// This service is marked as being accessible within Twig templates.
+					$output[$serviceName] = $service;
+				}
+			}
+
+			return $output;
+		}
+
+		return $this->services;
+	}
 
 
 	/**

@@ -2,7 +2,7 @@
 
 use PDO;
 use PDOStatement;
-use Tempest\IService;
+use Tempest\Services\IService;
 
 
 class Database extends PDO implements IService
@@ -79,5 +79,13 @@ class Database extends PDO implements IService
 
 		return $stmt;
 	}
+
+
+	/**
+	 * Whether or not this service is accessible within Twig templates.
+	 *
+	 * @return bool
+	 */
+	public function isTwigAccessible() { return false; }
 
 }

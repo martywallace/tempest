@@ -10,7 +10,7 @@ use Tempest\Utils\Path;
 class Route extends Path
 {
 
-	private $vars;
+	private $detail;
 	private $controller;
 
 
@@ -22,13 +22,14 @@ class Route extends Path
 	 */
 	public function __construct($base, Array $detail)
 	{
+		$this->detail = $detail;
+
 		if (!array_key_exists('controller', $detail))
 		{
 			trigger_error('Route definitions must point to a controller.');
 		}
 		else
 		{
-			$this->vars = array_key_exists('vars', $detail) ? $detail['vars'] : array();
 			$this->controller = preg_split('/\:+/', $detail['controller']);
 		}
 
@@ -41,11 +42,11 @@ class Route extends Path
 
 
 	/**
-	 * Returns custom variables associated with the route definition.
+	 * Returns the route definition array.
 	 *
 	 * @return array
 	 */
-	public function getVars(){ return $this->vars; }
+	public function getDetail() { return $this->detail; }
 
 
 	/**
@@ -53,7 +54,7 @@ class Route extends Path
 	 *
 	 * @return string
 	 */
-	public function getControllerClass(){ return $this->controller[0]; }
+	public function getControllerClass() { return $this->controller[0]; }
 
 
 	/**
@@ -61,6 +62,6 @@ class Route extends Path
 	 *
 	 * @return string
 	 */
-	public function getControllerAction(){ return count($this->controller) > 1 ? $this->controller[1] : 'index'; }
+	public function getControllerAction() { return count($this->controller) > 1 ? $this->controller[1] : 'index'; }
 
 }
