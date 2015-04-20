@@ -28,10 +28,10 @@ class Config
 		{
 			$this->data = $data['*'];
 
-			if (array_key_exists(HOST, $data))
+			if (array_key_exists($compareHost, $data))
 			{
 				// Consume host-specific configuration and overwrite where necessary.
-				$this->data = array_replace_recursive($this->data, $data[HOST]);
+				$this->data = array_replace_recursive($this->data, $data[$compareHost]);
 			}
 		}
 		else
