@@ -50,7 +50,7 @@ class Path
 	/**
 	 * A regex pattern that matches one or more sequential forward or back slashes.
 	 */
-	const PATTERN_SLASHES = '/[\/\\\\]+/';
+	const PATTERN_SLASHES = '/(?!^)[\/\\\\]+/';
 
 
 	/**
