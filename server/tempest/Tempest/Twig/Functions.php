@@ -33,7 +33,8 @@ class Functions extends Extensions
 	public function link($value)
 	{
 		return Path::create($value)
-			->prepend(tempest()->getRoot());
+			->prepend(tempest()->getRoot())
+			->setStrategy(Path::DELIMITER_LEFT);
 	}
 
 }
