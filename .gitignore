@@ -1,7 +1,6 @@
-# For PHPStorm users.
 .idea
-
-# Don't carry around files handled by dependency managers.
+vendor/*
+!vendor/tempest
 composer.lock
 node_modules
 bower

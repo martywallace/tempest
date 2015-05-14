@@ -1,5 +1,25 @@
 {
+	"name": "martywallace/tempest",
+	"version": "2.0.0",
+	"description": "A tiny PHP framework.",
+	"homepage": "https://github.com/MartyWallace/Tempest",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Marty Wallace",
+			"email": "marty.wallace@live.com.au",
+			"homepage": "http://martywallace.com",
+			"role": "Lead Developer"
+		}
+	],
+	"autoload": {
+		"psr-4" : {
+			"Tempest\\" : "vendor/martywallace/tempest/src/Tempest/"
+		}
+	},
 	"require": {
-		"twig/twig": "~1.18.1"
+		"php": ">=5.3.0",
+		"twig/twig": "1.18.1"
 	}
 }
