@@ -1,6 +1,7 @@
-# For PHPStorm / Eclipse users.
+# For PHPStorm users.
 .idea
 
 # Don't carry around files handled by dependency managers.
 composer.lock
-server/vendor
+node_modules
+bower

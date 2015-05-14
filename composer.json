@@ -1,9 +1,5 @@
 {
-	"config": {
-		"vendor-dir": "server/vendor"
-	},
 	"require": {
-		"twig/twig": "~1.0",
-		"cbschuld/browser.php": "dev-master"
+		"twig/twig": "~1.18.1"
 	}
 }
