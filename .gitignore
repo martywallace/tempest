@@ -1,6 +1,6 @@
 .idea
 vendor/*
-!vendor/tempest
+!vendor/martywallace
 composer.lock
 node_modules
 bower
