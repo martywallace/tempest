@@ -7,11 +7,13 @@
 		<meta name="generator" content="Tempest">
 		<meta name="author" content="Marty Wallace">
 
-		<title>Tempest</title>
-
-		<link rel="stylesheet" href="/css/tempest.css">
+		<title>{{ title }}</title>
 	</head>
 	<body>
-		{% block content %}{% endblock %}
+		<h1>{{ title }}</h1>
+
+		<div class="content">
+			{% block content %}{% endblock %}
+		</div>
 	</body>
 </html>

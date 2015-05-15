@@ -3,12 +3,21 @@
 use Tempest\Tempest;
 
 
+/**
+ * Your application.
+ */
 class App extends Tempest
 {
 
+    /**
+     * Set up the application.
+     */
     protected function setup()
     {
-        echo 'It works!';
+        // Application level templates.
+        app()->twig->addTemplatePath('app/templates');
+
+        echo app()->twig->render('index.html');
     }
 
 }

@@ -3,18 +3,19 @@
 namespace Tempest;
 
 use Exception;
+use Tempest\Rendering\TwigComponent;
 
 
 /**
  * Tempest's core, extended by your core application class.
  *
  * @property-read string $root The framework root directory.
+ * @property-read TwigComponent $twig A reference to the inbuilt Twig component, used to render templates with Twig.
  *
  * @package Tempest
- *
  * @author Marty Wallace
  */
-abstract class Tempest
+abstract class Tempest extends Element
 {
 
     /** @var Tempest */
@@ -23,10 +24,8 @@ abstract class Tempest
 
     /**
      * Instantiate the application.
-     *
      * @param string $root The framework root directory.
      * @param array $autoloadPaths A list of paths to attempt to autoload classes from.
-     *
      * @return Tempest
      */
     public static function instantiate($root, Array $autoloadPaths = null)
@@ -51,14 +50,15 @@ abstract class Tempest
 
     /**
      * Constructor. Should not be called directly.
-     *
      * @see Tempest::instantiate() To create a new instance instead.
-     *
      * @param string $root The application root directory.
      */
     public function __construct($root)
     {
         $this->_root = $root;
+
+        // TODO: Set error reporting level based on whether we are in development mode.
+        // ...
     }
 
 
@@ -66,15 +66,13 @@ abstract class Tempest
     {
         if ($prop === 'root') return $this->_root;
 
-        return null;
+        return parent::__get($prop);
     }
 
 
     /**
      * Register an autoloader to run in a given directory.
-     *
      * @param string $path The directory to add.
-     *
      * @throws Exception
      */
     public function addAutoloadDirectory($path)
@@ -113,7 +111,6 @@ abstract class Tempest
     /**
      * Attempt to execute a block of code. If any exceptions are thrown in the attempted block, they will be caught and
      * displayed in Tempest's exception page.
-     *
      * @param callable $callable Block of code to attempt to execute.
      */
     private function _attempt($callable)
@@ -122,18 +119,12 @@ abstract class Tempest
         {
             $callable();
         }
-
         catch (Exception $exception)
         {
-            header('Content-Type: text/plain');
-
-            // TODO: Nice exception display.
-            // See vendor/martywallace/tempest/templates.
-
-            $stack = $exception->getTrace();
-            var_dump($stack);
-
-            exit;
+            // TODO: Only do this if the application is in development mode.
+            die($this->twig->render('@tempest/exception.html', array(
+                'exception' => $exception
+            )));
         }
     }
 
@@ -144,6 +135,8 @@ abstract class Tempest
     public function start()
     {
         $this->_attempt(function() {
+            $this->addComponent('twig', new TwigComponent());
+
             $this->setup();
         });
     }
@@ -151,7 +144,6 @@ abstract class Tempest
 
     /**
      * Set up the application.
-     *
      * @throws Exception
      */
     protected abstract function setup();

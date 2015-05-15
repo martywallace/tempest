@@ -1,5 +1,14 @@
-{% extends 'tempest/_layout.html' %}
+{% set title = 'Exception Encountered' %}
+
+{% extends '@tempest/_layout.html' %}
 
 {% block content %}
-	<p>Exception</p>
+	<h2>{{ exception.message }}</h2>
+	<h4>{{ exception.file }} at line {{ exception.line }}</h4>
+
+	<ul class="trace">
+		{% for item in exception.trace %}
+			<li>{{ item.file }} at line {{ item.line }}.</li>
+		{% endfor %}
+	</ul>
 {% endblock %}

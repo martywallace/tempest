@@ -3,10 +3,11 @@
 /**
  * Tempest PHP Framework v2.0.0.
  * http://github.com/MartyWallace/Tempest
- * ---------------------------------------------------------------------------------------------------------------------
+ *
  * Developed by Marty Wallace
  * http://martywallace.com
- * ---------------------------------------------------------------------------------------------------------------------
+ *
+ *
  * Licensed under MIT
  *
  * Copyright (c) 2015 Marty Wallace
@@ -26,6 +27,7 @@
  */
 
 define('ROOT', realpath(__DIR__ . '/../'));
+define('PUBLIC', '/' . trim(str_replace(ROOT, '', $_SERVER['DOCUMENT_ROOT']), '/\\'));
 
 require(ROOT . '/vendor/autoload.php');
 require(ROOT . '/app/src/App.php');
