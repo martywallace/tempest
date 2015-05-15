@@ -79,7 +79,7 @@ abstract class Tempest
      */
     public function addAutoloadDirectory($path)
     {
-        $this->attempt(function() use ($path) {
+        $this->_attempt(function() use ($path) {
             $path = ROOT . '/' . trim($path, '/') . '/';
 
             if (is_dir($path))
@@ -116,7 +116,7 @@ abstract class Tempest
      *
      * @param callable $callable Block of code to attempt to execute.
      */
-    public function attempt($callable)
+    private function _attempt($callable)
     {
         try
         {
@@ -143,7 +143,7 @@ abstract class Tempest
      */
     public function start()
     {
-        $this->attempt(function() {
+        $this->_attempt(function() {
             $this->setup();
         });
     }
