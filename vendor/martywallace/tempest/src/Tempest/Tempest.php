@@ -6,18 +6,18 @@ use Exception;
 
 
 /**
- * Tempest's core.
+ * Tempest's core, extended by your core application class.
  *
  * @property-read string $root The framework root directory.
  *
- * @author Marty Wallace.
+ * @package Tempest
+ *
+ * @author Marty Wallace
  */
-class Tempest
+abstract class Tempest
 {
 
-    /**
-     * @var Tempest
-     */
+    /** @var Tempest */
     private static $_instance;
 
 
@@ -45,12 +45,17 @@ class Tempest
     }
 
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $_root;
 
 
+    /**
+     * Constructor. Should not be called directly.
+     *
+     * @see Tempest::instantiate() To create a new instance instead.
+     *
+     * @param string $root The application root directory.
+     */
     public function __construct($root)
     {
         $this->_root = $root;
@@ -69,28 +74,67 @@ class Tempest
      * Register an autoloader to run in a given directory.
      *
      * @param string $path The directory to add.
+     *
+     * @throws Exception
      */
     public function addAutoloadDirectory($path)
     {
-        $path = trim($path, '/');
-        spl_autoload_register(function($class) use ($path)
-        {
-            $file = ROOT . '/' . $path . '/' . str_replace('\\', '/', $class) . '.php';
+        $this->attempt(function() use ($path) {
+            $path = ROOT . '/' . trim($path, '/') . '/';
 
-            if (is_file($file))
+            if (is_dir($path))
             {
-                require_once $file;
+                spl_autoload_register(function($class) use ($path) {
+                    $file = str_replace('\\', '/', $class) . '.php';
 
-                if (!class_exists($class))
-                {
-                    throw new Exception('Could not find class ' . $class);
-                }
+                    if (is_file($file))
+                    {
+                        require_once $file;
+
+                        if (!class_exists($class))
+                        {
+                            throw new Exception('Could not find class ' . $class . '.');
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception('Could not load file ' . $file . '.');
+                    }
+                });
             }
             else
             {
-                throw new Exception('Could not load file ' . $file);
+                throw new Exception('Directory ' . $path . ' does not exist.');
             }
         });
+    }
+
+
+    /**
+     * Attempt to execute a block of code. If any exceptions are thrown in the attempted block, they will be caught and
+     * displayed in Tempest's exception page.
+     *
+     * @param callable $callable Block of code to attempt to execute.
+     */
+    public function attempt($callable)
+    {
+        try
+        {
+            $callable();
+        }
+
+        catch (Exception $exception)
+        {
+            header('Content-Type: text/plain');
+
+            // TODO: Nice exception display.
+            // See vendor/martywallace/tempest/templates.
+
+            $stack = $exception->getTrace();
+            var_dump($stack);
+
+            exit;
+        }
     }
 
 
@@ -99,22 +143,17 @@ class Tempest
      */
     public function start()
     {
-        try
-        {
+        $this->attempt(function() {
             $this->setup();
-        }
-        catch(Exception $e)
-        {
-            // TODO: Nice exception output.
-            $stack = $e->getTrace();
-            var_dump($stack);
-        }
+        });
     }
 
 
-    protected function setup()
-    {
-        //
-    }
+    /**
+     * Set up the application.
+     *
+     * @throws Exception
+     */
+    protected abstract function setup();
 
 }
