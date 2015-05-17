@@ -15,7 +15,7 @@ use Tempest\Rendering\TwigComponent;
  * @package Tempest
  * @author Marty Wallace
  */
-abstract class Tempest extends Element
+abstract class Tempest extends Element implements IConfigurationProvider
 {
 
     /** @var Tempest */
@@ -25,14 +25,15 @@ abstract class Tempest extends Element
     /**
      * Instantiate the application.
      * @param string $root The framework root directory.
+     * @param string $configPath The application configuration file path, relative to the application root.
      * @param array $autoloadPaths A list of paths to attempt to autoload classes from.
      * @return Tempest
      */
-    public static function instantiate($root, Array $autoloadPaths = null)
+    public static function instantiate($root, $configPath = null, Array $autoloadPaths = null)
     {
         if (self::$_instance === null)
         {
-            self::$_instance = new static($root);
+            self::$_instance = new static($root, $configPath);
 
             foreach ($autoloadPaths as $path)
             {
@@ -47,18 +48,27 @@ abstract class Tempest extends Element
     /** @var string */
     private $_root;
 
+    /** @var Configuration */
+    private $_config;
+
 
     /**
      * Constructor. Should not be called directly.
      * @see Tempest::instantiate() To create a new instance instead.
      * @param string $root The application root directory.
+     * @param string $configPath The application configuration file path, relative to the application root.
      */
-    public function __construct($root)
+    public function __construct($root, $configPath = null)
     {
         $this->_root = $root;
 
-        // TODO: Set error reporting level based on whether we are in development mode.
-        // ...
+        if ($configPath !== null)
+        {
+            // Initialize configuration.
+            $this->_config = new Configuration($root . '/' . trim($configPath, '/'));
+        }
+
+        error_reporting($this->_config->dev ? E_ALL : 0);
     }
 
 
@@ -67,6 +77,18 @@ abstract class Tempest extends Element
         if ($prop === 'root') return $this->_root;
 
         return parent::__get($prop);
+    }
+
+
+    /**
+     * Get application configuration data.
+     * @param string $prop The configuration data to get.
+     * @param mixed $fallback A fallback value to use if the specified data does not exist.
+     * @return mixed
+     */
+    public function config($prop, $fallback = null)
+    {
+        return $this->_config->get($prop, $fallback);
     }
 
 
@@ -121,10 +143,12 @@ abstract class Tempest extends Element
         }
         catch (Exception $exception)
         {
-            // TODO: Only do this if the application is in development mode.
-            die($this->twig->render('@tempest/exception.html', array(
-                'exception' => $exception
-            )));
+            if ($this->_config->dev)
+            {
+                die($this->twig->render('@tempest/exception.html', array(
+                    'exception' => $exception
+                )));
+            }
         }
     }
 

@@ -34,8 +34,7 @@ class TwigComponent extends Component
         $this->addTemplatePath('vendor/martywallace/tempest/templates', self::TEMPEST_NAMESPACE);
 
         $this->_environment = new Twig_Environment($this->_loader, array(
-            // TODO: Derive debug mode from app configuration when ready (development mode).
-            'debug' => false
+            'debug' => app()->config('dev')
         ));
     }
 
@@ -58,14 +57,25 @@ class TwigComponent extends Component
 
     /**
      * Adds a new location relative to the application root where templates can be searched for.
-     * @param string $path A path to search for templates.
+     * @param string|array $path A path or array of paths to search for templates.
      * @param string $namespace An optional namespace to use for templates.
      * @throws Twig_Error_Loader
      */
     public function addTemplatePath($path, $namespace = Twig_Loader_Filesystem::MAIN_NAMESPACE)
     {
-        $path = trim($path, '/');
-        $this->_loader->addPath(ROOT . '/' . $path, $namespace);
+        if (is_array($path))
+        {
+            foreach($path as $p)
+            {
+                // Recursive path additions.
+                $this->addTemplatePath($p, $namespace);
+            }
+        }
+        else
+        {
+            $path = trim($path, '/');
+            $this->_loader->addPath(ROOT . '/' . $path, $namespace);
+        }
     }
 
 }

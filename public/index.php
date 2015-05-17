@@ -27,7 +27,6 @@
  */
 
 define('ROOT', realpath(__DIR__ . '/../'));
-define('PUBLIC', '/' . trim(str_replace(ROOT, '', $_SERVER['DOCUMENT_ROOT']), '/\\'));
 
 require(ROOT . '/vendor/autoload.php');
 require(ROOT . '/app/src/App.php');
@@ -41,7 +40,7 @@ require(ROOT . '/app/src/App.php');
  */
 function app()
 {
-    return App::instantiate(ROOT, array('app/src'));
+    return App::instantiate(ROOT, 'app/config', array('app/src'));
 }
 
 // Instantiate and start the application.
