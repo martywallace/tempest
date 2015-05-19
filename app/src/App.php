@@ -14,7 +14,6 @@ class App extends Tempest
      */
     protected function setup()
     {
-        // Application level templates.
         app()->twig->addTemplatePath(app()->config('templates'));
 
         echo app()->twig->render('index.html');

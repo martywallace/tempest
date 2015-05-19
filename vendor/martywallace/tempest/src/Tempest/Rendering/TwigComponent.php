@@ -51,6 +51,11 @@ class TwigComponent extends Component
     public function render($template, Array $data = null)
     {
         $data = $data === null ? array() : $data;
+
+        $data = array_merge($data, array(
+            'app' => app()
+        ));
+
         return $this->_environment->render($template, $data);
     }
 
@@ -74,7 +79,7 @@ class TwigComponent extends Component
         else
         {
             $path = trim($path, '/');
-            $this->_loader->addPath(ROOT . '/' . $path, $namespace);
+            $this->_loader->prependPath(ROOT . '/' . $path, $namespace);
         }
     }
 

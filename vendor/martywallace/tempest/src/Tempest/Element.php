@@ -34,6 +34,21 @@ abstract class Element
     }
 
 
+    public function __isset($prop)
+    {
+        // Mostly here to satisfy Twig, see:
+        // https://github.com/twigphp/Twig/issues/360
+        return $this->{$prop} !== null;
+    }
+
+
+    public function __set($prop, $value)
+    {
+        // Help a brother out and avoid annoying bugs via typos.
+        throw new Exception('Property "' . $prop . '" does not exist on "' . get_class($this) . '" and cannot be dynamically created.');
+    }
+
+
     /**
      * Add a Component to this Element.
      * @param string $name The name used to reference the Component.

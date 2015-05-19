@@ -9,6 +9,7 @@ use Tempest\Rendering\TwigComponent;
 /**
  * Tempest's core, extended by your core application class.
  *
+ * @property int $status The HTTP status to be sent back to the client.
  * @property-read string $root The framework root directory.
  * @property-read TwigComponent $twig A reference to the inbuilt Twig component, used to render templates with Twig.
  *
@@ -51,6 +52,9 @@ abstract class Tempest extends Element implements IConfigurationProvider
     /** @var Configuration */
     private $_config;
 
+    /** @var int */
+    private $_status = 200;
+
 
     /**
      * Constructor. Should not be called directly.
@@ -75,8 +79,23 @@ abstract class Tempest extends Element implements IConfigurationProvider
     public function __get($prop)
     {
         if ($prop === 'root') return $this->_root;
+        if ($prop === 'status') return $this->_status;
 
         return parent::__get($prop);
+    }
+
+
+    public function __set($prop, $value)
+    {
+        if ($prop === 'status')
+        {
+            $this->_status = $value;
+
+            if (function_exists('http_response_code')) http_response_code($value);
+            else header('X-PHP-Response-Code: ' . $value, true, $value);
+        }
+
+        else parent::__set($prop, $value);
     }
 
 
@@ -143,6 +162,8 @@ abstract class Tempest extends Element implements IConfigurationProvider
         }
         catch (Exception $exception)
         {
+            $this->status = 500;
+
             if ($this->_config->dev)
             {
                 die($this->twig->render('@tempest/exception.html', array(

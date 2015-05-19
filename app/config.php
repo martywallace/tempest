@@ -14,7 +14,8 @@ return array(
     ),
 
     'localhost' => array(
-        'dev' => true
+        'dev' => true,
+        'url' => 'http://localhost:3000'
     )
 
 );
