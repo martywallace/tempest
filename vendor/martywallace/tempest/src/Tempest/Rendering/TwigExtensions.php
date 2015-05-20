@@ -2,25 +2,44 @@
 
 namespace Tempest\Rendering;
 
+use Twig_Extension;
+use Twig_SimpleFunction;
+use Twig_SimpleFilter;
+
 
 /**
  * This class attaches Tempest level extensions to Twig.
  * @package Tempest\Rendering
  * @author Marty Wallace
  */
-class TwigExtensions
+class TwigExtensions extends Twig_Extension
 {
 
-    const TYPE_FILTER = 'filter';
-    const TYPE_FUNCTION = 'function';
+    public function getName() { return 'TempestTwigExtensions'; }
 
 
-    /**
-     * @param TwigComponent $twig
-     */
-    public function __construct(TwigComponent $twig)
+    public function getGlobals()
     {
-        $twig->extend(self::TYPE_FUNCTION, 'link', array($this, 'link'));
+        return array(
+            // Bind the application to Twig templates.
+            'app' => app()
+        );
+    }
+
+
+    public function getFilters()
+    {
+        return array(
+            new Twig_SimpleFilter('hash', 'sha1')
+        );
+    }
+
+
+    public function getFunctions()
+    {
+        return array(
+            new Twig_SimpleFunction('link', array($this, 'link'))
+        );
     }
 
 

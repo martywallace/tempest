@@ -8,7 +8,6 @@ use Twig_Error_Loader;
 use Twig_Error_Syntax;
 use Twig_Error_Runtime;
 use Twig_Loader_Filesystem;
-use Exception;
 
 
 /**
@@ -48,9 +47,8 @@ class TwigComponent extends Component
             'debug' => app()->config('dev')
         ));
 
-        $this->_environment->addGlobal('app', app());
-
-        $this->_extensions = new TwigExtensions($this);
+        $this->_extensions = new TwigExtensions();
+        $this->_environment->addExtension($this->_extensions);
     }
 
 
@@ -77,31 +75,6 @@ class TwigComponent extends Component
     {
         $data = $data === null ? array() : $data;
         return $this->_environment->render($template, $data);
-    }
-
-
-    /**
-     * Add an extension to Twig.
-     * @param string $type The extension type, see TwigExtension::TYPE_FILTER and TwigExtension::TYPE_FUNCTION.
-     * @param string $handle The handle associated with the extension.
-     * @param callable $callable The callable to execute when triggering the extension.
-     * @throws Exception If the extension type requested is unknown.
-     */
-    public function extend($type, $handle, $callable)
-    {
-        if ($type === TwigExtensions::TYPE_FILTER || $type === TwigExtensions::TYPE_FUNCTION)
-        {
-            // Lol PHP's case insensitivity.
-            // $type = ucfirst($type);
-
-            $class = 'Twig_Simple' . $type;
-
-            $this->_environment->{'add' . $type}(
-                new $class($handle, $callable)
-            );
-        }
-
-        else throw new Exception('Unknown extension type "' . $type . '".');
     }
 
 
