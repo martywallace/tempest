@@ -8,8 +8,6 @@ use Twig_Error_Loader;
 use Twig_Error_Syntax;
 use Twig_Error_Runtime;
 use Twig_Loader_Filesystem;
-use Twig_SimpleFilter;
-use Twig_SimpleFunction;
 use Exception;
 
 
@@ -50,6 +48,8 @@ class TwigComponent extends Component
             'debug' => app()->config('dev')
         ));
 
+        $this->_environment->addGlobal('app', app());
+
         $this->_extensions = new TwigExtensions($this);
     }
 
@@ -76,11 +76,6 @@ class TwigComponent extends Component
     public function render($template, Array $data = null)
     {
         $data = $data === null ? array() : $data;
-
-        $data = array_merge($data, array(
-            'app' => app()
-        ));
-
         return $this->_environment->render($template, $data);
     }
 
