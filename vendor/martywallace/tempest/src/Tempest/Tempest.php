@@ -3,7 +3,8 @@
 namespace Tempest;
 
 use Exception;
-use Tempest\Rendering\TwigComponent;
+use Tempest\Rendering\Twig;
+use Tempest\Routing\Router;
 
 
 /**
@@ -11,7 +12,8 @@ use Tempest\Rendering\TwigComponent;
  *
  * @property int $status The HTTP status to be sent back to the client.
  * @property-read string $root The framework root directory.
- * @property-read TwigComponent $twig A reference to the inbuilt Twig component, used to render templates with Twig.
+ * @property-read Twig $twig A reference to the inbuilt Twig component, used to render templates with Twig.
+ * @property-read Router $router A reference to the Router component.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -185,7 +187,8 @@ abstract class Tempest extends Element implements IConfigurationProvider
     public function start()
     {
         $this->_attempt(function() {
-            $this->addComponent('twig', new TwigComponent());
+            $this->addComponent('twig', new Twig());
+            $this->addComponent('router', new Router());
 
             $this->setup();
         });

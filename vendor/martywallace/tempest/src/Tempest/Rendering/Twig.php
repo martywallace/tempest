@@ -20,7 +20,7 @@ use Twig_Loader_Filesystem;
  * @package Tempest\Rendering
  * @author Marty Wallace
  */
-class TwigComponent extends Component
+class Twig extends Component
 {
 
     const TEMPEST_NAMESPACE = 'tempest';
