@@ -107,7 +107,12 @@ abstract class Tempest extends Element implements IConfigurationProvider
      */
     public function config($prop, $fallback = null)
     {
-        return $this->_config->get($prop, $fallback);
+        if ($this->_config !== null)
+        {
+            return $this->_config->get($prop, $fallback);
+        }
+
+        return $fallback;
     }
 
 

@@ -42,7 +42,9 @@ class TwigComponent extends Component
     public function __construct()
     {
         $this->_loader = new Twig_Loader_Filesystem();
+
         $this->addTemplatePath('vendor/martywallace/tempest/templates', self::TEMPEST_NAMESPACE);
+        $this->addTemplatePath(app()->config('templates', array()));
 
         $this->_environment = new Twig_Environment($this->_loader, array(
             'debug' => app()->config('dev')
@@ -83,18 +85,25 @@ class TwigComponent extends Component
     }
 
 
+    /**
+     * Add an extension to Twig.
+     * @param string $type The extension type, see TwigExtension::TYPE_FILTER and TwigExtension::TYPE_FUNCTION.
+     * @param string $handle The handle associated with the extension.
+     * @param callable $callable The callable to execute when triggering the extension.
+     * @throws Exception If the extension type requested is unknown.
+     */
     public function extend($type, $handle, $callable)
     {
-        if ($type === TwigExtensions::TYPE_FILTER)
+        if ($type === TwigExtensions::TYPE_FILTER || $type === TwigExtensions::TYPE_FUNCTION)
         {
-            $e = new Twig_SimpleFilter($handle, $callable);
-            $this->_environment->addFilter($e);
-        }
+            // Lol PHP's case insensitivity.
+            // $type = ucfirst($type);
 
-        else if ($type === TwigExtensions::TYPE_FUNCTION)
-        {
-            $e = new Twig_SimpleFunction($handle, $callable);
-            $this->_environment->addFunction($e);
+            $class = 'Twig_Simple' . $type;
+
+            $this->_environment->{'add' . $type}(
+                new $class($handle, $callable)
+            );
         }
 
         else throw new Exception('Unknown extension type "' . $type . '".');
