@@ -2,6 +2,7 @@
 
 namespace Tempest;
 
+use Tempest\Components\Component;
 use Exception;
 
 
@@ -13,71 +14,33 @@ use Exception;
  * @package Tempest
  * @author Marty Wallace
  */
-abstract class Element
-{
-
-    /** @var Component[] */
-    private $_components = array();
+abstract class Element {
 
 
-    public function __get($prop)
-    {
+
+
+    public function __get($prop) {
         if ($prop === 'components') return $this->_components;
 
-        if (array_key_exists($prop, $this->_components))
-        {
-            // We found a component with a matching name.
-            return $this->_components[$prop];
-        }
+
 
         return null;
     }
 
 
-    public function __isset($prop)
-    {
+    public function __isset($prop) {
         // Mostly here to satisfy Twig, see:
         // https://github.com/twigphp/Twig/issues/360
         return $this->{$prop} !== null;
     }
 
 
-    public function __set($prop, $value)
-    {
+    public function __set($prop, $value) {
         // Help a brother out and avoid annoying bugs via typos.
         throw new Exception('Property "' . $prop . '" does not exist on "' . get_class($this) . '" and cannot be dynamically created.');
     }
 
 
-    /**
-     * Add a Component to this Element.
-     * @param string $name The name used to reference the Component.
-     * @param Component $component The Component to add.
-     * @return Component|null
-     * @throws Exception
-     */
-    public function addComponent($name, Component $component)
-    {
-       if (!$this->hasComponent($name))
-       {
-           $this->_components[$name] = $component;
-           return $component;
-       }
-       else
-       {
-           throw new Exception('A Component named "' . $name . '" already exists on this Element.');
-       }
-    }
 
-
-    /**
-     * Determine whether or not a Component with the specified name exists on this Element.
-     * @param string $name The name to check.
-     * @return bool
-     */
-    public function hasComponent($name)
-    {
-        return array_key_exists($name, $this->_components);
-    }
 
 }

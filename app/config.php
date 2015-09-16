@@ -5,17 +5,15 @@
  * defined. Configuration cascades based on the environment your application is running in.
  */
 
-return array(
-
-    '*' => array(
-        'templates' => array(
+return [
+    '*' => [
+        'templates' => [
             'app/templates'
-        )
-    ),
+        ]
+    ],
 
-    'localhost' => array(
+    'localhost' => [
         'dev' => true,
         'url' => 'http://localhost:3000'
-    )
-
-);
+    ]
+];

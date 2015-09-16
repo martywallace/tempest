@@ -1,8 +1,6 @@
-<?php
+<?php namespace Tempest\Components;
 
-namespace Tempest\Rendering;
-
-use Tempest\Component;
+use Tempest\Utils\TwigExtensions;
 use Twig_Environment;
 use Twig_Error_Loader;
 use Twig_Error_Syntax;
@@ -20,11 +18,9 @@ use Twig_Loader_Filesystem;
  * @package Tempest\Rendering
  * @author Marty Wallace
  */
-class Twig extends Component
-{
+class TwigComponent extends Component {
 
     const TEMPEST_NAMESPACE = 'tempest';
-
 
     /** @var Twig_Loader_Filesystem */
     private $_loader;
@@ -35,9 +31,7 @@ class Twig extends Component
     /** @var TwigExtensions */
     private $_extensions;
 
-
-    public function __construct()
-    {
+    public function __construct() {
         $this->_loader = new Twig_Loader_Filesystem();
 
         $this->addTemplatePath('vendor/martywallace/tempest/templates', self::TEMPEST_NAMESPACE);
@@ -52,8 +46,7 @@ class Twig extends Component
     }
 
 
-    public function __get($prop)
-    {
+    public function __get($prop) {
         if ($prop === 'environment') return $this->_environment;
         if ($prop === 'loader') return $this->_loader;
         if ($prop === 'extensions') return $this->_extensions;
@@ -71,8 +64,7 @@ class Twig extends Component
      * @throws Twig_Error_Syntax When an error occurred during compilation.
      * @throws Twig_Error_Runtime When an error occurred during rendering.
      */
-    public function render($template, Array $data = null)
-    {
+    public function render($template, Array $data = null) {
         $data = $data === null ? array() : $data;
         return $this->_environment->render($template, $data);
     }
@@ -84,18 +76,13 @@ class Twig extends Component
      * @param string $namespace An optional namespace to use for templates.
      * @throws Twig_Error_Loader
      */
-    public function addTemplatePath($path, $namespace = Twig_Loader_Filesystem::MAIN_NAMESPACE)
-    {
-        if (is_array($path))
-        {
-            foreach($path as $p)
-            {
+    public function addTemplatePath($path, $namespace = Twig_Loader_Filesystem::MAIN_NAMESPACE) {
+        if (is_array($path)) {
+            foreach($path as $p) {
                 // Recursive path additions.
                 $this->addTemplatePath($p, $namespace);
             }
-        }
-        else
-        {
+        } else {
             $path = trim($path, '/');
             $this->_loader->prependPath(ROOT . '/' . $path, $namespace);
         }
