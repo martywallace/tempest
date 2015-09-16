@@ -4,9 +4,10 @@ namespace Tempest;
 
 use Exception;
 use Slim\App;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use Tempest\Components\Component;
 use Tempest\Components\TwigComponent;
-use Tempest\Routing\Controller;
 
 
 /**
@@ -145,8 +146,26 @@ abstract class Tempest extends App {
 	        foreach ($this->bindControllers() as $controller) {
 		        foreach ($controller->bindRoutes() as $route => $detail) {
 			        if (count($detail) === 2) {
+				        $action = $detail[1];
 				        $method = strtoupper($detail[0]);
-				        $this->map([$method], $route, array($controller, $detail[1]));
+
+				        if (!is_array($method)) {
+					        $method = [$method];
+				        }
+
+				        if (method_exists($controller, $action)) {
+					        $this->map($method, $route, function(Request $request, Response $response, Array $args) use ($controller, $action) {
+						        $output = $controller->{$action}($request, $response, $args);
+
+						        if (is_array($output)) {
+							        $response->withJson($output);
+						        } else {
+							        $response->write($output);
+						        }
+					        });
+				        } else {
+					        throw new Exception('Action "' . $action . '" does not exist on controller "' . get_class($controller) . '".');
+				        }
 			        } else {
 				        throw new Exception('Invalid route definition bound to "' . $route . '".');
 			        }

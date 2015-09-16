@@ -1,11 +1,11 @@
 <?php namespace Controllers;
 
-use Tempest\Routing\Controller;
+use Tempest\Controller;
 
 class GeneralController extends Controller {
 
 	public function index() {
-		return app()->twig->render('index.html');
+		return array('ok' => true);
 	}
 
 	public function bindRoutes() {

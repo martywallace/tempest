@@ -1,4 +1,4 @@
-<?php namespace Tempest\Routing;
+<?php namespace Tempest;
 
 abstract class Controller {
 
