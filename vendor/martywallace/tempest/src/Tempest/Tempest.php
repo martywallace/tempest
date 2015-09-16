@@ -46,6 +46,9 @@ abstract class Tempest extends App {
     /** @var Configuration */
     private $_config;
 
+	/** @var TContainer */
+	private $_container;
+
 	/** @var Component[] */
 	private $_components = [];
 
@@ -59,6 +62,7 @@ abstract class Tempest extends App {
      */
     public function __construct($root, $configPath = null) {
         $this->_root = $root;
+	    $this->_container = new TContainer();
 
         if ($configPath !== null) {
             // Initialize configuration.
@@ -67,7 +71,7 @@ abstract class Tempest extends App {
 
         error_reporting($this->_config->dev ? E_ALL : 0);
 
-	    parent::__construct();
+	    parent::__construct($this->_container->container);
     }
 
     public function __get($prop) {
