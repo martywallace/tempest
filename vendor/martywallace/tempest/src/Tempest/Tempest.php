@@ -29,19 +29,13 @@ abstract class Tempest extends Element implements IConfigurationProvider
      * Instantiate the application.
      * @param string $root The framework root directory.
      * @param string $configPath The application configuration file path, relative to the application root.
-     * @param array $autoloadPaths A list of paths to attempt to autoload classes from.
      * @return Tempest
      */
-    public static function instantiate($root, $configPath = null, Array $autoloadPaths = null)
+    public static function instantiate($root, $configPath = null)
     {
         if (self::$_instance === null)
         {
             self::$_instance = new static($root, $configPath);
-
-            foreach ($autoloadPaths as $path)
-            {
-                self::$_instance->addAutoloadDirectory($path);
-            }
         }
 
         return self::$_instance;
@@ -115,44 +109,6 @@ abstract class Tempest extends Element implements IConfigurationProvider
         }
 
         return $fallback;
-    }
-
-
-    /**
-     * Register an autoloader to run in a given directory.
-     * @param string $path The directory to add.
-     * @throws Exception
-     */
-    public function addAutoloadDirectory($path)
-    {
-        $this->_attempt(function() use ($path) {
-            $path = ROOT . '/' . trim($path, '/') . '/';
-
-            if (is_dir($path))
-            {
-                spl_autoload_register(function($class) use ($path) {
-                    $file = str_replace('\\', '/', $class) . '.php';
-
-                    if (is_file($file))
-                    {
-                        require_once $file;
-
-                        if (!class_exists($class))
-                        {
-                            throw new Exception('Could not find class ' . $class . '.');
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception('Could not load file ' . $file . '.');
-                    }
-                });
-            }
-            else
-            {
-                throw new Exception('Directory ' . $path . ' does not exist.');
-            }
-        });
     }
 
 

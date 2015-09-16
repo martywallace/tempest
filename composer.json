@@ -1,7 +1,7 @@
 {
 	"name": "martywallace/tempest",
 	"version": "2.0.0",
-	"description": "A tiny PHP framework.",
+	"description": "A tiny PHP framework wrapping Slim.",
 	"homepage": "https://github.com/MartyWallace/Tempest",
 	"type": "library",
 	"license": "MIT",
@@ -15,11 +15,13 @@
 	],
 	"autoload": {
 		"psr-4" : {
+			"": "app/src/",
 			"Tempest\\" : "vendor/martywallace/tempest/src/Tempest/"
 		}
 	},
 	"require": {
 		"php": ">=5.3.0",
-		"twig/twig": "1.18.1"
+		"slim/slim": "3.0.0-RC1",
+		"twig/twig": "1.18.*"
 	}
 }

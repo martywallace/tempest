@@ -29,7 +29,6 @@
 define('ROOT', realpath(__DIR__ . '/../'));
 
 require(ROOT . '/vendor/autoload.php');
-require(ROOT . '/app/src/App.php');
 
 
 /**
@@ -38,9 +37,8 @@ require(ROOT . '/app/src/App.php');
  *
  * @return App
  */
-function app()
-{
-    return App::instantiate(ROOT, 'app/config', array('app/src'));
+function app() {
+    return \App::instantiate(ROOT, 'app/config');
 }
 
 // Instantiate and start the application.
