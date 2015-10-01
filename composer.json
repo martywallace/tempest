@@ -21,7 +21,7 @@
 	},
 	"require": {
 		"php": ">=5.3.0",
-		"slim/slim": "3.0.0-RC1",
+		"nikic/fast-route": "0.6.*",
 		"twig/twig": "1.18.*"
 	}
 }

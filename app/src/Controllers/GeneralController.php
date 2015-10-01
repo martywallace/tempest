@@ -1,17 +1,16 @@
 <?php namespace Controllers;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
-use Tempest\Controller;
+use Tempest\Http\Controller;
+use Tempest\Http\Request;
 
 class GeneralController extends Controller {
 
-	public function index() {
+	public function index(Request $request) {
 		return app()->twig->render('index.html');
 	}
 
-	public function welcome(Request $req, Response $res, Array $args) {
-		return 'Welcome ' . $args['name'] . '!';
+	public function welcome(Request $request) {
+		return $request->data('hi');
 	}
 
 	public function bindRoutes() {

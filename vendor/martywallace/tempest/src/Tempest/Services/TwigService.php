@@ -15,7 +15,7 @@ use Twig_Loader_Filesystem;
  * @property-read Twig_Loader_Filesystem $loader The internal Twig_Loader_Filesystem instance.
  * @property-read TwigExtensions $extensions The internal TwigExtensions class, defining Tempest level extensions.
  *
- * @package Tempest\Rendering
+ * @package Tempest\Services
  * @author Marty Wallace
  */
 class TwigService extends Service {

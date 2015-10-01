@@ -5,7 +5,7 @@
  *
  * @property-read bool $setup Whether or not this service has been set up yet.
  *
- * @package Tempest
+ * @package Tempest\Services
  * @author Marty Wallace
  */
 abstract class Service {

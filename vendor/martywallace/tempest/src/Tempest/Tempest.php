@@ -3,12 +3,12 @@
 namespace Tempest;
 
 use Exception;
-use Slim\App;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Tempest\Services\FilesystemService;
 use Tempest\Services\Service;
 use Tempest\Services\TwigService;
-
+use Tempest\Http\Router;
+use Tempest\Http\Controller;
+use Tempest\Http\Request;
 
 /**
  * Tempest's core, extended by your core application class.
@@ -16,6 +16,7 @@ use Tempest\Services\TwigService;
  * @property-read bool $dev Whether the application is in development mode.
  * @property-read string $url The public application URL, always without a trailing slash.
  * @property-read string $root The framework root directory, always without a trailing slash.
+ * @property-read Router $router The application router.
  *
  * @property-read string $host The value provided by the server name property on the web server.
  * @property-read string $port The port on which the application is running.
@@ -25,7 +26,7 @@ use Tempest\Services\TwigService;
  * @package Tempest
  * @author Marty Wallace
  */
-abstract class Tempest extends App {
+abstract class Tempest {
 
     /** @var Tempest */
     private static $_instance;
@@ -46,6 +47,9 @@ abstract class Tempest extends App {
         return self::$_instance;
     }
 
+	/** @var Router */
+	private $_router;
+
     /** @var string */
     private $_root;
 
@@ -65,6 +69,7 @@ abstract class Tempest extends App {
      */
     public function __construct($root, $configPath = null) {
         $this->_root = $root;
+	    $this->_router = new Router();
 
         if ($configPath !== null) {
             // Initialize configuration.
@@ -72,8 +77,6 @@ abstract class Tempest extends App {
         }
 
         error_reporting($this->dev ? E_ALL : 0);
-
-	    parent::__construct();
     }
 
     public function __get($prop) {
@@ -81,6 +84,7 @@ abstract class Tempest extends App {
 	    if ($prop === 'dev') return $this->config('dev', false);
 	    if ($prop === 'url') return rtrim($this->config('url', $_SERVER['SERVER_NAME']), '/');
         if ($prop === 'root') return rtrim($this->_root . '/');
+	    if ($prop === 'router') return $this->_router;
 
 	    // Useful server information.
 	    if ($prop === 'host') return $_SERVER['SERVER_NAME'];
@@ -96,8 +100,6 @@ abstract class Tempest extends App {
 
 		    return $service;
 	    }
-
-        return parent::__get($prop);
     }
 
     public function __set($prop, $value) {
@@ -135,9 +137,8 @@ abstract class Tempest extends App {
     private function _attempt($callable) {
         try {
             $callable();
-        }
-        catch (Exception $exception) {
-            $this->response->withStatus(500);
+        } catch (Exception $exception) {
+	        // TODO: Set 500 status.
 
             if ($this->dev) {
                die($this->twig->render('@tempest/exception.html', [
@@ -153,6 +154,7 @@ abstract class Tempest extends App {
     public function start() {
         $this->_attempt(function() {
 	        $services = array_merge([
+		        'filesystem' => new FilesystemService(),
 		        'twig' => new TwigService()
 	        ], $this->bindServices());
 
@@ -162,37 +164,17 @@ abstract class Tempest extends App {
 
 	        foreach ($this->bindControllers() as $controller) {
 		        foreach ($controller->bindRoutes() as $route => $detail) {
-			        // TODO: Ensure route not already used up.
-			        // ...
+			        $handler = $detail[1];
 
-			        if (count($detail) === 2) {
-				        $action = $detail[1];
-				        $method = strtoupper($detail[0]);
-
-				        if (!is_array($method)) {
-					        $method = [$method];
-				        }
-
-				        if (method_exists($controller, $action)) {
-					        $this->map($method, $route, function(Request $request, Response $response, Array $args) use ($controller, $action) {
-						        $output = $controller->{$action}($request, $response, $args);
-
-						        if (is_array($output)) {
-							        $response->withJson($output);
-						        } else {
-							        $response->write($output);
-						        }
-					        });
-				        } else {
-					        throw new Exception('Action "' . $action . '" does not exist on controller "' . get_class($controller) . '".');
-				        }
+			        if (method_exists($controller, $handler)) {
+				        $this->_router->add($detail[0], $route, array($controller, $handler));
 			        } else {
-				        throw new Exception('Invalid route definition bound to "' . $route . '".');
+				        throw new Exception('Method "' . $handler . '" does not exist on controller "' . get_class($controller) . '".');
 			        }
 		        }
 	        }
 
-	        $this->run();
+	        $this->_router->dispatch();
         });
     }
 

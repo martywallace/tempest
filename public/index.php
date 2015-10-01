@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require('../vendor/autoload.php');
 
 /**
@@ -8,7 +10,7 @@ require('../vendor/autoload.php');
  * @return App
  */
 function app() {
-    return App::instantiate(realpath(__DIR__ . '/../'), 'app/config');
+    return App::instantiate(realpath(__DIR__ . '/../'), '/app/config');
 }
 
 // Instantiate and start the application.
