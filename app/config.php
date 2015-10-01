@@ -7,9 +7,7 @@
 
 return [
     '*' => [
-        'templates' => [
-            'app/templates'
-        ]
+        'templates' => 'app/templates'
     ],
 
     'localhost' => [

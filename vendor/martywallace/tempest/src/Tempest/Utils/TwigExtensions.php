@@ -16,22 +16,22 @@ class TwigExtensions extends Twig_Extension {
     public function getName() { return 'TempestTwigExtensions'; }
 
     public function getGlobals() {
-        return array(
+        return [
             // Bind the application to Twig templates.
             'app' => app()
-        );
+        ];
     }
 
     public function getFilters() {
-        return array(
+        return [
             new Twig_SimpleFilter('hash', 'sha1')
-        );
+        ];
     }
 
     public function getFunctions() {
-        return array(
-            new Twig_SimpleFunction('link', array($this, 'link'))
-        );
+        return [
+            new Twig_SimpleFunction('link', [$this, 'link'])
+        ];
     }
 
 
@@ -43,8 +43,7 @@ class TwigExtensions extends Twig_Extension {
      * @return string
      */
     public function link($value) {
-        $baseUrl = rtrim(app()->config('url', ''), '/') . '/';
-        return $baseUrl . ltrim($value, '/');
+        return app()->url . '/' . ltrim($value, '/');
     }
 
 }

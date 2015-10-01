@@ -6,15 +6,21 @@ use Exception;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Tempest\Components\Component;
-use Tempest\Components\TwigComponent;
+use Tempest\Services\Service;
+use Tempest\Services\TwigService;
 
 
 /**
  * Tempest's core, extended by your core application class.
  *
- * @property-read string $root The framework root directory.
- * @property-read TwigComponent $twig A reference to the inbuilt Twig component, used to render templates with Twig.
+ * @property-read bool $dev Whether the application is in development mode.
+ * @property-read string $url The public application URL, always without a trailing slash.
+ * @property-read string $root The framework root directory, always without a trailing slash.
+ *
+ * @property-read string $host The value provided by the server name property on the web server.
+ * @property-read string $port The port on which the application is running.
+ *
+ * @property-read TwigService $twig A reference to the inbuilt Twig component, used to render templates with Twig.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -46,11 +52,8 @@ abstract class Tempest extends App {
     /** @var Configuration */
     private $_config;
 
-	/** @var TContainer */
-	private $_container;
-
-	/** @var Component[] */
-	private $_components = [];
+	/** @var Service[] */
+	private $_services = [];
 
     /**
      * Constructor. Should not be called directly.
@@ -62,25 +65,36 @@ abstract class Tempest extends App {
      */
     public function __construct($root, $configPath = null) {
         $this->_root = $root;
-	    $this->_container = new TContainer();
 
         if ($configPath !== null) {
             // Initialize configuration.
             $this->_config = new Configuration($root . '/' . trim($configPath, '/'));
         }
 
-        error_reporting($this->_config->dev ? E_ALL : 0);
+        error_reporting($this->dev ? E_ALL : 0);
 
-	    parent::__construct($this->_container->container);
+	    parent::__construct();
     }
 
     public function __get($prop) {
+	    // Settings provided by app configuration.
+	    if ($prop === 'dev') return $this->config('dev', false);
+	    if ($prop === 'url') return rtrim($this->config('url', $_SERVER['SERVER_NAME']), '/');
         if ($prop === 'root') return rtrim($this->_root . '/');
-        if ($prop === 'status') return $this->_status;
 
-	    if ($this->hasComponent($prop)) {
-		    // We found a component with a matching name.
-		    return $this->_components[$prop];
+	    // Useful server information.
+	    if ($prop === 'host') return $_SERVER['SERVER_NAME'];
+	    if ($prop === 'port') return $_SERVER['SERVER_PORT'];
+
+	    if ($this->hasService($prop)) {
+		    // We found a service with a matching name.
+		    $service = $this->_services[$prop];
+
+		    if (!$service->setup) {
+			    $service->runSetup();
+		    }
+
+		    return $service;
 	    }
 
         return parent::__get($prop);
@@ -92,7 +106,7 @@ abstract class Tempest extends App {
 
 	public function __isset($prop) {
 		return property_exists($this, $prop) ||
-			$this->hasComponent($prop) ||
+			$this->hasService($prop) ||
 			$this->{$prop} !== null;
 	}
 
@@ -118,18 +132,17 @@ abstract class Tempest extends App {
      *
      * @param callable $callable Block of code to attempt to execute.
      */
-    private function _attempt($callable)
-    {
+    private function _attempt($callable) {
         try {
             $callable();
         }
         catch (Exception $exception) {
             $this->response->withStatus(500);
 
-            if ($this->_config->dev) {
-               die($this->twig->render('@tempest/exception.html', array(
+            if ($this->dev) {
+               die($this->twig->render('@tempest/exception.html', [
                     'exception' => $exception
-               )));
+               ]));
             }
         }
     }
@@ -139,16 +152,19 @@ abstract class Tempest extends App {
      */
     public function start() {
         $this->_attempt(function() {
-	        $components = array_merge(array(
-		        'twig' => new TwigComponent()
-	        ), $this->bindComponents());
+	        $services = array_merge([
+		        'twig' => new TwigService()
+	        ], $this->bindServices());
 
-            foreach ($components as $name => $component) {
-	            $this->addComponent($name, $component);
+            foreach ($services as $name => $component) {
+	            $this->addService($name, $component);
             }
 
 	        foreach ($this->bindControllers() as $controller) {
 		        foreach ($controller->bindRoutes() as $route => $detail) {
+			        // TODO: Ensure route not already used up.
+			        // ...
+
 			        if (count($detail) === 2) {
 				        $action = $detail[1];
 				        $method = strtoupper($detail[0]);
@@ -181,40 +197,40 @@ abstract class Tempest extends App {
     }
 
 	/**
-	 * Add a Component to the application.
+	 * Add a service to the application.
 	 *
-	 * @param string $name The name used to reference the Component.
-	 * @param Component $component The Component to add.
-	 * @return Component|null
+	 * @param string $name The name used to reference the service.
+	 * @param Service $service The service to add.
+	 * @return Service|null
 	 *
 	 * @throws Exception
 	 */
-	public function addComponent($name, Component $component) {
-		if (!$this->hasComponent($name)) {
-			$this->_components[$name] = $component;
-			return $component;
+	public function addService($name, Service $service) {
+		if (!$this->hasService($name)) {
+			$this->_services[$name] = $service;
+			return $service;
 		} else {
-			throw new Exception('A Component named "' . $name . '" already exists on this Element.');
+			throw new Exception('A service named "' . $name . '" already exists.');
 		}
 	}
 
 	/**
-	 * Determine whether or not a Component with the specified name exists.
+	 * Determine whether or not a service with the specified name exists.
 	 *
 	 * @param string $name The name to check.
 	 *
 	 * @return bool
 	 */
-	public function hasComponent($name) {
-		return array_key_exists($name, $this->_components);
+	public function hasService($name) {
+		return array_key_exists($name, $this->_services);
 	}
 
 	/**
-	 * Defines the list of Components to be bound to the application at startup.
+	 * Defines the list of services to be bound to the application at startup.
 	 *
-	 * @return Component[]
+	 * @return Service[]
 	 */
-	protected abstract function bindComponents();
+	protected abstract function bindServices();
 
 	/**
 	 * Defines the list of Controllers to be bound to the application at startup.

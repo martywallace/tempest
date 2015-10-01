@@ -2,20 +2,18 @@
 
 use Tempest\Tempest;
 
-
 class App extends Tempest {
 
-    protected function bindComponents() {
-		return array(
-			// Bind Components to the application here.
-			// ...
-		);
+    protected function bindServices() {
+		return [
+			'general' => new \Services\GeneralService()
+		];
 	}
 
 	protected function bindControllers() {
-		return array(
+		return [
 			new \Controllers\GeneralController()
-		);
+		];
 	}
 
 }
