@@ -3,12 +3,13 @@
 namespace Tempest;
 
 use Exception;
+use Tempest\Http\ContentType;
+use Tempest\Http\Response;
 use Tempest\Services\FilesystemService;
 use Tempest\Services\Service;
 use Tempest\Services\TwigService;
 use Tempest\Http\Router;
 use Tempest\Http\Controller;
-use Tempest\Http\Request;
 
 /**
  * Tempest's core, extended by your core application class.
@@ -21,7 +22,8 @@ use Tempest\Http\Request;
  * @property-read string $host The value provided by the server name property on the web server.
  * @property-read string $port The port on which the application is running.
  *
- * @property-read TwigService $twig A reference to the inbuilt Twig component, used to render templates with Twig.
+ * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
+ * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -138,13 +140,19 @@ abstract class Tempest {
         try {
             $callable();
         } catch (Exception $exception) {
-	        // TODO: Set 500 status.
+	        $response = new Response();
+	        $response->status = 500;
 
             if ($this->dev) {
-               die($this->twig->render('@tempest/exception.html', [
+               $response->body = $this->twig->render('@tempest/exception.html', [
                     'exception' => $exception
-               ]));
+               ]);
+            } else {
+	            $response->contentType = ContentType::TEXT;
+	            $response->body = 'App exception.';
             }
+
+	        $response->send();
         }
     }
 

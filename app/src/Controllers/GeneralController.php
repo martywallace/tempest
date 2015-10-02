@@ -7,7 +7,7 @@ use Tempest\Http\Response;
 class GeneralController extends Controller {
 
 	public function index(Request $request, Response $response) {
-		return app()->twig->render('index.html');
+		return app()->twig->render('indx.html');
 	}
 
 	public function welcome(Request $request, Response $response) {
