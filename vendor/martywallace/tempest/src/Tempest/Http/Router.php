@@ -33,6 +33,8 @@ class Router {
 	}
 
 	public function dispatch() {
+		$response = new Response();
+
 		$dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $collector) {
 			foreach ($this->_routes as $route) {
 				$collector->addRoute($route['method'], $route['route'], $route['handler']);
@@ -43,15 +45,16 @@ class Router {
 
 		if ($info[0] === Dispatcher::FOUND) {
 			$request = new Request($info[2]);
-			$output = $info[1][0]->{$info[1][1]}($request);
-
-			echo $output;
+			$response->body = $info[1][0]->{$info[1][1]}($request, $response);
 		}
 
 		if ($info[0] === Dispatcher::NOT_FOUND) {
 			// TODO: Something more exciting.
-			echo '404 Not Found';
+			$response->status = 404;
+			$response->body = '404 Not Found';
 		}
+
+		$response->send();
 	}
 
 }
