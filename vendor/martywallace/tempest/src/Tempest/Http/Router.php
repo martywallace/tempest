@@ -14,15 +14,11 @@ use FastRoute\RouteCollector;
  */
 class Router {
 
-	/** @var array[] */
+	/** @var Route[] */
 	private $_routes = [];
 
-	public function add($method, $route, Callable $handler) {
-		$this->_routes[] = array(
-			'method' => strtoupper($method),
-			'route' => $route,
-			'handler' => $handler
-		);
+	public function add(Route $route) {
+		$this->_routes[] = $route;
 	}
 
 	public function __get($prop) {
@@ -42,15 +38,36 @@ class Router {
 
 		$dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $collector) {
 			foreach ($this->_routes as $route) {
-				$collector->addRoute($route['method'], $route['route'], $route['handler']);
+				$collector->addRoute($route->method, $route->route, array(
+					'handler' => $route->handler,
+					'middleware' => $route->middleware
+				));
 			}
 		});
 
 		$info = $dispatcher->dispatch($this->method, $this->uri);
 
 		if ($info[0] === Dispatcher::FOUND) {
+			// Successful route match.
 			$request = new Request($info[2]);
-			$response->body = $info[1][0]->{$info[1][1]}($request, $response);
+			$handler = $info[1];
+
+			$doHandler = true;
+
+			if (!empty($handler['middleware'])) {
+				// Execute middleware from left to right.
+				foreach ($handler['middleware'] as $middleware) {
+					if (!call_user_func($middleware, $request, $response)) {
+						// Stop chaining middleware if true was not returned.
+						$doHandler = false;
+						break;
+					}
+				}
+			}
+
+			if ($doHandler) {
+				$response->body = $handler['handler'][0]->{$handler['handler'][1]}($request, $response);
+			}
 		}
 
 		if ($info[0] === Dispatcher::NOT_FOUND) {
