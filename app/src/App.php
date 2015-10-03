@@ -1,19 +1,26 @@
 <?php
 
 use Tempest\Tempest;
+use Services\GeneralService;
+use Controllers\GeneralController;
 
+/**
+ * Your application.
+ *
+ * @property-read GeneralService $general
+ */
 class App extends Tempest {
 
     protected function bindServices() {
-		return [
-			'general' => new \Services\GeneralService()
-		];
+		return array(
+			'general' => new GeneralService()
+		);
 	}
 
 	protected function bindControllers() {
-		return [
-			new \Controllers\GeneralController()
-		];
+		return array(
+			new GeneralController()
+		);
 	}
 
 }

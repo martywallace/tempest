@@ -15,7 +15,7 @@ use JsonSerializable;
 class Response {
 
 	/** @var int */
-	private $_status = 200;
+	private $_status = Status::OK;
 
 	/** @var string */
 	private $_contentType = ContentType::HTML;
@@ -43,17 +43,38 @@ class Response {
 		}
 
 		if ($prop === 'contentType') {
-			header('Content-Type: ' . $value);
+			$this->header('Content-Type', $value);
 		}
 
 		if ($prop === 'body') $this->_body = $value;
 	}
 
+	/**
+	 * Add a response header.
+	 *
+	 * @param string $name The header name.
+	 * @param string $value The header value.
+	 */
+	public function header($name, $value) {
+		header($name . ': ' . $value);
+	}
+
+	/**
+	 * Send the response back to the client.
+	 */
 	public function send() {
-		if (is_array($this->_body) || $this->_body instanceof JsonSerializable) {
-			// Convert the response to JSON.
-			$this->contentType = ContentType::JSON;
-			$this->_body = json_encode($this->_body);
+		if (Status::isSuccessful($this->status)) {
+			if (is_array($this->_body) || $this->_body instanceof JsonSerializable) {
+				// Convert the response to JSON.
+				// TODO: Fix stupid UTF-8 encoding problems here.
+				$this->contentType = ContentType::JSON;
+				$this->_body = json_encode($this->_body);
+			}
+		}
+
+		// Append additional headers.
+		if (!empty(app()->config('robots'))) {
+			$this->header('X-Robots-Tag', app()->config('robots'));
 		}
 
 		echo $this->_body;

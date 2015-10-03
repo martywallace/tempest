@@ -35,10 +35,10 @@ class TwigService extends Service {
         $this->_loader = new Twig_Loader_Filesystem();
 
         $this->addTemplatePath('/vendor/martywallace/tempest/templates', self::TEMPEST_NAMESPACE);
-        $this->addTemplatePath(app()->config('templates', []));
+        $this->addTemplatePath(app()->config('templates', '/app/templates'));
 
         $this->_environment = new Twig_Environment($this->_loader, array(
-            'debug' => app()->config('dev')
+            'debug' => app()->dev
         ));
 
         $this->_extensions = new TwigExtensions();

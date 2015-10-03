@@ -21,6 +21,7 @@ use Tempest\Http\Controller;
  *
  * @property-read string $host The value provided by the server name property on the web server.
  * @property-read string $port The port on which the application is running.
+ * @property-read bool $secure Attempts to determine whether the application is running over SSL.
  *
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
@@ -43,7 +44,7 @@ abstract class Tempest {
      */
     public static function instantiate($root, $configPath = null) {
         if (self::$_instance === null)  {
-            self::$_instance = new static($root, $configPath);
+	        self::$_instance = new static($root, $configPath);
         }
 
         return self::$_instance;
@@ -59,7 +60,7 @@ abstract class Tempest {
     private $_config;
 
 	/** @var Service[] */
-	private $_services = [];
+	private $_services = array();
 
     /**
      * Constructor. Should not be called directly.
@@ -78,19 +79,38 @@ abstract class Tempest {
             $this->_config = new Configuration($root . '/' . trim($configPath, '/'));
         }
 
+	    // TODO: Investigate correct procedures for clean session setup.
+	    session_start();
+
         error_reporting($this->dev ? E_ALL : 0);
     }
 
     public function __get($prop) {
 	    // Settings provided by app configuration.
 	    if ($prop === 'dev') return $this->config('dev', false);
-	    if ($prop === 'url') return rtrim($this->config('url', $_SERVER['SERVER_NAME']), '/');
-        if ($prop === 'root') return rtrim($this->_root . '/');
+
+	    if ($prop === 'url') {
+		    // Attempt to guess the website URL based on whether the request was over HTTPS, the serverName variable and
+		    // the port the request was made over.
+		    $guess = ($this->secure ? 'https://' : 'http://') .
+			    $_SERVER['SERVER_NAME'] .
+			    ($this->port === 80 || $this->port === 443 ? '' : ':' . $this->port);
+
+		    return rtrim($this->config('url', $guess), '/');
+	    }
+
+        if ($prop === 'root') return rtrim($this->_root, '/');
 	    if ($prop === 'router') return $this->_router;
 
 	    // Useful server information.
 	    if ($prop === 'host') return $_SERVER['SERVER_NAME'];
-	    if ($prop === 'port') return $_SERVER['SERVER_PORT'];
+	    if ($prop === 'port') return intval($_SERVER['SERVER_PORT']);
+
+	    if ($prop === 'secure') {
+		    return (!empty($_SERVER['HTTPS']) &&
+		        strtolower($_SERVER['HTTPS']) !== 'off') ||
+		        $this->port === 443;
+	    }
 
 	    if ($this->hasService($prop)) {
 		    // We found a service with a matching name.
@@ -144,7 +164,7 @@ abstract class Tempest {
 	        $response->status = 500;
 
             if ($this->dev) {
-               $response->body = $this->twig->render('@tempest/exception.html', [
+               $response->body = $this->twig->render('@tempest/500.html', [
                     'exception' => $exception
                ]);
             } else {

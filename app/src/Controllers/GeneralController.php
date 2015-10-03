@@ -7,18 +7,18 @@ use Tempest\Http\Response;
 class GeneralController extends Controller {
 
 	public function index(Request $request, Response $response) {
-		return app()->twig->render('indx.html');
+		return app()->twig->render('index.html');
 	}
 
 	public function welcome(Request $request, Response $response) {
-		return $request->arg('name');
+		return $request->name;
 	}
 
 	public function bindRoutes() {
-		return [
-			'/' => ['get', 'index'],
-			'/welcome/{name}' => ['get', 'welcome']
-		];
+		return array(
+			'/' => array('get', 'index'),
+			'/welcome/{name}' => array('get', 'welcome')
+		);
 	}
 
 }

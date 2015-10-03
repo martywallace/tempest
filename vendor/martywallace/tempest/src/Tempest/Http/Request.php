@@ -15,6 +15,14 @@ class Request {
 		$this->_args = $args;
 	}
 
+	public function __get($prop) {
+		if (array_key_exists($prop, $this->_args)) {
+			return $this->named($prop);
+		}
+
+		return null;
+	}
+
 	/**
 	 * Returns request data e.g. GET or POST data.
 	 *
@@ -24,7 +32,7 @@ class Request {
 	 * @return mixed
 	 */
 	public function data($name = null, $fallback = null) {
-		$stack = [];
+		$stack = array();
 
 		if (app()->router->method === 'GET') $stack = $_GET;
 		if (app()->router->method === 'POST') $stack = $_POST;
@@ -37,14 +45,14 @@ class Request {
 	}
 
 	/**
-	 * Return data provided in the request URI against dynamic components.
+	 * Return data provided in the request URI against dynamic named components.
 	 *
 	 * @param string $name The argument name provided in the route definition.
 	 * @param mixed $fallback A fallback value to use if the argument was not provided.
 	 *
 	 * @return mixed
 	 */
-	public function arg($name = null, $fallback = null) {
+	public function named($name = null, $fallback = null) {
 		return array_key_exists($name, $this->_args) ? $this->_args[$name] : $fallback;
 	}
 

@@ -32,6 +32,11 @@ class Router {
 		return null;
 	}
 
+	public function __isset($prop) {
+		return property_exists($this, $prop) ||
+			$this->{$prop} !== null;
+	}
+
 	public function dispatch() {
 		$response = new Response();
 
@@ -49,9 +54,13 @@ class Router {
 		}
 
 		if ($info[0] === Dispatcher::NOT_FOUND) {
-			// TODO: Something more exciting.
-			$response->status = 404;
-			$response->body = '404 Not Found';
+			$response->status = Status::NOT_FOUND;
+			$response->body = app()->twig->render('@tempest/404.html');
+		}
+
+		if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {
+			$response->status = Status::METHOD_NOT_ALLOWED;
+			$response->body = app()->twig->render('@tempest/405.html');
 		}
 
 		$response->send();
