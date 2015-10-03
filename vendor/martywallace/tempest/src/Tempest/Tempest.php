@@ -17,8 +17,9 @@ use Tempest\Http\Controller;
  * @property-read bool $dev Whether the application is in development mode.
  * @property-read string $url The public application URL, always without a trailing slash.
  * @property-read string $root The framework root directory, always without a trailing slash.
- * @property-read Router $router The application router.
+ * @property-read string $timezone The application timezone.
  *
+ * @property-read Router $router The application router.
  * @property-read string $host The value provided by the server name property on the web server.
  * @property-read string $port The port on which the application is running.
  * @property-read bool $secure Attempts to determine whether the application is running over SSL.
@@ -82,6 +83,7 @@ abstract class Tempest {
 	    // TODO: Investigate correct procedures for clean session setup.
 	    session_start();
 
+	    date_default_timezone_set($this->timezone);
         error_reporting($this->dev ? E_ALL : 0);
     }
 
@@ -110,6 +112,10 @@ abstract class Tempest {
 		    return (!empty($_SERVER['HTTPS']) &&
 		        strtolower($_SERVER['HTTPS']) !== 'off') ||
 		        $this->port === 443;
+	    }
+
+	    if ($prop === 'timezone') {
+		    return $this->config('timezone', date_default_timezone_get());
 	    }
 
 	    if ($this->hasService($prop)) {

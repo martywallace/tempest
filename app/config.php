@@ -8,8 +8,7 @@
 
 return array(
     '*' => array(
-        // Global configuration here.
-        // ...
+        'timezone' => 'Australia/Sydney'
     ),
 
     'localhost' => array(
