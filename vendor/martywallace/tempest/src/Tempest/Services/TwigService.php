@@ -98,7 +98,7 @@ class TwigService extends Service {
             }
         } else {
             $path = trim($path, '/');
-            $this->_loader->prependPath(app()->root . '/' . $path, $namespace);
+            $this->_loader->prependPath(app()->filesystem->absolute($path), $namespace);
         }
     }
 

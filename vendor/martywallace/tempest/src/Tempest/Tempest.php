@@ -3,6 +3,7 @@
 namespace Tempest;
 
 use Exception;
+use Tempest\Http\Status;
 use Tempest\Services\FilesystemService;
 use Tempest\Services\Service;
 use Tempest\Services\TwigService;
@@ -158,43 +159,18 @@ abstract class Tempest {
 	}
 
 	/**
-	 * Attempt to execute a block of code. If any exceptions are thrown in the attempted block, they will be caught and
-	 * displayed in Tempest's exception page.
-	 *
-	 * @param callable $callable Block of code to attempt to execute.
-	 */
-	private function _attempt($callable) {
-		try {
-			$callable();
-		} catch (Exception $exception) {
-			$response = new Response();
-			$response->status = 500;
-
-			if ($this->dev) {
-			   $response->body = $this->twig->render('@tempest/500.html', [
-					'exception' => $exception
-			   ]);
-			} else {
-				$response->contentType = ContentType::TEXT;
-				$response->body = 'App exception.';
-			}
-
-			$response->send();
-		}
-	}
-
-	/**
 	 * Start running the application.
 	 */
 	public function start() {
-		$this->_attempt(function() {
-			$services = array_merge([
+		try {
+			$services = array_merge(array(
+				// Services that the core depends on.
 				'filesystem' => new FilesystemService(),
 				'twig' => new TwigService()
-			], $this->bindServices());
+			), $this->bindServices());
 
-			foreach ($services as $name => $component) {
-				$this->addService($name, $component);
+			foreach ($services as $name => $service) {
+				$this->addService($name, $service);
 			}
 
 			foreach ($this->bindControllers() as $controller) {
@@ -215,7 +191,12 @@ abstract class Tempest {
 			}
 
 			$this->_router->dispatch();
-		});
+		} catch (Exception $exception) {
+			// Application did not run correctly.
+			$response = new Response(Status::INTERNAL_SERVER_ERROR);
+			$response->body = app()->twig->render('@tempest/500.html', array('exception' => $exception));
+			$response->send();
+		}
 	}
 
 	/**

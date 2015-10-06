@@ -18,10 +18,20 @@ class Response {
 	private $_status = Status::OK;
 
 	/** @var string */
-	private $_contentType = ContentType::HTML;
+	private $_contentType;
 
 	/** @var string */
 	private $_body = null;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param int $status The response status.
+	 */
+	public function __construct($status = 200) {
+		$this->status = $status;
+		$this->contentType = array('text/html', 'charset' => 'utf-8');
+	}
 
 	public function __get($prop) {
 		if ($prop === 'status') return $this->_status;
@@ -53,10 +63,44 @@ class Response {
 	 * Add a response header.
 	 *
 	 * @param string $name The header name.
-	 * @param string $value The header value.
+	 * @param string|string[] $values The header values.
 	 */
-	public function header($name, $value) {
-		header($name . ': ' . $value);
+	public function header($name, $values) {
+		if (!is_array($values)) {
+			$values = array($values);
+		}
+
+		$value = array();
+
+		foreach ($values as $key => $val) {
+			if (is_numeric($key)) $value[] = $val;
+			else $value[] = $key . '=' . $val;
+		}
+
+		header($name . ': ' . implode('; ', $value));
+	}
+
+	/**
+	 * Send the response as a file download.
+	 *
+	 * @param string $filename The filename to use for the downloaded data.
+	 */
+	public function isDownload($filename) {
+		if (!empty($filename)) {
+			$this->header('Content-Disposition', array('attachment', 'filename' => $filename));
+		}
+	}
+
+	/**
+	 * Flash the response for a given amount of time before redirecting to a new location.
+	 *
+	 * @param int $seconds The amount of seconds to wait before redirection.
+	 * @param string $location The target location.
+	 */
+	public function flash($seconds, $location) {
+		if (intval($seconds) >= 0 && !empty($location)) {
+			$this->header('Refresh', array($seconds, 'url' => $location));
+		}
 	}
 
 	/**
@@ -66,8 +110,7 @@ class Response {
 		if (Status::isSuccessful($this->status)) {
 			if (is_array($this->_body) || $this->_body instanceof JsonSerializable) {
 				// Convert the response to JSON.
-				// TODO: Fix stupid UTF-8 encoding problems here.
-				$this->contentType = ContentType::JSON;
+				$this->contentType = array('application/json', 'charset' => 'utf-8');
 				$this->_body = json_encode($this->_body);
 			}
 		}

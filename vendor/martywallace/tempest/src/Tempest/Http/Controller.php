@@ -8,10 +8,11 @@
  */
 abstract class Controller {
 
-	public function __get($prop) {
-		return null;
-	}
-
+	/**
+	 * Binds routes to this controller.
+	 *
+	 * @return array[]
+	 */
 	public abstract function bindRoutes();
 
 }

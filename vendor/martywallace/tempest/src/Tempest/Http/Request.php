@@ -16,11 +16,8 @@ class Request {
 	}
 
 	public function __get($prop) {
-		if (array_key_exists($prop, $this->_args)) {
-			return $this->named($prop);
-		}
-
-		return null;
+		// Return a named components or GET/POST data.
+		return $this->named($prop, $this->data($prop));
 	}
 
 	/**
@@ -53,7 +50,8 @@ class Request {
 	 * @return mixed
 	 */
 	public function named($name = null, $fallback = null) {
-		return array_key_exists($name, $this->_args) ? $this->_args[$name] : $fallback;
+		return $name === null ? $this->_args
+			: (array_key_exists($name, $this->_args) ? $this->_args[$name] : $fallback);
 	}
 
 }

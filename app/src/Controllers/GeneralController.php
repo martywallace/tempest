@@ -6,12 +6,14 @@ use Tempest\Http\Response;
 
 class GeneralController extends Controller {
 
-	public function index(Request $request, Response $response) {
+	public function index(Request $req, Response $res) {
 		return app()->twig->render('index.html');
 	}
 
-	public function welcome(Request $request, Response $response) {
-		return $request->name;
+	public function welcome(Request $req, Response $res) {
+		$res->flash(5, '/');
+
+		return 'Welcome, ' . $req->named('name');
 	}
 
 	public function bindRoutes() {

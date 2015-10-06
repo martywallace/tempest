@@ -2,10 +2,11 @@
 <html lang="en-GB">
 	<head>
 		<meta charset="utf-8">
-		<title>Application</title>
+		<title>My Application</title>
 	</head>
 	<body>
-		<p>It works!</p>
-		<p>Running at: {{ app.url }}</p>
+		<h2>It works!</h2>
+		<p>Running at: {{ app.url }}.</p>
+        <p>This app <strong>is {{ app.dev ? '' : 'not' }}</strong> in development mode.</p>
 	</body>
 </html>
