@@ -4,13 +4,13 @@ namespace Tempest;
 
 use Exception;
 use Tempest\Http\Status;
-use Tempest\Services\FilesystemService;
 use Tempest\Services\Service;
+use Tempest\Services\FilesystemService;
 use Tempest\Services\TwigService;
+use Tempest\Services\SessionService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Controller;
-use Tempest\Http\ContentType;
 use Tempest\Http\Response;
 
 /**
@@ -28,6 +28,7 @@ use Tempest\Http\Response;
  *
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
+ * @property-read SessionService $sessions The inbuilt service dealing with user sessions.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -81,9 +82,6 @@ abstract class Tempest {
 			// Initialize configuration.
 			$this->_config = new Configuration($root . '/' . trim($configPath, '/'));
 		}
-
-		// TODO: Investigate correct procedures for clean session setup.
-		session_start();
 
 		date_default_timezone_set($this->timezone);
 		error_reporting($this->dev ? E_ALL : 0);
@@ -166,7 +164,8 @@ abstract class Tempest {
 			$services = array_merge(array(
 				// Services that the core depends on.
 				'filesystem' => new FilesystemService(),
-				'twig' => new TwigService()
+				'twig' => new TwigService(),
+				'session' => new SessionService()
 			), $this->bindServices());
 
 			foreach ($services as $name => $service) {
