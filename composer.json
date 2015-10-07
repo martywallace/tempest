@@ -22,6 +22,7 @@
 	"require": {
 		"php": ">=5.3.0",
 		"nikic/fast-route": "0.6.*",
-		"twig/twig": "1.18.*"
+		"twig/twig": "1.18.*",
+		"gabordemooij/redbean": "4.2.*"
 	}
 }

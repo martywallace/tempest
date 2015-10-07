@@ -8,6 +8,7 @@ use Tempest\Services\Service;
 use Tempest\Services\FilesystemService;
 use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
+use Tempest\Services\DatabaseService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Controller;
@@ -29,6 +30,7 @@ use Tempest\Http\Response;
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  * @property-read SessionService $sessions The inbuilt service dealing with user sessions.
+ * @property-read DatabaseService $db The inbuild service dealing with a database and its content.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -167,7 +169,8 @@ abstract class Tempest {
 				// Services that the core depends on.
 				'filesystem' => new FilesystemService(),
 				'twig' => new TwigService(),
-				'session' => new SessionService()
+				'session' => new SessionService(),
+				'db' => new DatabaseService()
 			), $this->bindServices());
 
 			foreach ($services as $name => $service) {

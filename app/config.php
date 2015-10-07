@@ -12,7 +12,13 @@ return array(
     ),
 
     'localhost' => array(
-        'dev' => true
+        'dev' => true,
+	    'db' => array(
+		    'host' => 'localhost',
+		    'name' => 'test',
+		    'user' => 'root',
+		    'pass' => ''
+	    )
     ),
 
     'staging.yourwebsite.com' => array(
