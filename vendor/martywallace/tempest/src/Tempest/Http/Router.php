@@ -72,7 +72,12 @@ class Router {
 
 		if ($info[0] === Dispatcher::NOT_FOUND) {
 			$response->status = Status::NOT_FOUND;
-			$response->body = app()->twig->render('@tempest/404.html');
+
+			if (app()->twig->loader->exists('404.html')) {
+				$response->body = app()->twig->render('404.html');
+			} else {
+				$response->body = app()->twig->render('@tempest/404.html');
+			}
 		}
 
 		if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {

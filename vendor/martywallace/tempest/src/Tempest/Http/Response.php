@@ -104,6 +104,17 @@ class Response {
 	}
 
 	/**
+	 * Redirect the response.
+	 *
+	 * @param string $location The redirect destination.
+	 * @param bool $permanent Whether the redirection should be treated as permanent (adds a 302 status code).
+	 */
+	public function redirect($location, $permanent = false) {
+		$this->status = $permanent ? Status::MOVED_PERMANENTLY : Status::FOUND;
+		$this->header('Location', $location);
+	}
+
+	/**
 	 * Send the response back to the client.
 	 */
 	public function send() {

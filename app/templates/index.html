@@ -1,12 +1,18 @@
-<!DOCTYPE html>
-<html lang="en-GB">
-	<head>
-		<meta charset="utf-8">
-		<title>My Application</title>
-	</head>
-	<body>
-		<h2>It works!</h2>
-		<p>Running at: {{ app.url }}.</p>
-        <p>This app <strong>is {{ app.dev ? '' : 'not' }}</strong> in development mode.</p>
-	</body>
-</html>
+{% extends '_layouts/main.html' %}
+
+{% block content %}
+    <h1>It works!</h1>
+
+    <table style="border-collapse: collapse;" border="1" cellpadding="12">
+        <tbody>
+            <tr>
+                <td>Running At</td>
+                <td><a href="{{ app.url }}">{{ app.url }}</a></td>
+            </tr>
+            <tr>
+                <td>Development Mode</td>
+                <td>{{ app.dev ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}
