@@ -6,7 +6,9 @@ A very rough overview of the architecture:
 
 ![0](http://i.imgur.com/PSW0og3.png)
 
-The core application is accessible via `app()`. Services are accessible by name via `app()`, e.g. `app()->twig->render()`.
+The core application is accessible via `app()`. Services are accessible by name via `app()`, e.g.
+
+    $html = app()->twig->render('template.html');
 
 ## Configuration.
 
