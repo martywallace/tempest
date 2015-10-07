@@ -23,7 +23,7 @@ class TwigExtensions extends Twig_Extension {
 
 	public function getFilters() {
 		return array(
-			new Twig_SimpleFilter('hash', 'sha1')
+			new Twig_SimpleFilter('sha1', 'sha1')
 		);
 	}
 

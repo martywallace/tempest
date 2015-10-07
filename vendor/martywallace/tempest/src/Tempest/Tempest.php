@@ -30,7 +30,7 @@ use Tempest\Http\Response;
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  * @property-read SessionService $sessions The inbuilt service dealing with user sessions.
- * @property-read DatabaseService $db The inbuild service dealing with a database and its content.
+ * @property-read DatabaseService $db The inbuilt service dealing with a database and its content.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -177,6 +177,11 @@ abstract class Tempest {
 				$this->addService($name, $service);
 			}
 
+			if (!empty($this->config('db'))) {
+				// Bind models if a database connection is provided.
+				$this->db->helper->map($this->bindModels());
+			}
+
 			foreach ($this->bindControllers() as $controller) {
 				foreach ($controller->bindRoutes() as $route => $detail) {
 					if (!is_array($detail) || count($detail) >= 2) {
@@ -237,13 +242,20 @@ abstract class Tempest {
 	 *
 	 * @return Service[]
 	 */
-	protected abstract function bindServices();
+	protected function bindServices() { return array(); }
 
 	/**
 	 * Defines the list of Controllers to be bound to the application at startup.
 	 *
 	 * @return Controller[]
 	 */
-	protected abstract function bindControllers();
+	protected function bindControllers() { return array(); }
+
+	/**
+	 * Defines the list of models to be bound to the application at startup.
+	 *
+	 * @return string[]
+	 */
+	protected function bindModels() { return array(); }
 
 }

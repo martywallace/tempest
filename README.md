@@ -41,13 +41,13 @@ There are a handful of configuration options:
 		</tr>
 		<tr>
 			<td><code>robots</code></td>
-			<td>---</td>
+			<td>-</td>
 			<td>If defined, determined the value of the <code>X-Robots-Tag</code> header. Useful for setting <code>noindex</code> and <code>nofollow</code> in staging environments.</td>
 		</tr>
 		<tr>
 		    <td><code>db</code></td>
-		    <td>---</td>
-		    <td>If defined, provides the connection details used by the internal database service. The value expected in an array with the following fields: <code>host</code>, <code>name</code>, <code>user</code> and <code>pass</code>.</td>
+		    <td>-</td>
+		    <td>If defined, provides the connection details used by the internal database service. The value expected in an array with the following keys: <code>host</code>, <code>name</code>, <code>user</code> and <code>pass</code>.</td>
 		</tr>
 	</tbody>
 </table>
