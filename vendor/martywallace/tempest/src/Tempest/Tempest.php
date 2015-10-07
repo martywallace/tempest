@@ -128,6 +128,8 @@ abstract class Tempest {
 
 			return $service;
 		}
+
+		return null;
 	}
 
 	public function __set($prop, $value) {

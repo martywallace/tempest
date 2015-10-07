@@ -3,6 +3,8 @@
 /**
  * A request made to the application.
  *
+ * @property-read string $method The request method e.g. GET, POST.
+ *
  * @package Tempest\Http
  * @author Marty Wallace
  */
@@ -16,8 +18,9 @@ class Request {
 	}
 
 	public function __get($prop) {
-		// Return a named components or GET/POST data.
-		return $this->named($prop, $this->data($prop));
+		if ($prop === 'method') return app()->router->method;
+
+		return null;
 	}
 
 	/**

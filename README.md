@@ -1,6 +1,10 @@
 # Tempest v2.
 
-Yet another PHP framework by [Marty Wallace](http://martywallace.com).
+Yet another minimal PHP framework by [Marty Wallace](http://martywallace.com).
+
+A very rough overview of the architecture:
+
+![0](http://i.imgur.com/WhSla0n.png)
 
 ## Configuration.
 
