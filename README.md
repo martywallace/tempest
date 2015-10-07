@@ -1,14 +1,16 @@
 # Tempest v2.
 
-Yet another minimal PHP framework by [Marty Wallace](http://martywallace.com).
+Yet another minimal PHP framework by [Marty Wallace](http://martywallace.com). Tempest provides a foundation on which you can define services, models and controllers.
 
 A very rough overview of the architecture:
 
-![0](http://i.imgur.com/WhSla0n.png)
+![0](http://i.imgur.com/PSW0og3.png)
+
+The core application is accessible via `app()`. Services are accessible by name via `app()`, e.g. `app()->twig->render()`.
 
 ## Configuration.
 
-There are a handful of configuration options:
+Configuration can be provided via `/app/config.php`. There are a handful of inbuilt configuration options:
 
 <table>
 	<thead>
