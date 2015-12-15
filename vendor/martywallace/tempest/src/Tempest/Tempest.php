@@ -225,10 +225,12 @@ abstract class Tempest {
 				if (!empty($routes)) {
 					if (is_string($routes)) {
 						// Load routes from an additional configuration file.
+						// TODO: Maybe we can roll this functionality directly into the config class, so we can create
+						// separate config files wherever we like?
 						if ($this->filesystem->exists($routes)) {
 							$routes = $this->filesystem->import($routes);
 						} else {
-							throw new Exception('The external routes could not be found at "' . $routes . '".');
+							throw new Exception('External routes could not be found at "' . $routes . '".');
 						}
 					}
 
@@ -242,7 +244,8 @@ abstract class Tempest {
 					throw new Exception('Your application does not define any routes.');
 				}
 			} else {
-				// TODO: What should we do if the app is disabled?
+				// TODO: What should we do if the app is disabled? A 404 is probably appropriate but there might be a
+				// more relevant status to use for "there's a site here but it's not active right now".
 				// ...
 			}
 		} catch (Exception $exception) {

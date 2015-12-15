@@ -26,7 +26,7 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 		<tr>
 			<td><code>enabled</code></td>
 			<td><code>true</code></td>
-			<td>Whether or not the site is enabled. If not, the site does not active any services or trigger any routes.</td>
+			<td>Whether or not the site is enabled. If not, the site does not activate any services or trigger any routes.</td>
 		</tr>
 		<tr>
 			<td><code>dev</code></td>
@@ -35,7 +35,7 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 		</tr>
 		<tr>
 			<td><code>url</code></td>
-			<td>Educated guess using server name and port variables</td>
+			<td>Educated guess using server name and port variables.</td>
 			<td>The application URL e.g. <code>http://yoursite.com</code>.</td>
 		</tr>
 		<tr>
@@ -58,7 +58,7 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 		</tr>
 		<tr>
 			<td><code>timezone</code></td>
-			<td>Default timezone provied by your PHP installation</td>
+			<td>Default timezone provied by your PHP installation.</td>
 			<td>The application timezone.</td>
 		</tr>
 		<tr>
