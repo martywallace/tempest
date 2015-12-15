@@ -1,5 +1,8 @@
 <?php namespace Tempest\Services;
 
+use Exception;
+
+
 /**
  * Deals with the filesystem relative to the application path.
  *
@@ -22,12 +25,29 @@ class FilesystemService extends Service {
 	/**
 	 * Determine whether a file or directory exists.
 	 *
-	 * @param string $relative The file or directory path relative to the application root.
+	 * @param string $relative The relative path within the application directory.
 	 *
 	 * @return bool
 	 */
 	public function exists($relative) {
 		return file_exists($this->absolute($relative));
+	}
+
+	/**
+	 * Alias for <code>require()</code>.
+	 *
+	 * @param string $relative The relative path within the application directory.
+	 *
+	 * @return mixed
+	 *
+	 * @throws Exception If the file to import does not exist.
+	 */
+	public function import($relative) {
+		if ($this->exists($relative)) {
+			return require($this->absolute($relative));
+		} else {
+			throw new Exception('Could not import "' . $relative . '" - it does not exist.');
+		}
 	}
 
 }

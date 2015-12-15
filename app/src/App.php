@@ -2,24 +2,17 @@
 
 use Tempest\Tempest;
 use Services\GeneralService;
-use Controllers\GeneralController;
 
 /**
- * Your application.
+ * Your application. The primary purpose of this class is to bind your services to the application.
  *
  * @property-read GeneralService $general
  */
 class App extends Tempest {
 
-    protected function bindServices() {
+	protected function bindServices() {
 		return array(
 			'general' => new GeneralService()
-		);
-	}
-
-	protected function bindControllers() {
-		return array(
-			new GeneralController()
 		);
 	}
 

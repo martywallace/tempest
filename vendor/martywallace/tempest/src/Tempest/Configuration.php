@@ -13,7 +13,7 @@ use Exception;
  */
 class Configuration {
 
-	/** @var Array */
+	/** @var array */
 	private $_data;
 
 	/**

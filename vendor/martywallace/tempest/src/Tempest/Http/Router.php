@@ -38,10 +38,7 @@ class Router {
 
 		$dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $collector) {
 			foreach ($this->_routes as $route) {
-				$collector->addRoute($route->method, $route->route, array(
-					'handler' => $route->handler,
-					'middleware' => $route->middleware
-				));
+				$collector->addRoute($route->method, $route->route, $route->handler);
 			}
 		});
 
@@ -52,22 +49,7 @@ class Router {
 			$request = new Request($info[2]);
 			$handler = $info[1];
 
-			$doHandler = true;
-
-			if (!empty($handler['middleware'])) {
-				// Execute middleware from left to right.
-				foreach ($handler['middleware'] as $middleware) {
-					if (!call_user_func($middleware, $request, $response)) {
-						// Stop chaining middleware if true was not returned.
-						$doHandler = false;
-						break;
-					}
-				}
-			}
-
-			if ($doHandler) {
-				$response->body = $handler['handler'][0]->{$handler['handler'][1]}($request, $response);
-			}
+			$response->body = app()->callControllerMethod($handler, $request, $response);
 		}
 
 		if ($info[0] === Dispatcher::NOT_FOUND) {

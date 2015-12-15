@@ -5,14 +5,12 @@
 	"homepage": "https://github.com/MartyWallace/Tempest",
 	"type": "library",
 	"license": "MIT",
-	"authors": [
-		{
-			"name": "Marty Wallace",
-			"email": "marty.wallace@live.com.au",
-			"homepage": "http://martywallace.com",
-			"role": "Lead Developer"
-		}
-	],
+	"authors": [{
+		"name": "Marty Wallace",
+		"email": "marty.wallace@live.com.au",
+		"homepage": "http://martywallace.com",
+		"role": "Lead Developer"
+	}],
 	"autoload": {
 		"psr-4" : {
 			"": "app/src/",
@@ -22,7 +20,9 @@
 	"require": {
 		"php": ">=5.3.0",
 		"nikic/fast-route": "0.6.*",
-		"twig/twig": "1.18.*",
-		"gabordemooij/redbean": "4.2.*"
+		"twig/twig": "1.18.*"
+	},
+	"require-dev": {
+		"phpdocumentor/phpdocumentor": "2.*"
 	}
 }

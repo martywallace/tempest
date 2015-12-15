@@ -1,12 +1,14 @@
 <?php namespace Tempest\Http;
 
+use Exception;
+
+
 /**
  * A single route definition.
  *
  * @property-read string $route The route pattern.
  * @property-read string $method The request method used to access this route.
- * @property-read callable $handler The route handler.
- * @property-read callable[] $middleware A list of the middleware attached to this route.
+ * @property-read string $handler The route handler.
  *
  * @package Tempest\Http
  */
@@ -18,26 +20,26 @@ class Route {
 	/** @var string */
 	private $_method;
 
-	/** @var callable */
+	/** @var string */
 	private $_handler;
 
-	/** @var callable[] */
-	private $_middleware;
-
-	public function __construct($route, Array $detail) {
+	public function __construct($route, $detail) {
 		$this->_route = $route;
-		$this->_method = count($detail) >= 1 ? strtoupper($detail[0]) : null;
-		$this->_handler = count($detail) >= 2 ? $detail[1] : null;
+		$this->_method = 'GET';
 
-		if (count($detail) >= 3) {
-			if (!is_array($detail[2]) || is_callable($detail[2])) {
-				// Convert to array of callables.
-				$detail[2] = array($detail[2]);
+		if (!empty($detail) && (is_array($detail) || is_string($detail))) {
+			if (is_array($detail)) {
+				if (count($detail) > 1) {
+					$this->_method = strtoupper($detail[0]);
+					$this->_handler = $detail[1];
+				} else {
+					$this->_handler = $detail[0];
+				}
+			} else {
+				$this->_handler = $detail;
 			}
-
-			$this->_middleware = $detail[2];
 		} else {
-			$this->_middleware = null;
+			throw new Exception('Invalid route definition for "' . $route . '".');
 		}
 	}
 
@@ -45,7 +47,6 @@ class Route {
 		if ($prop === 'route') return $this->_route;
 		if ($prop === 'method') return $this->_method;
 		if ($prop === 'handler') return $this->_handler;
-		if ($prop === 'middleware') return $this->_middleware;
 
 		return null;
 	}

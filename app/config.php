@@ -7,27 +7,22 @@
  */
 
 return array(
-    '*' => array(
-        'timezone' => 'Australia/Sydney'
-    ),
+	'*' => array(
+		'timezone' => 'Australia/Sydney',
+		'routes' => '/app/routes.php'
+	),
 
-    'localhost' => array(
-        'dev' => true,
-	    'db' => array(
-		    'host' => 'localhost',
-		    'name' => 'test',
-		    'user' => 'root',
-		    'pass' => ''
-	    )
-    ),
+	'localhost' => array(
+		'dev' => true
+	),
 
-    'staging.yourwebsite.com' => array(
-        'dev' => true,
-        'url' => 'http://staging.yourwebsite.com',
-        'robots' => 'noindex, nofollow'
-    ),
+	'staging.yourwebsite.com' => array(
+		'dev' => true,
+		'url' => 'http://staging.yourwebsite.com',
+		'robots' => 'noindex, nofollow'
+	),
 
-    'yourwebsite.com' => array(
-        'url' => 'http://yourwebsite.com'
-    )
+	'yourwebsite.com' => array(
+		'url' => 'http://yourwebsite.com'
+	)
 );

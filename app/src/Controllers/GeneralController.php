@@ -16,11 +16,4 @@ class GeneralController extends Controller {
 		return 'Welcome, ' . $req->named('name');
 	}
 
-	public function bindRoutes() {
-		return array(
-			'/' => array('get', 'index'),
-			'/welcome/{name}' => array('get', 'welcome')
-		);
-	}
-
 }

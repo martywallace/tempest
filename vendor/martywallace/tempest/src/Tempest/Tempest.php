@@ -11,7 +11,7 @@ use Tempest\Services\SessionService;
 use Tempest\Services\DatabaseService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
-use Tempest\Http\Controller;
+use Tempest\Http\Request;
 use Tempest\Http\Response;
 
 /**
@@ -82,7 +82,7 @@ abstract class Tempest {
 
 		if ($configPath !== null) {
 			// Initialize configuration.
-			$this->_config = new Configuration($root . '/' . trim($configPath, '/'));
+			$this->_config = new Configuration($this->root . '/' . trim($configPath, '/'));
 		}
 
 		date_default_timezone_set($this->timezone);
@@ -161,6 +161,48 @@ abstract class Tempest {
 	}
 
 	/**
+	 * Output some data for debugging.
+	 *
+	 * @param mixed $data The data to debug.
+	 */
+	public function dump($data) {
+		print_r($data); exit;
+	}
+
+	/**
+	 * Calls a controller method and provides the result.
+	 *
+	 * @param string $handler The handler used to reference the controller and method within that controller to call. If
+	 * no method detail is provided, the default is index.
+	 * @param Request $request The request object to pass to the controller method.
+	 * @param Response $response The response object to pass to the controller method.
+	 *
+	 * @return mixed
+	 *
+	 * @throws Exception If the class or method does not exist.
+	 */
+	public function callControllerMethod($handler, Request $request = null, Response $response = null) {
+		$handler = explode('::', $handler);
+
+		$class = $handler[0];
+		$method = count($handler) > 1 ? $handler[1] : 'index';
+
+		if (class_exists($class)) {
+			$controller = new $class();
+
+			if (method_exists($controller, $method)) {
+				return $controller->{$method}($request, $response);
+			} else {
+				throw new Exception('Controller class "' . $class . '" does not define a method "' . $method . '".');
+			}
+		} else {
+			throw new Exception('Controller class "' . $class . '" does not exist.');
+		}
+
+		return 'wot';
+	}
+
+	/**
 	 * Start running the application.
 	 */
 	public function start() {
@@ -177,26 +219,20 @@ abstract class Tempest {
 				$this->addService($name, $service);
 			}
 
-			if (!empty($this->config('db'))) {
-				// Bind models if a database connection is provided.
-				$this->db->helper->map($this->bindModels());
+			$routes = $this->config('routes', array());
+
+			if (is_string($routes)) {
+				// Load routes from an additional configuration file.
+				if ($this->filesystem->exists($routes)) {
+					$routes = $this->filesystem->import($routes);
+				} else {
+					throw new Exception('The external routes could not be found at "' . $routes . '".');
+				}
 			}
 
-			foreach ($this->bindControllers() as $controller) {
-				foreach ($controller->bindRoutes() as $route => $detail) {
-					if (!is_array($detail) || count($detail) >= 2) {
-						if (method_exists($controller, $detail[1])) {
-							// Convert handler detail to full callable.
-							$detail[1] = array($controller, $detail[1]);
-
-							$this->_router->add(new Route($route, $detail));
-						} else {
-							throw new Exception('Method "' . $detail[1] . '" does not exist on controller "' . get_class($controller) . '".');
-						}
-					} else {
-						throw new Exception('Invalid route detail supplied for route "' . $route . '".');
-					}
-				}
+			foreach ($routes as $route => $handler) {
+				$route = new Route($route, $handler);
+				$this->_router->add($route);
 			}
 
 			$this->_router->dispatch();
@@ -213,6 +249,7 @@ abstract class Tempest {
 	 *
 	 * @param string $name The name used to reference the service.
 	 * @param Service $service The service to add.
+	 *
 	 * @return Service|null
 	 *
 	 * @throws Exception
@@ -243,19 +280,5 @@ abstract class Tempest {
 	 * @return Service[]
 	 */
 	protected function bindServices() { return array(); }
-
-	/**
-	 * Defines the list of Controllers to be bound to the application at startup.
-	 *
-	 * @return Controller[]
-	 */
-	protected function bindControllers() { return array(); }
-
-	/**
-	 * Defines the list of models to be bound to the application at startup.
-	 *
-	 * @return string[]
-	 */
-	protected function bindModels() { return array(); }
 
 }

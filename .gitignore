@@ -1,6 +1,7 @@
 .idea
 vendor/*
 !vendor/martywallace
+output
 composer.lock
 node_modules
 bower
