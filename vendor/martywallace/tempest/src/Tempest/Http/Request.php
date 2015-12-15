@@ -24,10 +24,10 @@ class Request {
 	}
 
 	/**
-	 * Returns request data e.g. GET or POST data.
+	 * Returns request data e.g. GET or POST data, based on the request method.
 	 *
 	 * @param string $name The name of the data to get.
-	 * @param mixed $fallback A fallback value to use if the data is not defined.
+	 * @param mixed $fallback A fallback value to use if the data does not exist.
 	 *
 	 * @return mixed
 	 */

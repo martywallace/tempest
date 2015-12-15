@@ -48,6 +48,9 @@ class Configuration {
 			} else {
 				throw new Exception('Configuration data must be an array.');
 			}
+
+			// TODO: Potentially recurse over values in search for token representing external config file to load in.
+			// ...
 		} else {
 			throw new Exception('Configuration file "' . $file . '" does not exist.');
 		}

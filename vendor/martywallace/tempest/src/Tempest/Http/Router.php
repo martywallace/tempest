@@ -1,5 +1,6 @@
 <?php namespace Tempest\Http;
 
+use Exception;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 
@@ -8,6 +9,7 @@ use FastRoute\RouteCollector;
  *
  * @property-read string $method The request method e.g. GET, POST.
  * @property-read string $uri The request URI.
+ * @property-read Route $matched The matched route being triggered.
  *
  * @package Tempest\Http
  * @author Marty Wallace
@@ -17,6 +19,9 @@ class Router {
 	/** @var Route[] */
 	private $_routes = [];
 
+	/** @var Route */
+	private $_matched;
+
 	public function add(Route $route) {
 		$this->_routes[] = $route;
 	}
@@ -24,6 +29,7 @@ class Router {
 	public function __get($prop) {
 		if ($prop === 'method') return strtoupper($_SERVER['REQUEST_METHOD']);
 		if ($prop === 'uri') return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		if ($prop === 'matched') return $this->_matched;
 
 		return null;
 	}
@@ -38,7 +44,7 @@ class Router {
 
 		$dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $collector) {
 			foreach ($this->_routes as $route) {
-				$collector->addRoute($route->method, $route->route, $route->handler);
+				$collector->addRoute($route->method, $route->route, $route);
 			}
 		});
 
@@ -47,9 +53,22 @@ class Router {
 		if ($info[0] === Dispatcher::FOUND) {
 			// Successful route match.
 			$request = new Request($info[2]);
-			$handler = $info[1];
+			$this->_matched = $info[1];
 
-			$response->body = app()->callControllerMethod($handler, $request, $response);
+			$respond = true;
+
+			if (count($this->_matched->middleware) > 0) {
+				foreach ($this->_matched->middleware as $middleware) {
+					if (!$this->instantiateAndCall($middleware, $request, $response)) {
+						$respond = false;
+						break;
+					}
+				}
+			}
+
+			if ($respond) {
+				$response->body = $this->instantiateAndCall($this->_matched->handler, $request, $response);
+			}
 		}
 
 		if ($info[0] === Dispatcher::NOT_FOUND) {
@@ -68,6 +87,38 @@ class Router {
 		}
 
 		$response->send();
+	}
+
+	/**
+	 * Instantiate an instance of a class and call a method attached to that class, passing the current Request and
+	 * Response objects to that method.
+	 *
+	 * @param string $handler The handler used to reference the class and method within that class to call. If no method
+	 * detail is provided, the default is index.
+	 * @param Request $request The request object to pass to the method.
+	 * @param Response $response The response object to pass to the method.
+	 *
+	 * @return mixed The result of calling the class method.
+	 *
+	 * @throws Exception If the class or method does not exist.
+	 */
+	public function instantiateAndCall($handler, Request $request = null, Response $response = null) {
+		$handler = explode('::', $handler);
+
+		$class = $handler[0];
+		$method = count($handler) > 1 ? $handler[1] : 'index';
+
+		if (class_exists($class)) {
+			$instance = new $class();
+
+			if (method_exists($instance, $method)) {
+				return $instance->{$method}($request, $response);
+			} else {
+				throw new Exception('Class "' . $class . '" does not define a method "' . $method . '".');
+			}
+		} else {
+			throw new Exception('Class "' . $class . '" does not exist.');
+		}
 	}
 
 }

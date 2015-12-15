@@ -14,6 +14,7 @@ class Status {
 	const NOT_FOUND = 404;
 	const METHOD_NOT_ALLOWED = 405;
 	const INTERNAL_SERVER_ERROR = 500;
+	const SERVICE_UNAVAILABLE = 503;
 
 	public function isInformational($value) {
 		return $value >= 100 && $value < 200;

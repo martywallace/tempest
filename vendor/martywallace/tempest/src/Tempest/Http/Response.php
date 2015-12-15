@@ -21,16 +21,18 @@ class Response {
 	private $_contentType;
 
 	/** @var string */
-	private $_body = null;
+	private $_body;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param int $status The response status.
+	 * @param string $body The response body.
 	 */
-	public function __construct($status = 200) {
+	public function __construct($status = 200, $body = null) {
 		$this->status = $status;
 		$this->contentType = array('text/html', 'charset' => 'utf-8');
+		$this->body = $body;
 	}
 
 	public function __get($prop) {

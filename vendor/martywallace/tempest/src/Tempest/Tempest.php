@@ -163,43 +163,12 @@ abstract class Tempest {
 	}
 
 	/**
-	 * Output some data for debugging.
+	 * Output some data for debugging and stop the application.
 	 *
 	 * @param mixed $data The data to debug.
 	 */
 	public function dump($data) {
 		print_r($data); exit;
-	}
-
-	/**
-	 * Calls a controller method and provides the result.
-	 *
-	 * @param string $handler The handler used to reference the controller and method within that controller to call. If
-	 * no method detail is provided, the default is index.
-	 * @param Request $request The request object to pass to the controller method.
-	 * @param Response $response The response object to pass to the controller method.
-	 *
-	 * @return mixed
-	 *
-	 * @throws Exception If the class or method does not exist.
-	 */
-	public function callControllerMethod($handler, Request $request = null, Response $response = null) {
-		$handler = explode('::', $handler);
-
-		$class = $handler[0];
-		$method = count($handler) > 1 ? $handler[1] : 'index';
-
-		if (class_exists($class)) {
-			$controller = new $class();
-
-			if (method_exists($controller, $method)) {
-				return $controller->{$method}($request, $response);
-			} else {
-				throw new Exception('Controller class "' . $class . '" does not define a method "' . $method . '".');
-			}
-		} else {
-			throw new Exception('Controller class "' . $class . '" does not exist.');
-		}
 	}
 
 	/**
@@ -225,8 +194,6 @@ abstract class Tempest {
 				if (!empty($routes)) {
 					if (is_string($routes)) {
 						// Load routes from an additional configuration file.
-						// TODO: Maybe we can roll this functionality directly into the config class, so we can create
-						// separate config files wherever we like?
 						if ($this->filesystem->exists($routes)) {
 							$routes = $this->filesystem->import($routes);
 						} else {
@@ -244,14 +211,13 @@ abstract class Tempest {
 					throw new Exception('Your application does not define any routes.');
 				}
 			} else {
-				// TODO: What should we do if the app is disabled? A 404 is probably appropriate but there might be a
-				// more relevant status to use for "there's a site here but it's not active right now".
-				// ...
+				// Site is not enabled.
+				$response = new Response(Status::SERVICE_UNAVAILABLE);
+				$response->send();
 			}
 		} catch (Exception $exception) {
 			// Application did not run correctly.
-			$response = new Response(Status::INTERNAL_SERVER_ERROR);
-			$response->body = app()->twig->render('@tempest/500.html', array('exception' => $exception));
+			$response = new Response(Status::INTERNAL_SERVER_ERROR, app()->twig->render('@tempest/500.html', array('exception' => $exception)));
 			$response->send();
 		}
 	}
