@@ -49,11 +49,13 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 			<td>
 				An array of routes mapped to valid handlers. A path relative to the application root pointing to a PHP file that returns an array is also a valid value e.g. <code>/app/routes.php</code>. Valid handler formats include:
 				<ul>
-					<li><code>array("method", "ClassName::methodName")</code></li>
-					<li><code>array("ClassName::methodName")</code></li>
-					<li><code>"ClassName::methodName"</code></li>
+					<li><code>["method", "ControllerClassName::methodName", ["MiddlewareClassName::methodName"]]</code></li>
+					<li><code>["method", "ControllerClassName::methodName", "MiddlewareClassName::methodName"]</code></li>
+					<li><code>["method", "ControllerClassName::methodName"]</code></li>
+					<li><code>["ControllerClassName::methodName"]</code></li>
+					<li><code>"ControllerClassName::methodName"</code></li>
 				</ul>
-				Where <code>method</code> is the HTTP method e.g. <code>GET</code> or <code>POST</code>.
+				Where <code>method</code> is the HTTP method e.g. <code>GET</code> or <code>POST</code>. Middleware is executed in the order they are defined.
 			</td>
 		</tr>
 		<tr>
