@@ -34,7 +34,7 @@ class FilesystemService extends Service {
 	}
 
 	/**
-	 * Alias for <code>require()</code>.
+	 * Alias for require().
 	 *
 	 * @param string $relative The relative path within the application directory.
 	 *

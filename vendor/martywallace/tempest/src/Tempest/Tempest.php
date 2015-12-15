@@ -18,6 +18,7 @@ use Tempest\Http\Response;
  * Tempest's core, extended by your core application class.
  *
  * @property-read bool $dev Whether the application is in development mode.
+ * @property-read bool $enabled Whether the application is currently enabled.
  * @property-read string $url The public application URL, always without a trailing slash.
  * @property-read string $root The framework root directory, always without a trailing slash.
  * @property-read string $timezone The application timezone.
@@ -92,6 +93,7 @@ abstract class Tempest {
 	public function __get($prop) {
 		// Settings provided by app configuration.
 		if ($prop === 'dev') return $this->config('dev', false);
+		if ($prop === 'enabled') return $this->config('enabled', true);
 
 		if ($prop === 'url') {
 			// Attempt to guess the website URL based on whether the request was over HTTPS, the serverName variable and
@@ -205,38 +207,43 @@ abstract class Tempest {
 	 */
 	public function start() {
 		try {
-			$services = array_merge(array(
-				// Services that the core depends on.
-				'filesystem' => new FilesystemService(),
-				'twig' => new TwigService(),
-				'session' => new SessionService(),
-				'db' => new DatabaseService()
-			), $this->bindServices());
+			if ($this->enabled) {
+				$services = array_merge(array(
+					// Services that the core depends on.
+					'filesystem' => new FilesystemService(),
+					'twig' => new TwigService(),
+					'session' => new SessionService(),
+					'db' => new DatabaseService()
+				), $this->bindServices());
 
-			foreach ($services as $name => $service) {
-				$this->addService($name, $service);
-			}
+				foreach ($services as $name => $service) {
+					$this->addService($name, $service);
+				}
 
-			$routes = $this->config('routes', array());
+				$routes = $this->config('routes', array());
 
-			if (!empty($routes)) {
-				if (is_string($routes)) {
-					// Load routes from an additional configuration file.
-					if ($this->filesystem->exists($routes)) {
-						$routes = $this->filesystem->import($routes);
-					} else {
-						throw new Exception('The external routes could not be found at "' . $routes . '".');
+				if (!empty($routes)) {
+					if (is_string($routes)) {
+						// Load routes from an additional configuration file.
+						if ($this->filesystem->exists($routes)) {
+							$routes = $this->filesystem->import($routes);
+						} else {
+							throw new Exception('The external routes could not be found at "' . $routes . '".');
+						}
 					}
-				}
 
-				foreach ($routes as $route => $handler) {
-					$route = new Route($route, $handler);
-					$this->_router->add($route);
-				}
+					foreach ($routes as $route => $handler) {
+						$route = new Route($route, $handler);
+						$this->_router->add($route);
+					}
 
-				$this->_router->dispatch();
+					$this->_router->dispatch();
+				} else {
+					throw new Exception('Your application does not define any routes.');
+				}
 			} else {
-				throw new Exception('Your application does not define any routes.');
+				// TODO: What should we do if the app is disabled?
+				// ...
 			}
 		} catch (Exception $exception) {
 			// Application did not run correctly.

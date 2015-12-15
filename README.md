@@ -24,6 +24,11 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 	</thead>
 	<tbody>
 		<tr>
+			<td><code>enabled</code></td>
+			<td><code>true</code></td>
+			<td>Whether or not the site is enabled. If not, the site does not active any services or trigger any routes.</td>
+		</tr>
+		<tr>
 			<td><code>dev</code></td>
 			<td><code>false</code></td>
 			<td>Whether or not the application is in development mode. If it is, exceptions and errors are shown to the developer when they are encountered.</td>
