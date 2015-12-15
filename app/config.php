@@ -9,7 +9,10 @@
 return array(
 	'*' => array(
 		'timezone' => 'Australia/Sydney',
-		'routes' => '/app/routes.php'
+		'routes' => array(
+			'/' => array('get', 'Controllers\GeneralController'),
+			'/welcome/{name}' => array('get', 'Controllers\GeneralController::welcome')
+		)
 	),
 
 	'localhost' => array(

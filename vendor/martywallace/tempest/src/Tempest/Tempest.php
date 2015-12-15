@@ -198,8 +198,6 @@ abstract class Tempest {
 		} else {
 			throw new Exception('Controller class "' . $class . '" does not exist.');
 		}
-
-		return 'wot';
 	}
 
 	/**
@@ -221,21 +219,25 @@ abstract class Tempest {
 
 			$routes = $this->config('routes', array());
 
-			if (is_string($routes)) {
-				// Load routes from an additional configuration file.
-				if ($this->filesystem->exists($routes)) {
-					$routes = $this->filesystem->import($routes);
-				} else {
-					throw new Exception('The external routes could not be found at "' . $routes . '".');
+			if (!empty($routes)) {
+				if (is_string($routes)) {
+					// Load routes from an additional configuration file.
+					if ($this->filesystem->exists($routes)) {
+						$routes = $this->filesystem->import($routes);
+					} else {
+						throw new Exception('The external routes could not be found at "' . $routes . '".');
+					}
 				}
-			}
 
-			foreach ($routes as $route => $handler) {
-				$route = new Route($route, $handler);
-				$this->_router->add($route);
-			}
+				foreach ($routes as $route => $handler) {
+					$route = new Route($route, $handler);
+					$this->_router->add($route);
+				}
 
-			$this->_router->dispatch();
+				$this->_router->dispatch();
+			} else {
+				throw new Exception('Your application does not define any routes.');
+			}
 		} catch (Exception $exception) {
 			// Application did not run correctly.
 			$response = new Response(Status::INTERNAL_SERVER_ERROR);

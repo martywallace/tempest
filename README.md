@@ -1,6 +1,6 @@
 # Tempest v2.
 
-Yet another minimal PHP framework by [Marty Wallace](http://martywallace.com). Tempest provides a foundation on which you can define services, models and controllers.
+Yet another minimal PHP framework by [Marty Wallace](http://martywallace.com). Tempest provides a foundation on which you can define services and make use of basic routing.
 
 A very rough overview of the architecture:
 
@@ -8,7 +8,7 @@ A very rough overview of the architecture:
 
 The core application is accessible via `app()`. Services are accessible by name via `app()`, e.g.
 
-    $html = app()->twig->render('template.html');
+	$html = app()->twig->render('template.html');
 
 ## Configuration.
 
@@ -39,6 +39,19 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 			<td>A path or array of paths where application level Twig templates can be loaded from.</td>
 		</tr>
 		<tr>
+			<td><code>routes</code></td>
+			<td><code>array()</code></td>
+			<td>
+				An array of routes mapped to valid handlers. A path relative to the application root pointing to a PHP file that returns an array is also a valid value e.g. <code>/app/routes.php</code>. Valid handler formats include:
+				<ul>
+					<li><code>array("method", "ClassName::methodName")</code></li>
+					<li><code>array("ClassName::methodName")</code></li>
+					<li><code>"ClassName::methodName"</code></li>
+				</ul>
+				Where <code>method</code> is the HTTP method e.g. <code>GET</code> or <code>POST</code>.
+			</td>
+		</tr>
+		<tr>
 			<td><code>timezone</code></td>
 			<td>Default timezone provied by your PHP installation</td>
 			<td>The application timezone.</td>
@@ -49,9 +62,9 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 			<td>If defined, determined the value of the <code>X-Robots-Tag</code> header. Useful for setting <code>noindex</code> and <code>nofollow</code> in staging environments.</td>
 		</tr>
 		<tr>
-		    <td><code>db</code></td>
-		    <td>-</td>
-		    <td>If defined, provides the connection details used by the internal database service. The value expected in an array with the following keys: <code>host</code>, <code>name</code>, <code>user</code> and <code>pass</code>.</td>
+			<td><code>db</code></td>
+			<td>-</td>
+			<td>If defined, provides the connection details used by the internal database service. The value expected in an array with the following keys: <code>host</code>, <code>name</code>, <code>user</code> and <code>pass</code>.</td>
 		</tr>
 	</tbody>
 </table>
