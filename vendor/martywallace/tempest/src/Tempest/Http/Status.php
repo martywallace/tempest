@@ -16,7 +16,7 @@ class Status {
 	const INTERNAL_SERVER_ERROR = 500;
 	const SERVICE_UNAVAILABLE = 503;
 
-	public function isInformational($value) {
+	public static function isInformational($value) {
 		return $value >= 100 && $value < 200;
 	}
 

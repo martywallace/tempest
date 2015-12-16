@@ -28,6 +28,9 @@ class Router {
 	/** @var mixed[] */
 	private $_instantiated = array();
 
+	/** @var bool */
+	private $_dispatched = false;
+
 	public function add(Route $route) {
 		$this->_routes[] = $route;
 	}
@@ -49,50 +52,54 @@ class Router {
 	}
 
 	public function dispatch() {
-		$response = new Response();
+		if (!$this->_dispatched) {
+			$response = new Response();
 
-		$dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $collector) {
-			foreach ($this->_routes as $route) {
-				$collector->addRoute($route->method, $route->route, $route);
-			}
-		});
+			$dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
+				foreach ($this->_routes as $route) {
+					$collector->addRoute($route->method, $route->route, $route);
+				}
+			});
 
-		$info = $dispatcher->dispatch($this->method, $this->uri);
+			$info = $dispatcher->dispatch($this->method, $this->uri);
 
-		if ($info[0] === Dispatcher::FOUND) {
-			// Successful route match.
-			$request = new Request($info[2]);
-			$this->_matched = $info[1];
+			if ($info[0] === Dispatcher::FOUND) {
+				// Successful route match.
+				$request = new Request($info[2]);
+				$this->_matched = $info[1];
 
-			$respond = true;
+				$respond = true;
 
-			if (count($this->_matched->middleware) > 0) {
-				foreach ($this->_matched->middleware as $middleware) {
-					if (!$this->instantiateAndCall($this->baseMiddlewareNamespace . ltrim($middleware, '\\'), $request, $response)) {
-						$respond = false;
-						break;
+				if (count($this->_matched->middleware) > 0) {
+					foreach ($this->_matched->middleware as $middleware) {
+						if (!$this->instantiateAndCall($this->baseMiddlewareNamespace . ltrim($middleware, '\\'), $request, $response)) {
+							$respond = false;
+							break;
+						}
 					}
+				}
+
+				if ($respond) {
+					$response->body = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->handler, '\\'), $request, $response);
 				}
 			}
 
-			if ($respond) {
-				$response->body = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->handler, '\\'), $request, $response);
+			if ($info[0] === Dispatcher::NOT_FOUND) {
+				$response->status = Status::NOT_FOUND;
+
+				if (app()->twig->loader->exists('404.html')) $response->body = app()->twig->render('404.html');
+				else $response->body = app()->twig->render('@tempest/404.html');
 			}
+
+			if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {
+				$response->status = Status::METHOD_NOT_ALLOWED;
+				$response->body = app()->twig->render('@tempest/405.html');
+			}
+
+			$response->send();
 		}
 
-		if ($info[0] === Dispatcher::NOT_FOUND) {
-			$response->status = Status::NOT_FOUND;
-
-			if (app()->twig->loader->exists('404.html')) $response->body = app()->twig->render('404.html');
-			else $response->body = app()->twig->render('@tempest/404.html');
-		}
-
-		if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {
-			$response->status = Status::METHOD_NOT_ALLOWED;
-			$response->body = app()->twig->render('@tempest/405.html');
-		}
-
-		$response->send();
+		$this->_dispatched = true;
 	}
 
 	/**
@@ -128,7 +135,7 @@ class Router {
 		}
 
 		if (!empty($instance)) {
-			if (is_a($instance, 'Tempest\Http\Controller') || is_a($instance, 'Tempest\Http\Middleware')) {
+			if ($instance instanceof Controller || $instance instanceof Middleware) {
 				if (method_exists($instance, $method)) {
 					return $instance->{$method}($request, $response);
 				} else {
