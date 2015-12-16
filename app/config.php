@@ -10,8 +10,8 @@ return array(
 	'*' => array(
 		'timezone' => 'Australia/Sydney',
 		'routes' => array(
-			'/' => 'Controllers\GeneralController',
-			'/welcome/{name}' => array('GET', 'Controllers\GeneralController::welcome', 'Middleware\GeneralMiddleware::auth')
+			'/' => 'GeneralController',
+			'/welcome/{name}' => array('GET', 'GeneralController::welcome', 'GeneralMiddleware::auth')
 		)
 	),
 

@@ -31,7 +31,7 @@ class DatabaseService extends Service {
 				// Set up connection.
 				$this->_pdo = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['name'], $config['user'], $config['pass']);
 			} else {
-				throw new Exception('Incomplete connection information provided in database configuration.');
+				throw new Exception('Incomplete database connection information provided in app configuration.');
 			}
 		} else {
 			throw new Exception('No database configuration was provided.');

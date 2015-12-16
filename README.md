@@ -39,11 +39,6 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 			<td>The application URL e.g. <code>http://yoursite.com</code>.</td>
 		</tr>
 		<tr>
-			<td><code>templates</code></td>
-			<td><code>/app/templates</code></td>
-			<td>A path or array of paths where application level Twig templates can be loaded from.</td>
-		</tr>
-		<tr>
 			<td><code>routes</code></td>
 			<td><code>array()</code></td>
 			<td>
@@ -72,6 +67,21 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 			<td><code>db</code></td>
 			<td>-</td>
 			<td>If defined, provides the connection details used by the internal database service. The value expected in an array with the following keys: <code>host</code>, <code>name</code>, <code>user</code> and <code>pass</code>.</td>
+		</tr>
+		<tr>
+			<td><code>templates</code></td>
+			<td><code>/app/templates</code></td>
+			<td>A path or array of paths where application level Twig templates can be loaded from.</td>
+		</tr>
+		<tr>
+			<td><code>controllers</code></td>
+			<td><code>Controllers</code></td>
+			<td>The base namespace for all controller classes.</td>
+		</tr>
+		<tr>
+			<td><code>middleware</code></td>
+			<td><code>Middleware</code></td>
+			<td>The base namespace for all middleware classes.</td>
 		</tr>
 	</tbody>
 </table>

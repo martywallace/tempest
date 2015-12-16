@@ -7,6 +7,9 @@ use FastRoute\RouteCollector;
 /**
  * The application router.
  *
+ * @property-read string $baseControllerNamespace The root namespace for controller classes.
+ * @property-read string $baseMiddlewareNamespace The root namespace for middleware classes.
+ *
  * @property-read string $method The request method e.g. GET, POST.
  * @property-read string $uri The request URI.
  * @property-read Route $matched The matched route being triggered.
@@ -30,6 +33,9 @@ class Router {
 	}
 
 	public function __get($prop) {
+		if ($prop === 'baseControllerNamespace') return '\\' . trim(app()->config('controllers', 'Controllers'), '\\') . '\\';
+		if ($prop === 'baseMiddlewareNamespace') return '\\' . trim(app()->config('middleware', 'Middleware'), '\\') . '\\';
+
 		if ($prop === 'method') return strtoupper($_SERVER['REQUEST_METHOD']);
 		if ($prop === 'uri') return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 		if ($prop === 'matched') return $this->_matched;
@@ -62,7 +68,7 @@ class Router {
 
 			if (count($this->_matched->middleware) > 0) {
 				foreach ($this->_matched->middleware as $middleware) {
-					if (!$this->instantiateAndCall($middleware, $request, $response)) {
+					if (!$this->instantiateAndCall($this->baseMiddlewareNamespace . ltrim($middleware, '\\'), $request, $response)) {
 						$respond = false;
 						break;
 					}
@@ -70,7 +76,7 @@ class Router {
 			}
 
 			if ($respond) {
-				$response->body = $this->instantiateAndCall($this->_matched->handler, $request, $response);
+				$response->body = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->handler, '\\'), $request, $response);
 			}
 		}
 
