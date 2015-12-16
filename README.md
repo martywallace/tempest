@@ -26,7 +26,7 @@ Configuration can be provided via `/app/config.php`. There are a handful of inbu
 		<tr>
 			<td><code>enabled</code></td>
 			<td><code>true</code></td>
-			<td>Whether or not the site is enabled. If not, the site does not activate any services or trigger any routes.</td>
+			<td>Whether or not the site is enabled. If not, the site does not activate any services or trigger any routes. A 503 Service Unavailable response is sent while the site is not enabled.</td>
 		</tr>
 		<tr>
 			<td><code>dev</code></td>

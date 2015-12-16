@@ -17,10 +17,13 @@ use FastRoute\RouteCollector;
 class Router {
 
 	/** @var Route[] */
-	private $_routes = [];
+	private $_routes = array();
 
 	/** @var Route */
 	private $_matched;
+
+	/** @var mixed[] */
+	private $_instantiated = array();
 
 	public function add(Route $route) {
 		$this->_routes[] = $route;
@@ -74,11 +77,8 @@ class Router {
 		if ($info[0] === Dispatcher::NOT_FOUND) {
 			$response->status = Status::NOT_FOUND;
 
-			if (app()->twig->loader->exists('404.html')) {
-				$response->body = app()->twig->render('404.html');
-			} else {
-				$response->body = app()->twig->render('@tempest/404.html');
-			}
+			if (app()->twig->loader->exists('404.html')) $response->body = app()->twig->render('404.html');
+			else $response->body = app()->twig->render('@tempest/404.html');
 		}
 
 		if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {
@@ -90,31 +90,46 @@ class Router {
 	}
 
 	/**
-	 * Instantiate an instance of a class and call a method attached to that class, passing the current Request and
-	 * Response objects to that method.
+	 * Instantiate an instance of a Controller or Middleware and call a method attached to that class, passing the
+	 * current Request and Response objects to that method. The created instance is stored for future method calls (e.g.
+	 * if the same middleware class has multiple methods that are called in one chain, only one instance of that
+	 * middleware is actually created.
 	 *
 	 * @param string $handler The handler used to reference the class and method within that class to call. If no method
-	 * detail is provided, the default is index.
+	 * detail is provided, the default is index. The handler follows the format "ClassName" to target a class and call a
+	 * method "index" or "ClassName::methodName" to target a specific method of that class.
 	 * @param Request $request The request object to pass to the method.
 	 * @param Response $response The response object to pass to the method.
 	 *
 	 * @return mixed The result of calling the class method.
 	 *
-	 * @throws Exception If the class or method does not exist.
+	 * @throws Exception If the class or method does not exist or the class does not inherit Controller or Middleware.
 	 */
 	public function instantiateAndCall($handler, Request $request = null, Response $response = null) {
 		$handler = explode('::', $handler);
 
-		$class = $handler[0];
+		$class = '\\' . trim($handler[0], '\\');
 		$method = count($handler) > 1 ? $handler[1] : 'index';
+		$instance = null;
 
-		if (class_exists($class)) {
+		if (array_key_exists($class, $this->_instantiated)) {
+			$instance = $this->_instantiated[$class];
+		}
+
+		if (empty($instance) && class_exists($class)) {
 			$instance = new $class();
+			$this->_instantiated[$class] = $instance;
+		}
 
-			if (method_exists($instance, $method)) {
-				return $instance->{$method}($request, $response);
+		if (!empty($instance)) {
+			if (is_a($instance, 'Tempest\Http\Controller') || is_a($instance, 'Tempest\Http\Middleware')) {
+				if (method_exists($instance, $method)) {
+					return $instance->{$method}($request, $response);
+				} else {
+					throw new Exception('Class "' . $class . '" does not define a method "' . $method . '".');
+				}
 			} else {
-				throw new Exception('Class "' . $class . '" does not define a method "' . $method . '".');
+				throw new Exception('Class "' . $class . '" is not an instance of Controller or Middleware.');
 			}
 		} else {
 			throw new Exception('Class "' . $class . '" does not exist.');

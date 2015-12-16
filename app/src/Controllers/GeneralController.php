@@ -11,8 +11,6 @@ class GeneralController extends Controller {
 	}
 
 	public function welcome(Request $req, Response $res) {
-		$res->flash(5, '/');
-
 		return 'Welcome, ' . $req->named('name');
 	}
 

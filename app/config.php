@@ -11,7 +11,7 @@ return array(
 		'timezone' => 'Australia/Sydney',
 		'routes' => array(
 			'/' => 'Controllers\GeneralController',
-			'/welcome/{name}' => array('get', 'Controllers\GeneralController::welcome', 'Middleware\GeneralMiddleware::auth')
+			'/welcome/{name}' => array('GET', 'Controllers\GeneralController::welcome', 'Middleware\GeneralMiddleware::auth')
 		)
 	),
 
