@@ -9,7 +9,7 @@ class GeneralMiddleware extends Middleware {
 
 	public function auth(Request $req, Response $res) {
 		if ($req->data('auth') !== 'example') {
-			$res->redirect(app()->url);
+			$res->body = array('message' => 'No auth.');
 			return false;
 		}
 

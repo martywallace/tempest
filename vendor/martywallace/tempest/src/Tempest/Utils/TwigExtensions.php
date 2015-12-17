@@ -23,7 +23,8 @@ class TwigExtensions extends Twig_Extension {
 
 	public function getFilters() {
 		return array(
-			new Twig_SimpleFilter('sha1', 'sha1')
+			new Twig_SimpleFilter('sha1', 'sha1'),
+			new Twig_SimpleFilter('hyphenate', array($this, 'hyphenate'))
 		);
 	}
 
@@ -42,6 +43,21 @@ class TwigExtensions extends Twig_Extension {
 	 */
 	public function link($value) {
 		return app()->url . '/' . ltrim($value, '/');
+	}
+
+	/**
+	 * Hyphenate some text, removing any non-word characters and replacing whitespace with hyphens e.g. "My name is
+	 * John" becomes "my-name-is-john".
+	 *
+	 * @param string $value The input text.
+	 *
+	 * @return string
+	 */
+	public function hyphenate($value) {
+		$base = preg_replace('/[^\w\s]+/', '', $value);
+		$base = preg_replace('/\s+/', '-', $base);
+
+		return strtolower($base);
 	}
 
 }

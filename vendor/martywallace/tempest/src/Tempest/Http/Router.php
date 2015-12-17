@@ -25,7 +25,7 @@ class Router {
 	/** @var Route */
 	private $_matched;
 
-	/** @var mixed[] */
+	/** @var IRequestChainElement[] */
 	private $_instantiated = array();
 
 	/** @var bool */
@@ -103,7 +103,7 @@ class Router {
 	}
 
 	/**
-	 * Instantiate an instance of a Controller or Middleware and call a method attached to that class, passing the
+	 * Instantiate an instance of an IRequestChainElement and call a method attached to that instance, passing the
 	 * current Request and Response objects to that method. The created instance is stored for future method calls (e.g.
 	 * if the same middleware class has multiple methods that are called in one chain, only one instance of that
 	 * middleware is actually created.
@@ -116,7 +116,7 @@ class Router {
 	 *
 	 * @return mixed The result of calling the class method.
 	 *
-	 * @throws Exception If the class or method does not exist or the class does not inherit Controller or Middleware.
+	 * @throws Exception If the class or method does not exist or the class does not implement IRequestChainElement.
 	 */
 	public function instantiateAndCall($handler, Request $request = null, Response $response = null) {
 		$handler = explode('::', $handler);
@@ -135,14 +135,14 @@ class Router {
 		}
 
 		if (!empty($instance)) {
-			if ($instance instanceof Controller || $instance instanceof Middleware) {
+			if ($instance instanceof IRequestChainElement) {
 				if (method_exists($instance, $method)) {
 					return $instance->{$method}($request, $response);
 				} else {
 					throw new Exception('Class "' . $class . '" does not define a method "' . $method . '".');
 				}
 			} else {
-				throw new Exception('Class "' . $class . '" is not an instance of Controller or Middleware.');
+				throw new Exception('Class "' . $class . '" is not an instance of IRequestChainElement.');
 			}
 		} else {
 			throw new Exception('Class "' . $class . '" does not exist.');

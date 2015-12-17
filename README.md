@@ -4,7 +4,7 @@ Yet another minimal PHP framework by [Marty Wallace](http://martywallace.com). T
 
 A very rough overview of the architecture:
 
-![0](http://i.imgur.com/PSW0og3.png)
+![0](http://i.imgur.com/hGOIaWk.png)
 
 The core application is accessible via `app()`. Services are accessible by name via `app()`, e.g.
 

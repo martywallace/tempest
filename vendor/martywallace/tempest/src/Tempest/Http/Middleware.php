@@ -7,7 +7,7 @@
  * @package Tempest\Http
  * @author Marty Wallace
  */
-abstract class Middleware {
+abstract class Middleware implements IRequestChainElement {
 
 	//
 
