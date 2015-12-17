@@ -19,7 +19,7 @@ class DatabaseService extends Service {
 	public function __get($prop) {
 		if ($prop === 'lastInsertId') return $this->_pdo->lastInsertId();
 
-		return parent::__get($prop);
+		return null;
 	}
 
 	protected function setup() {

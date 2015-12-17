@@ -11,6 +11,10 @@ use Exception;
  */
 class FilesystemService extends Service {
 
+	protected function setup() {
+		// ...
+	}
+
 	/**
 	 * Creates an absolute filesystem link based on the application root.
 	 *

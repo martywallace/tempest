@@ -11,11 +11,10 @@ use Tempest\Services\SessionService;
 use Tempest\Services\DatabaseService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
-use Tempest\Http\Request;
 use Tempest\Http\Response;
 
 /**
- * Tempest's core, extended by your core application class.
+ * Tempest's core, extended by your application class.
  *
  * @property-read bool $dev Whether the application is in development mode.
  * @property-read bool $enabled Whether the application is currently enabled.
@@ -30,7 +29,7 @@ use Tempest\Http\Response;
  *
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
- * @property-read SessionService $sessions The inbuilt service dealing with user sessions.
+ * @property-read SessionService $session The inbuilt service dealing with user sessions.
  * @property-read DatabaseService $db The inbuilt service dealing with a database and its content.
  *
  * @package Tempest
@@ -123,12 +122,9 @@ abstract class Tempest {
 		}
 
 		if ($this->hasService($prop)) {
-			// We found a service with a matching name.
+			// We found a service with a matching name. Set it up and return it.
 			$service = $this->_services[$prop];
-
-			if (!$service->setup) {
-				$service->runSetup();
-			}
+			$service->runSetup();
 
 			return $service;
 		}
@@ -177,17 +173,26 @@ abstract class Tempest {
 	public function start() {
 		try {
 			if ($this->enabled) {
+				$customServices = $this->bindServices();
+
+				if (empty($customServices) || !is_array($customServices)) {
+					$customServices = array();
+				}
+
 				$services = array_merge(array(
 					// Services that the core depends on.
 					'filesystem' => new FilesystemService(),
 					'twig' => new TwigService(),
 					'session' => new SessionService(),
 					'db' => new DatabaseService()
-				), $this->bindServices());
+				), $customServices);
 
 				foreach ($services as $name => $service) {
 					$this->addService($name, $service);
 				}
+
+				// Set up the application after services are bound.
+				$this->setup();
 
 				$routes = $this->config('routes', array());
 
@@ -257,6 +262,13 @@ abstract class Tempest {
 	 *
 	 * @return Service[]
 	 */
-	protected function bindServices() { return array(); }
+	abstract protected function bindServices();
+
+	/**
+	 * Additional application setup, run after services are bound.
+	 *
+	 * @return mixed
+	 */
+	abstract protected function setup();
 
 }
