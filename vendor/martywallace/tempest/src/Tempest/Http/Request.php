@@ -8,6 +8,7 @@ use Tempest\Utils\Memoizer;
  *
  * @property-read string $method The request method e.g. GET, POST.
  * @property-read string[] $headers The request headers. Returns an empty array if the getallheaders() function does not exist.
+ * @property-read string $ip The IP address making the request.
  *
  * @package Tempest\Http
  * @author Marty Wallace
@@ -23,6 +24,7 @@ class Request extends Memoizer {
 
 	public function __get($prop) {
 		if ($prop === 'method') return app()->router->method;
+		if ($prop === 'ip') return $_SERVER['REMOTE_ADDR'];
 
 		if ($prop === 'headers') {
 			return $this->memoize('headers', function() {
