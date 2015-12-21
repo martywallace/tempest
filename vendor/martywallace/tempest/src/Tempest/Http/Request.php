@@ -1,14 +1,18 @@
 <?php namespace Tempest\Http;
 
+use Tempest\Utils\Memoizer;
+
+
 /**
  * A request made to the application.
  *
  * @property-read string $method The request method e.g. GET, POST.
+ * @property-read string[] $headers The request headers. Returns an empty array if the getallheaders() function does not exist.
  *
  * @package Tempest\Http
  * @author Marty Wallace
  */
-class Request {
+class Request extends Memoizer {
 
 	/** @var array */
 	private $_args;
@@ -19,6 +23,20 @@ class Request {
 
 	public function __get($prop) {
 		if ($prop === 'method') return app()->router->method;
+
+		if ($prop === 'headers') {
+			return $this->memoize('headers', function() {
+				$headers = array();
+
+				if (function_exists('getallheaders')) {
+					foreach (getallheaders() as $header => $value) {
+						$headers[strtolower($header)] = $value;
+					}
+				}
+
+				return $headers;
+			});
+		}
 
 		return null;
 	}
@@ -55,6 +73,20 @@ class Request {
 	public function named($name = null, $fallback = null) {
 		return $name === null ? $this->_args
 			: (array_key_exists($name, $this->_args) ? $this->_args[$name] : $fallback);
+	}
+
+	/**
+	 * Returns a header from the request.
+	 *
+	 * @param string $name The header name.
+	 * @param mixed $fallback A fallback value to use if the header was not provided.
+	 *
+	 * @return mixed
+	 */
+	public function header($name, $fallback = null) {
+		$name = strtolower($name);
+
+		return array_key_exists($name, $this->headers) ? $this->headers[$name] : $fallback;
 	}
 
 }

@@ -1,12 +1,15 @@
 <?php namespace Tempest\Services;
 
+use Tempest\Utils\Memoizer;
+
+
 /**
  * An application service, attached to the main application to provide bundles of functionality.
  *
  * @package Tempest\Services
  * @author Marty Wallace
  */
-abstract class Service {
+abstract class Service extends Memoizer {
 
 	/** @var bool */
 	private $_setup = false;
