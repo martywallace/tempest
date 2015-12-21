@@ -8,7 +8,9 @@ use Exception;
  *
  * @property-read string $absolute The absolute path to the file.
  * @property-read string $relative The relative path to the file from the application root.
+ *
  * @property-read int $size The filesize, in bytes.
+ * @property-read string $extension The file extension.
  * @property-read string $contents The file contents.
  *
  * @package Tempest\Models
@@ -42,6 +44,12 @@ class FileModel extends Model {
 		if ($prop === 'absolute') return $this->_absolute;
 		if ($prop === 'relative') return $this->_relative;
 
+		if ($prop === 'extension') {
+			return $this->memoize('extension', function() {
+				return strtolower(pathinfo($this->_absolute, PATHINFO_EXTENSION));
+			});
+		}
+
 		if ($prop === 'size') {
 			return $this->memoize('size', function() {
 				return filesize($this->_absolute);
@@ -60,25 +68,9 @@ class FileModel extends Model {
 	public function jsonSerialize() {
 		return array(
 			'path' => $this->_relative,
+			'extension' => $this->extension,
 			'size' => $this->size
 		);
-	}
-
-	/**
-	 * Append data to this file.
-	 *
-	 * @param string $contents The data to append.
-	 */
-	public function append($contents) {
-		$this->unmemoize('contents');
-		app()->filesystem->append($this->_relative, $contents);
-	}
-
-	/**
-	 * Delete this file from the filesystem.
-	 */
-	public function delete() {
-		app()->filesystem->delete($this->_relative);
 	}
 
 }
