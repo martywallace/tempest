@@ -43,6 +43,11 @@ class Request extends Memoizer {
 		return null;
 	}
 
+	public function __isset($prop) {
+		return property_exists($this, $prop) ||
+			$this->{$prop} !== null;
+	}
+
 	/**
 	 * Returns request data e.g. GET or POST data, based on the request method.
 	 *
@@ -75,6 +80,17 @@ class Request extends Memoizer {
 	public function named($name = null, $fallback = null) {
 		return $name === null ? $this->_args
 			: (array_key_exists($name, $this->_args) ? $this->_args[$name] : $fallback);
+	}
+
+	/**
+	 * Returns information related to files attached to this request - alias for $_FILES[$name].
+	 *
+	 * @param string $name The name associated with the uploaded file.
+	 *
+	 * @return array|null
+	 */
+	public function file($name) {
+		return isset($_FILES[$name]) ? $_FILES[$name] : null;
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?php namespace Tempest\Services;
 
-use Tempest\Utils\TwigExtensions;
+use Tempest\Extensions\TwigExtensions;
 use Twig_Environment;
 use Twig_Error_Loader;
 use Twig_Error_Syntax;

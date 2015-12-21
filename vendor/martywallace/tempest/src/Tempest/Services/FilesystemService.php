@@ -1,6 +1,7 @@
 <?php namespace Tempest\Services;
 
 use Exception;
+use Tempest\Models\FileModel;
 
 
 /**
@@ -13,6 +14,19 @@ class FilesystemService extends Service {
 
 	protected function setup() {
 		// ...
+	}
+
+	/**
+	 * Finds a file relative to the application root and returns a FileModel representing it.
+	 *
+	 * @param string $path The file path relative to the application root.
+	 *
+	 * @return FileModel
+	 */
+	public function find($path) {
+		return $this->memoize('_file_' . $path, function() use ($path) {
+			return new FileModel($path);
+		});
 	}
 
 	/**

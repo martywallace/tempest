@@ -12,6 +12,12 @@ abstract class Memoizer {
 	/** @var mixed[] */
 	private $_memoized = array();
 
+	public function __isset($prop) {
+		return property_exists($this, $prop) ||
+			array_key_exists($prop, $this->_memoized) ||
+			$this->{$prop} !== null;
+	}
+
 	/**
 	 * Memoize a value. The first time this function is called against a key, the value will be added to the internal
 	 * list of values that are memoized. On subsequent calls, the memoized value is returned.

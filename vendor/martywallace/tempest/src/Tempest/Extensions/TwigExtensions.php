@@ -1,4 +1,4 @@
-<?php namespace Tempest\Utils;
+<?php namespace Tempest\Extensions;
 
 use Twig_Extension;
 use Twig_SimpleFunction;
@@ -7,7 +7,7 @@ use Twig_SimpleFilter;
 /**
  * This class attaches Tempest level extensions to Twig.
  *
- * @package Tempest\Utils
+ * @package Tempest\Extensions
  * @author Marty Wallace
  */
 class TwigExtensions extends Twig_Extension {

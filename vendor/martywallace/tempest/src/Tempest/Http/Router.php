@@ -10,6 +10,7 @@ use FastRoute\RouteCollector;
  * @property-read string $baseControllerNamespace The root namespace for controller classes.
  * @property-read string $baseMiddlewareNamespace The root namespace for middleware classes.
  *
+ * @property-read Request $request The request made to the application.
  * @property-read string $method The request method e.g. GET, POST.
  * @property-read string $uri The request URI.
  * @property-read Route $matched The matched route being triggered.
@@ -18,6 +19,9 @@ use FastRoute\RouteCollector;
  * @author Marty Wallace
  */
 class Router {
+
+	/** @var Request */
+	private $_request;
 
 	/** @var Route[] */
 	private $_routes = array();
@@ -39,6 +43,7 @@ class Router {
 		if ($prop === 'baseControllerNamespace') return '\\' . trim(app()->config('controllers', 'Controllers'), '\\') . '\\';
 		if ($prop === 'baseMiddlewareNamespace') return '\\' . trim(app()->config('middleware', 'Middleware'), '\\') . '\\';
 
+		if ($prop === 'request') return $this->_request;
 		if ($prop === 'method') return strtoupper($_SERVER['REQUEST_METHOD']);
 		if ($prop === 'uri') return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 		if ($prop === 'matched') return $this->_matched;
@@ -65,14 +70,14 @@ class Router {
 
 			if ($info[0] === Dispatcher::FOUND) {
 				// Successful route match.
-				$request = new Request($info[2]);
+				$this->_request = new Request($info[2]);
 				$this->_matched = $info[1];
 
 				$respond = true;
 
 				if (count($this->_matched->middleware) > 0) {
 					foreach ($this->_matched->middleware as $middleware) {
-						if (!$this->instantiateAndCall($this->baseMiddlewareNamespace . ltrim($middleware, '\\'), $request, $response)) {
+						if (!$this->instantiateAndCall($this->baseMiddlewareNamespace . ltrim($middleware, '\\'), $this->_request, $response)) {
 							$respond = false;
 							break;
 						}
@@ -80,7 +85,7 @@ class Router {
 				}
 
 				if ($respond) {
-					$response->body = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->handler, '\\'), $request, $response);
+					$response->body = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->handler, '\\'), $this->_request, $response);
 				}
 			}
 

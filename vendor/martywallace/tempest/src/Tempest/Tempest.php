@@ -118,7 +118,7 @@ abstract class Tempest {
 		}
 
 		if ($prop === 'timezone') {
-			return $this->config('timezone', date_default_timezone_get());
+			return $this->config('timezone', @date_default_timezone_get());
 		}
 
 		if ($this->hasService($prop)) {
