@@ -106,3 +106,5 @@ The inbuilt configuration options are:
 		</tr>
 	</tbody>
 </table>
+
+Additional configuration options can be of course provided by adding your own `key => value` pairs.

@@ -85,10 +85,31 @@ class Router {
 			}
 
 			if ($info[0] === Dispatcher::NOT_FOUND) {
-				$response->status = Status::NOT_FOUND;
+				$useTemplate = false;
 
-				if (app()->twig->loader->exists('404.html')) $response->body = app()->twig->render('404.html');
-				else $response->body = app()->twig->render('@tempest/404.html');
+				if (!empty($this->uri)) {
+					// Attempt to load HTML file with the same name.
+					if ($this->method === 'GET' && app()->twig->loader->exists($this->uri . '.html')) {
+						$useTemplate = true;
+
+						foreach (explode('/', $this->uri) as $part) {
+							// Don't use templates if it or any ancestor directory begins with an underscore.
+							if (strpos($part, '_') === 0) {
+								$useTemplate = false;
+								break;
+							}
+						}
+
+						if ($useTemplate) $response->body = app()->twig->render($this->uri . '.html');
+					}
+				}
+
+				if (!$useTemplate) {
+					$response->status = Status::NOT_FOUND;
+
+					if (app()->twig->loader->exists('404.html')) $response->body = app()->twig->render('404.html');
+					else $response->body = app()->twig->render('@tempest/404.html');
+				}
 			}
 
 			if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {

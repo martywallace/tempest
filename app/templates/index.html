@@ -1,18 +1,22 @@
 {% extends '_layouts/main.html' %}
 
 {% block content %}
-    <h1>It works!</h1>
+	<h1>It works!</h1>
 
-    <table style="border-collapse: collapse;" border="1" cellpadding="12">
-        <tbody>
-            <tr>
-                <td>Running At</td>
-                <td><a href="{{ app.url }}">{{ app.url }}</a></td>
-            </tr>
-            <tr>
-                <td>Development Mode</td>
-                <td>{{ app.dev ? 'Yes' : 'No' }}</td>
-            </tr>
-        </tbody>
-    </table>
+	<table style="border-collapse: collapse;" border="1" cellpadding="12">
+		<tbody>
+			<tr>
+				<td>Development Mode</td>
+				<td>{{ app.dev ? 'Yes' : 'No' }}</td>
+			</tr>
+			<tr>
+				<td>Running At</td>
+				<td><a href="{{ app.url }}">{{ app.url }}</a></td>
+			</tr>
+			<tr>
+				<td>Timezone</td>
+				<td>{{ app.timezone }}</td>
+			</tr>
+		</tbody>
+	</table>
 {% endblock %}
