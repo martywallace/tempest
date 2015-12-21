@@ -128,11 +128,6 @@ class Response {
 			}
 		}
 
-		// Append additional headers.
-		if (!empty(app()->config('robots'))) {
-			$this->header('X-Robots-Tag', app()->config('robots'));
-		}
-
 		echo $this->_body;
 
 		// Stop doing things once the response was sent.

@@ -48,6 +48,7 @@ class FilesystemService extends Service {
 	 */
 	public function import($relative) {
 		if ($this->exists($relative)) {
+			/** @noinspection PhpIncludeInspection */
 			return require($this->absolute($relative));
 		} else {
 			throw new Exception('Could not import "' . $relative . '" - it does not exist.');

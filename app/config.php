@@ -21,8 +21,7 @@ return array(
 
 	'staging.yourwebsite.com' => array(
 		'dev' => true,
-		'url' => 'http://staging.yourwebsite.com',
-		'robots' => 'noindex, nofollow'
+		'url' => 'http://staging.yourwebsite.com'
 	),
 
 	'yourwebsite.com' => array(
