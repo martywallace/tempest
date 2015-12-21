@@ -17,6 +17,17 @@ class FilesystemService extends Service {
 	}
 
 	/**
+	 * Creates an absolute filesystem link based on the application root.
+	 *
+	 * @param string $relative The relative path within the application directory.
+	 *
+	 * @return string
+	 */
+	public function absolute($relative) {
+		return app()->root . '/' . ltrim($relative, '/');
+	}
+
+	/**
 	 * Creates a file relative to the application root and returns a FileModel representing that file.
 	 *
 	 * @param string $path The file path relative to the application root.
@@ -28,7 +39,13 @@ class FilesystemService extends Service {
 	 */
 	public function create($path, $contents = null) {
 		if (!$this->exists($path)) {
-			file_put_contents($this->absolute($path), $contents);
+			$stream = fopen($this->absolute($path), 'w');
+
+			if (!empty($contents)) {
+				fwrite($stream, $contents);
+			}
+
+			fclose($stream);
 
 			return new FileModel($path);
 		} else {
@@ -61,17 +78,6 @@ class FilesystemService extends Service {
 	}
 
 	/**
-	 * Creates an absolute filesystem link based on the application root.
-	 *
-	 * @param string $relative The relative path within the application directory.
-	 *
-	 * @return string
-	 */
-	public function absolute($relative) {
-		return app()->root . '/' . ltrim($relative, '/');
-	}
-
-	/**
 	 * Determine whether a file or directory exists.
 	 *
 	 * @param string $relative The relative path within the application directory.
@@ -80,6 +86,35 @@ class FilesystemService extends Service {
 	 */
 	public function exists($relative) {
 		return file_exists($this->absolute($relative));
+	}
+
+	/**
+	 * Deletes a file from the application.
+	 *
+	 * @param string $path The file path relative to the application root.
+	 */
+	public function delete($path) {
+		if ($this->exists($path)) {
+			unlink($this->absolute($path));
+		}
+	}
+
+	/**
+	 * Appends some data to an existing file.
+	 *
+	 * @param string $path The file path relative to the application root.
+	 * @param string $contents The data to append.
+	 *
+	 * @throws Exception If the path does not represent an existing file.
+	 */
+	public function append($path, $contents) {
+		if ($this->exists($path)) {
+			$stream = fopen($this->absolute($path), 'a');
+			fwrite($stream, $contents);
+			fclose($stream);
+		} else {
+			throw new Exception('Cannot append contents to nonexistent file "' . $path . '".');
+		}
 	}
 
 	/**
