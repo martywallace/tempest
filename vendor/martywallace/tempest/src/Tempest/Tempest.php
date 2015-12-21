@@ -210,11 +210,12 @@ abstract class Tempest {
 						$route = new Route($route, $handler);
 						$this->_router->add($route);
 					}
-
-					$this->_router->dispatch();
 				} else {
-					throw new Exception('Your application does not define any routes.');
+					// No routes defined - always falling back to the templates directory.
+					// ...
 				}
+
+				$this->_router->dispatch();
 			} else {
 				// Site is not enabled.
 				$response = new Response(Status::SERVICE_UNAVAILABLE);

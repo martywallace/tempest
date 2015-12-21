@@ -89,10 +89,13 @@ class Router {
 
 				if (!empty($this->uri)) {
 					// Attempt to load HTML file with the same name.
-					if ($this->method === 'GET' && app()->twig->loader->exists($this->uri . '.html')) {
+					// Hitting the root looks for index.html.
+					$template = ($this->uri === '/' ? 'index' : $this->uri) . '.html';
+
+					if ($this->method === 'GET' && app()->twig->loader->exists($template)) {
 						$useTemplate = true;
 
-						foreach (explode('/', $this->uri) as $part) {
+						foreach (explode('/', $template) as $part) {
 							// Don't use templates if it or any ancestor directory begins with an underscore.
 							if (strpos($part, '_') === 0) {
 								$useTemplate = false;
@@ -100,7 +103,7 @@ class Router {
 							}
 						}
 
-						if ($useTemplate) $response->body = app()->twig->render($this->uri . '.html');
+						if ($useTemplate) $response->body = app()->twig->render($template);
 					}
 				}
 

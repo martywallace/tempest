@@ -11,7 +11,7 @@
 class SessionService extends Service {
 
 	public function __construct() {
-		// TODO: Investigate correct procedures for clean session setup.
+		session_save_path(app()->root . '/app/storage/sessions');
 		session_start();
 	}
 
