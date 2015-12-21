@@ -17,6 +17,26 @@ class FilesystemService extends Service {
 	}
 
 	/**
+	 * Creates a file relative to the application root and returns a FileModel representing that file.
+	 *
+	 * @param string $path The file path relative to the application root.
+	 * @param string $contents Content to save in the newly created file.
+	 *
+	 * @return FileModel
+	 *
+	 * @throws Exception If a file already exists at the target path.
+	 */
+	public function create($path, $contents = null) {
+		if (!$this->exists($path)) {
+			file_put_contents($this->absolute($path), $contents);
+
+			return new FileModel($path);
+		} else {
+			throw new Exception('A file already exists at "' . $path . '".');
+		}
+	}
+
+	/**
 	 * Finds a file relative to the application root and returns a FileModel representing it.
 	 *
 	 * @param string $path The file path relative to the application root.
@@ -27,6 +47,17 @@ class FilesystemService extends Service {
 		return $this->memoize('_file_' . $path, function() use ($path) {
 			return new FileModel($path);
 		});
+	}
+
+	/**
+	 * Finds an existing file or creates a new one.
+	 *
+	 * @param string $path The file path relative to the application root.
+	 * @return FileModel
+	 */
+	public function findOrCreate($path) {
+		if ($this->exists($path)) return $this->find($path);
+		else return $this->create($path);
 	}
 
 	/**

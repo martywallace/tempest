@@ -15,7 +15,7 @@ return array(
 		)
 	),
 
-	'localhost' => array(
+	'marty.dev' => array(
 		'dev' => true
 	),
 
