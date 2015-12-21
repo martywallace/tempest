@@ -8,7 +8,11 @@
 
 return array(
 	'*' => array(
-		'timezone' => 'Australia/Sydney'
+		'timezone' => 'Australia/Sydney',
+		'routes' => array(
+			'/' => 'GeneralController',
+			'/welcome/{name}' => array('GET', 'GeneralController::welcome', 'GeneralMiddleware::auth')
+		)
 	),
 
 	'localhost' => array(
