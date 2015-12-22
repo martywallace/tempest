@@ -7,6 +7,8 @@ use Crypto;
 /**
  * Handles encryption and decryption of application data. This library wraps Defuse/PHP-Encryption.
  *
+ * @property-read string $key Your application key.
+ *
  * @see https://github.com/defuse/php-encryption
  *
  * @package Tempest\Services
