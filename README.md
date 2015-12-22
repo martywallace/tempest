@@ -52,8 +52,14 @@ The inbuilt configuration options are:
 		<tr>
 			<td><code>timezone</code></td>
 			<td><code>string</code></td>
-			<td>Default timezone provied by your PHP installation.</td>
+			<td>Default timezone provided by your PHP installation.</td>
 			<td>The application timezone.</td>
+		</tr>
+		<tr>
+			<td><code>key</code></td>
+			<td><code>string</code></td>
+			<td>-</td>
+			<td>The key used to encode and decode data via the <code>crypt</code> service.</td>
 		</tr>
 		<tr>
 			<th colspan="4">Routing</th>

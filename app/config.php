@@ -9,6 +9,8 @@
 return array(
 	'*' => array(
 		'timezone' => 'Australia/Sydney',
+		'key' => 'gDS+mfTegGHdnVa+GpUZEQ==',
+
 		'routes' => array(
 			'/' => 'GeneralController',
 			'/welcome/{name}' => array('GET', 'GeneralController::welcome', 'GeneralMiddleware::auth')

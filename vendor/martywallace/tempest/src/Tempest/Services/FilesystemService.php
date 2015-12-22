@@ -7,6 +7,8 @@ use Tempest\Models\FileModel;
 /**
  * Deals with the filesystem relative to the application path.
  *
+ * @see FileModel
+ *
  * @package Tempest\Services
  * @author Marty Wallace
  */

@@ -9,6 +9,7 @@ use Tempest\Services\FilesystemService;
 use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
 use Tempest\Services\DatabaseService;
+use Tempest\Services\CryptService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Response;
@@ -31,6 +32,7 @@ use Tempest\Http\Response;
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  * @property-read SessionService $session The inbuilt service dealing with user sessions.
  * @property-read DatabaseService $db The inbuilt service dealing with a database and its content.
+ * @property-read CryptService $crypt The inbuilt encryption service, used to encrypt and decrypt data.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -184,7 +186,8 @@ abstract class Tempest {
 					'filesystem' => new FilesystemService(),
 					'twig' => new TwigService(),
 					'session' => new SessionService(),
-					'db' => new DatabaseService()
+					'db' => new DatabaseService(),
+					'crypt' => new CryptService()
 				), $customServices);
 
 				foreach ($services as $name => $service) {
