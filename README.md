@@ -59,7 +59,7 @@ The inbuilt configuration options are:
 			<td><code>key</code></td>
 			<td><code>string</code></td>
 			<td>-</td>
-			<td>The key used to encode and decode data via the <code>crypt</code> service.</td>
+			<td>The key used to encrypt and decrypt data via the <code>crypt</code> service.</td>
 		</tr>
 		<tr>
 			<th colspan="4">Routing</th>
