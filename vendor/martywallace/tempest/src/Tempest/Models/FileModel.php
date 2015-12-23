@@ -11,7 +11,6 @@ use Exception;
  *
  * @property-read int $size The filesize, in bytes.
  * @property-read string $extension The file extension.
- * @property-read string $contents The file contents.
  *
  * @package Tempest\Models
  * @author Marty Wallace
@@ -53,12 +52,6 @@ class FileModel extends Model {
 		if ($prop === 'size') {
 			return $this->memoize('size', function() {
 				return filesize($this->_absolute);
-			});
-		}
-
-		if ($prop === 'contents') {
-			return $this->memoize('contents', function() {
-				return file_get_contents($this->_absolute);
 			});
 		}
 

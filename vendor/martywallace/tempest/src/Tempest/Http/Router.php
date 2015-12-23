@@ -11,8 +11,7 @@ use FastRoute\RouteCollector;
  * @property-read string $baseMiddlewareNamespace The root namespace for middleware classes.
  *
  * @property-read Request $request The request made to the application.
- * @property-read string $method The request method e.g. GET, POST.
- * @property-read string $uri The request URI.
+ * @property-read Response $response The response to be sent to the client.
  * @property-read Route $matched The matched route being triggered.
  *
  * @package Tempest\Http
@@ -22,6 +21,9 @@ class Router {
 
 	/** @var Request */
 	private $_request;
+	
+	/** @var Response */
+	private $_response;
 
 	/** @var Route[] */
 	private $_routes = array();
@@ -35,8 +37,9 @@ class Router {
 	/** @var bool */
 	private $_dispatched = false;
 
-	public function add(Route $route) {
-		$this->_routes[] = $route;
+	public function __construct() {
+		$this->_request = new Request();
+		$this->_response = new Response();
 	}
 
 	public function __get($prop) {
@@ -44,8 +47,7 @@ class Router {
 		if ($prop === 'baseMiddlewareNamespace') return '\\' . trim(app()->config('middleware', 'Middleware'), '\\') . '\\';
 
 		if ($prop === 'request') return $this->_request;
-		if ($prop === 'method') return strtoupper($_SERVER['REQUEST_METHOD']);
-		if ($prop === 'uri') return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		if ($prop === 'response') return $this->_response;
 		if ($prop === 'matched') return $this->_matched;
 
 		return null;
@@ -56,28 +58,30 @@ class Router {
 			$this->{$prop} !== null;
 	}
 
+	public function add(Route $route) {
+		$this->_routes[] = $route;
+	}
+
 	public function dispatch() {
 		if (!$this->_dispatched) {
-			$response = new Response();
-
 			$dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
 				foreach ($this->_routes as $route) {
 					$collector->addRoute($route->method, $route->route, $route);
 				}
 			});
 
-			$info = $dispatcher->dispatch($this->method, $this->uri);
+			$info = $dispatcher->dispatch($this->_request->method, $this->_request->uri);
 
 			if ($info[0] === Dispatcher::FOUND) {
 				// Successful route match.
-				$this->_request = new Request($info[2]);
+				$this->_request->attachNamed($info[2]);
 				$this->_matched = $info[1];
 
 				$respond = true;
 
 				if (count($this->_matched->middleware) > 0) {
 					foreach ($this->_matched->middleware as $middleware) {
-						if (!$this->instantiateAndCall($this->baseMiddlewareNamespace . ltrim($middleware, '\\'), $this->_request, $response)) {
+						if (!$this->instantiateAndCall($this->baseMiddlewareNamespace . ltrim($middleware, '\\'), $this->_request, $this->_response)) {
 							$respond = false;
 							break;
 						}
@@ -85,7 +89,7 @@ class Router {
 				}
 
 				if ($respond) {
-					$response->body = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->handler, '\\'), $this->_request, $response);
+					$this->_response->body = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->handler, '\\'), $this->_request, $this->_response);
 				}
 			}
 
@@ -97,7 +101,7 @@ class Router {
 					// Hitting the root looks for index.html.
 					$template = ($this->uri === '/' ? 'index' : $this->uri) . '.html';
 
-					if ($this->method === 'GET' && app()->twig->loader->exists($template)) {
+					if ($this->_request->method === 'GET' && app()->twig->loader->exists($template)) {
 						$useTemplate = true;
 
 						foreach (explode('/', $template) as $part) {
@@ -108,24 +112,24 @@ class Router {
 							}
 						}
 
-						if ($useTemplate) $response->body = app()->twig->render($template);
+						if ($useTemplate) $this->_response->body = app()->twig->render($template);
 					}
 				}
 
 				if (!$useTemplate) {
-					$response->status = Status::NOT_FOUND;
+					$this->_response->status = Status::NOT_FOUND;
 
-					if (app()->twig->loader->exists('404.html')) $response->body = app()->twig->render('404.html');
-					else $response->body = app()->twig->render('@tempest/404.html');
+					if (app()->twig->loader->exists('404.html')) $this->_response->body = app()->twig->render('404.html');
+					else $this->_response->body = app()->twig->render('@tempest/404.html');
 				}
 			}
 
 			if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {
-				$response->status = Status::METHOD_NOT_ALLOWED;
-				$response->body = app()->twig->render('@tempest/405.html');
+				$this->_response->status = Status::METHOD_NOT_ALLOWED;
+				$this->_response->body = app()->twig->render('@tempest/405.html');
 			}
 
-			$response->send();
+			$this->_response->send();
 		}
 
 		$this->_dispatched = true;

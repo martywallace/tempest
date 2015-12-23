@@ -9,7 +9,9 @@ use Tempest\Models\UploadedFileModel;
  * A request made to the application.
  *
  * @property-read string $method The request method e.g. GET, POST.
- * @property-read string[] $headers The request headers. Returns an empty array if the getallheaders() function does not exist.
+ * @property-read string $uri The request URI e.g. /about.
+ * @property-read string[] $headers The request headers. Returns an empty array if the getallheaders() function does not
+ * exist.
  * @property-read string $ip The IP address making the request.
  *
  * @package Tempest\Http
@@ -18,14 +20,27 @@ use Tempest\Models\UploadedFileModel;
 class Request extends Memoizer {
 
 	/** @var array */
-	private $_args;
+	private $_named = array();
 
-	public function __construct(Array $args) {
-		$this->_args = $args;
+	/**
+	 * Attaches data provided by named route components. This method is used internally by the router when a route
+	 * providing named data was matched. It should not be called directly.
+	 *
+	 * @param array $named The named data as key => value pairs.
+	 *
+	 * @throws Exception If more than one attempt is made to attach named data.
+	 */
+	public function attachNamed(array $named) {
+		if (empty($this->named)) {
+			$this->_named = $named;
+		} else {
+			throw new Exception('Named data has already been attached to this Request.');
+		}
 	}
 
 	public function __get($prop) {
-		if ($prop === 'method') return app()->router->method;
+		if ($prop === 'method') return strtoupper($_SERVER['REQUEST_METHOD']);
+		if ($prop === 'uri') return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 		if ($prop === 'ip') return $_SERVER['REMOTE_ADDR'];
 
 		if ($prop === 'headers') {
@@ -59,14 +74,14 @@ class Request extends Memoizer {
 	 * @return mixed
 	 */
 	public function data($name = null, $fallback = null) {
-		$stack = array();
+		$stack = $this->memoize('_stack', function() {
+			if ($this->method === 'GET') return $_GET;
+			if ($this->method === 'POST') return $_POST;
 
-		if (app()->router->method === 'GET') $stack = $_GET;
-		if (app()->router->method === 'POST') $stack = $_POST;
+			return array();
+		});
 
-		if ($name === null) {
-			return $stack;
-		}
+		if ($name === null) return $stack;
 
 		return array_key_exists($name, $stack) ? $stack[$name] : $fallback;
 	}
@@ -80,8 +95,8 @@ class Request extends Memoizer {
 	 * @return mixed
 	 */
 	public function named($name = null, $fallback = null) {
-		return $name === null ? $this->_args
-			: (array_key_exists($name, $this->_args) ? $this->_args[$name] : $fallback);
+		return $name === null ? $this->_named
+			: (array_key_exists($name, $this->_named) ? $this->_named[$name] : $fallback);
 	}
 
 	/**

@@ -5,3 +5,4 @@ output
 composer.lock
 node_modules
 bower
+.DS_Store

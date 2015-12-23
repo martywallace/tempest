@@ -55,10 +55,16 @@ class Response {
 		}
 
 		if ($prop === 'contentType') {
+			$this->_contentType = $value;
 			$this->header('Content-Type', $value);
 		}
 
 		if ($prop === 'body') $this->_body = $value;
+	}
+
+	public function __isset($prop) {
+		return property_exists($this, $prop) ||
+			$this->{$prop} !== null;
 	}
 
 	/**

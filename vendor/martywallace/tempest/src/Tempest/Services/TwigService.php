@@ -67,9 +67,7 @@ class TwigService extends Service {
 	 * @throws Twig_Error_Syntax When an error occurred during compilation.
 	 * @throws Twig_Error_Runtime When an error occurred during rendering.
 	 */
-	public function render($template, Array $data = null, $createIfMissing = false) {
-		$data = $data === null ? array() : $data;
-
+	public function render($template, Array $data = array(), $createIfMissing = false) {
 		if ($this->loader->exists($template)) {
 			return $this->_environment->render($template, $data);
 		} else {
