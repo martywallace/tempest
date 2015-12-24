@@ -17,7 +17,9 @@ use Crypto;
 class CryptService extends Service {
 
 	protected function setup() {
-		//
+		if (empty($this->key)) {
+			throw new Exception('Crypt services cannot be used without a key - you can use app()->crypt->generateKey() to get one.');
+		}
 	}
 
 	public function __get($prop) {
@@ -27,9 +29,9 @@ class CryptService extends Service {
 
 				if (!empty($key)) {
 					return base64_decode($key);
-				} else {
-					throw new Exception('Crypt services cannot be used without a key - you can use app()->crypt->generateKey() to get one.');
 				}
+
+				return null;
 			});
 		}
 

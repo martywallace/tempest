@@ -3,19 +3,20 @@
 /**
  * Your application configuration, where API keys, database connection details and environment settings can be defined.
  * Configuration cascades based on the environment your application is running in. The environment is determined by the
- * value provided to $_SERVER['SERVER_NAME'].
+ * value provided to $_SERVER['SERVER_NAME']. Inbuilt configuration options can be reviewed in the README.
  */
 
 return array(
 	'*' => array(
 		'timezone' => 'Australia/Sydney',
 		'routes' => array(
-			'/' => 'GeneralController',
-			'/welcome/{name}' => array('GET', 'GeneralController::welcome', 'GeneralMiddleware::auth')
+			array('/', 'GeneralController'),
+			array('/welcome/{name}', 'GET', 'GeneralMiddleware::auth', 'GeneralController::welcome'),
+			array('/welcome/{name}', 'POST', 'GeneralController::welcome')
 		)
 	),
 
-	'localhost' => array(
+	'marty.dev' => array(
 		'dev' => true
 	),
 

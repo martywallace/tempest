@@ -12,7 +12,7 @@ use JsonSerializable;
  * @package Tempest\Http
  * @author Marty Wallace
  */
-class Response {
+final class Response {
 
 	/** @var int */
 	private $_status = Status::OK;

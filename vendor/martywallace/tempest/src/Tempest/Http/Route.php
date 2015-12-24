@@ -1,66 +1,96 @@
 <?php namespace Tempest\Http;
 
 use Exception;
+use Tempest\Utils\Memoizer;
 
 
 /**
  * A single route definition.
  *
- * @property-read string $route The route pattern.
+ * @property-read int $format The route format.
+ *
+ * @property-read string $uri The URI represented by this route.
  * @property-read string $method The request method used to access this route.
- * @property-read string $handler The route handler.
  * @property-read string[] $middleware Middleware to trigger before the handler is reached.
+ * @property-read string $controller The controller responsible for this route.
  *
  * @package Tempest\Http
  */
-class Route {
+final class Route extends Memoizer {
 
-	/** @var string */
-	private $_route;
+	/** An invalid definition format. */
+	const FORMAT_INVALID = 0;
 
-	/** @var string */
-	private $_method;
+	/** A definition with the route URI and controller only. */
+	const FORMAT_URI_CONTROLLER = 1;
 
-	/** @var string */
-	private $_handler;
+	/** A definition with the route URI, method and controller. */
+	const FORMAT_URI_METHOD_CONTROLLER = 2;
 
-	/** @var string[] */
-	private $_middleware = array();
+	/** A definition with the route URI, method, one or more middleware options and a controller. */
+	const FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER = 3;
 
-	public function __construct($route, $detail) {
-		$this->_route = $route;
-		$this->_method = 'GET';
+	/** @var array */
+	private $_definition;
 
-		if (!empty($detail) && (is_array($detail) || is_string($detail))) {
-			if (is_array($detail)) {
-				if (count($detail) === 1) {
-					// Only a handler, default to GET (above).
-					$this->_handler = $detail[0];
-				}
+	/**
+	 * Creates a route from a route definition array.
+	 *
+	 * @param array $definition The definition array.
+	 *
+	 * @throws Exception If the definition format was not valid.
+	 */
+	public function __construct(array $definition) {
+		$this->_definition = $definition;
 
-				if (count($detail) >= 2) {
-					// A handler and the request method.
-					$this->_method = strtoupper($detail[0]);
-					$this->_handler = $detail[1];
-
-					if (count($detail) >= 3) {
-						// Includes middleware.
-						$this->_middleware = is_array($detail[2]) ? $detail[2] : array($detail[2]);
-					}
-				}
-			} else {
-				$this->_handler = $detail;
-			}
-		} else {
-			throw new Exception('Invalid route definition for "' . $route . '".');
+		if ($this->format === self::FORMAT_INVALID) {
+			throw new Exception('Invalid route format.');
 		}
 	}
 
 	public function __get($prop) {
-		if ($prop === 'route') return $this->_route;
-		if ($prop === 'method') return $this->_method;
-		if ($prop === 'handler') return $this->_handler;
-		if ($prop === 'middleware') return $this->_middleware;
+		if ($prop === 'uri') {
+			return $this->memoize('uri', function() {
+				return $this->_definition[0];
+			});
+		}
+
+		if ($prop === 'method') {
+			return $this->memoize('method', function() {
+				if ($this->format === self::FORMAT_INVALID || $this->format === self::FORMAT_URI_CONTROLLER) {
+					return 'GET';
+				} else {
+					return strtoupper($this->_definition[1]);
+				}
+			});
+		}
+
+		if ($prop === 'middleware') {
+			return $this->memoize('middleware', function() {
+				if ($this->format === self::FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER) {
+					return array_slice($this->_definition, 2, -1);
+				} else {
+					return array();
+				}
+			});
+		}
+
+		if ($prop === 'controller') {
+			return $this->memoize('controller', function() {
+				return end($this->_definition);
+			});
+		}
+
+		if ($prop === 'format') {
+			return $this->memoize('format', function() {
+				$dl = count($this->_definition);
+
+				if ($dl < 2) return self::FORMAT_INVALID;
+				if ($dl === 2) return self::FORMAT_URI_CONTROLLER;
+				if ($dl === 3) return self::FORMAT_URI_METHOD_CONTROLLER;
+				if ($dl > 3) return self::FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER;
+			});
+		}
 
 		return null;
 	}

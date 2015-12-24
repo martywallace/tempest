@@ -17,7 +17,7 @@ use Tempest\Models\UploadedFileModel;
  * @package Tempest\Http
  * @author Marty Wallace
  */
-class Request extends Memoizer {
+final class Request extends Memoizer {
 
 	/** @var array */
 	private $_named = array();

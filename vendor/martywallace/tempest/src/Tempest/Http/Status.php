@@ -11,6 +11,7 @@ class Status {
 	const OK = 200;
 	const MOVED_PERMANENTLY = 301;
 	const FOUND = 302;
+	const UNAUTHORIZED = 401;
 	const NOT_FOUND = 404;
 	const METHOD_NOT_ALLOWED = 405;
 	const INTERNAL_SERVER_ERROR = 500;

@@ -209,9 +209,8 @@ abstract class Tempest {
 						}
 					}
 
-					foreach ($routes as $route => $handler) {
-						$route = new Route($route, $handler);
-						$this->_router->add($route);
+					foreach ($routes as $definition) {
+						$this->_router->add(new Route($definition));
 					}
 				} else {
 					// No routes defined - always falling back to the templates directory.

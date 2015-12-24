@@ -17,7 +17,7 @@ use FastRoute\RouteCollector;
  * @package Tempest\Http
  * @author Marty Wallace
  */
-class Router {
+final class Router {
 
 	/** @var Request */
 	private $_request;
@@ -66,7 +66,7 @@ class Router {
 		if (!$this->_dispatched) {
 			$dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
 				foreach ($this->_routes as $route) {
-					$collector->addRoute($route->method, $route->route, $route);
+					$collector->addRoute($route->method, $route->uri, $route);
 				}
 			});
 
@@ -89,7 +89,7 @@ class Router {
 				}
 
 				if ($respond) {
-					$this->_response->body = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->handler, '\\'), $this->_request, $this->_response);
+					$this->_response->body = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->controller, '\\'), $this->_request, $this->_response);
 				}
 			}
 
