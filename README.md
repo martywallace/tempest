@@ -69,13 +69,11 @@ The inbuilt configuration options are:
 			<td><code>string|array</code></td>
 			<td><code>array()</code></td>
 			<td>
-				An array of routes mapped to valid handlers. A path relative to the application root pointing to a PHP file that returns an array is also a valid value e.g. <code>/app/routes.php</code>. Valid handler formats include:
+				An array containing route information. Valid route information can be in any of these formats:
 				<ul>
-					<li><code>["method", "ControllerClassName::methodName", ["MiddlewareClassName::methodName"]]</code></li>
-					<li><code>["method", "ControllerClassName::methodName", "MiddlewareClassName::methodName"]</code></li>
-					<li><code>["method", "ControllerClassName::methodName"]</code></li>
-					<li><code>["ControllerClassName::methodName"]</code></li>
-					<li><code>"ControllerClassName::methodName"</code></li>
+					<li><code>[uri, controller]</code></li>
+					<li><code>[uri, method, controller]</code></li>
+					<li><code>[uri, method, ...middleware, controller]</code></li>
 				</ul>
 				Where <code>method</code> is the HTTP method e.g. <code>GET</code> or <code>POST</code>. Middleware is executed in the order they are defined.
 			</td>
