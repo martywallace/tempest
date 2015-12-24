@@ -126,12 +126,10 @@ final class Response {
 	 * Send the response back to the client.
 	 */
 	public function send() {
-		if (Status::isSuccessful($this->status)) {
-			if (is_array($this->_body) || $this->_body instanceof JsonSerializable) {
-				// Convert the response to JSON.
-				$this->contentType = array('application/json', 'charset' => 'utf-8');
-				$this->_body = json_encode($this->_body);
-			}
+		if (is_array($this->_body) || $this->_body instanceof JsonSerializable) {
+			// Convert the response to JSON.
+			$this->contentType = array('application/json', 'charset' => 'utf-8');
+			$this->_body = json_encode($this->_body);
 		}
 
 		echo $this->_body;

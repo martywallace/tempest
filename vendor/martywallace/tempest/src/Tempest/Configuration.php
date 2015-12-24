@@ -14,24 +14,23 @@ use Exception;
 class Configuration {
 
 	/** @var array */
-	private $_data;
+	private $_data = array();
 
 	/**
 	 * Constructor.
 	 *
 	 * @param string $file The configuration file location relative to the application root.
-	 * @param string $server The SERVER_NAME to cascade global configuration with. If not provided, this defaults to:
-	 * <code>$_SERVER['SERVER_NAME']</code>
 	 *
 	 * @throws Exception
 	 */
-	public function __construct($file, $server = null) {
+	public function __construct($file) {
 		$file = $file . '.php';
 
-		$server = $server === null ? $_SERVER['SERVER_NAME'] : $server;
-		$server = preg_replace('/^www\./', '', $server);
+		$server = preg_replace('/^www\./', '', $_SERVER['SERVER_NAME']);
+		$port = intval($_SERVER['SERVER_PORT']);
 
 		if (is_file($file)) {
+			/** @noinspection PhpIncludeInspection */
 			$data = require($file);
 
 			if (is_array($data)) {
@@ -41,6 +40,8 @@ class Configuration {
 					if (array_key_exists($server, $data)) {
 						// Cascade data.
 						$this->_data = array_replace_recursive($this->_data, $data[$server]);
+					} else if (array_key_exists($server . ':' . $port, $data)) {
+						$this->_data = array_replace_recursive($this->_data, $data[$server . ':' . $port]);
 					}
 				} else {
 					$this->_data = $data;
@@ -48,9 +49,6 @@ class Configuration {
 			} else {
 				throw new Exception('Configuration data must be an array.');
 			}
-
-			// TODO: Potentially recurse over values in search for token representing external config file to load in.
-			// ...
 		} else {
 			throw new Exception('Configuration file "' . $file . '" does not exist.');
 		}
