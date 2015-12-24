@@ -66,7 +66,7 @@ The inbuilt configuration options are:
 		</tr>
 		<tr>
 			<td><code>routes</code></td>
-			<td><code>string|array</code></td>
+			<td><code>array[]</code></td>
 			<td><code>array()</code></td>
 			<td>
 				An array containing route information. Valid route information can be in any of these formats:
@@ -92,7 +92,7 @@ The inbuilt configuration options are:
 		</tr>
 		<tr>
 			<td><code>templates</code></td>
-			<td><code>string|array</code></td>
+			<td><code>string|string[]</code></td>
 			<td><code>/app/templates</code></td>
 			<td>A path or array of paths where application level Twig templates can be loaded from.</td>
 		</tr>
