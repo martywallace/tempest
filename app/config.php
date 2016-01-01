@@ -16,7 +16,7 @@ return array(
 		)
 	),
 
-	'localhost' => array(
+	'tempest.dev, localhost' => array(
 		'dev' => true
 	),
 

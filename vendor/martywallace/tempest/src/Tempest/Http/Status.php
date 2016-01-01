@@ -1,7 +1,7 @@
 <?php namespace Tempest\Http;
 
 /**
- * Stores common HTTP status codes.
+ * Stores common HTTP status codes and provides some utility methods related to status codes.
  *
  * @package Tempest\Http
  * @author Marty Wallace
@@ -58,22 +58,57 @@ class Status {
 	const NOT_EXTENDED = 510;
 	const NETWORK_AUTHENTICATION_REQUIRED = 511;
 
+	/**
+	 * Determine whether a status code is within the 1xx range.
+	 *
+	 * @param int $value The status code.
+	 *
+	 * @return bool
+	 */
 	public static function isInformational($value) {
 		return $value >= 100 && $value < 200;
 	}
 
+	/**
+	 * Determine whether a status code is within the 2xx range.
+	 *
+	 * @param int $value The status code.
+	 *
+	 * @return bool
+	 */
 	public static function isSuccessful($value) {
 		return $value >= 200 && $value < 300;
 	}
 
+	/**
+	 * Determine whether a status code is within the 3xx range.
+	 *
+	 * @param int $value The status code.
+	 *
+	 * @return bool
+	 */
 	public static function isRedirection($value) {
 		return $value >= 300 && $value < 400;
 	}
 
+	/**
+	 * Determine whether a status code is within the 4xx range.
+	 *
+	 * @param int $value The status code.
+	 *
+	 * @return bool
+	 */
 	public static function isClientError($value) {
 		return $value >= 400 && $value < 500;
 	}
 
+	/**
+	 * Determine whether a status code is within the 5xx range.
+	 *
+	 * @param int $value The status code.
+	 *
+	 * @return bool
+	 */
 	public static function isServerError($value) {
 		return $value >= 500;
 	}

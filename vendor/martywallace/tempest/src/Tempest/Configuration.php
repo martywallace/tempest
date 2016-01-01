@@ -26,8 +26,8 @@ class Configuration {
 	public function __construct($file) {
 		$file = $file . '.php';
 
-		$server = preg_replace('/^www\./', '', $_SERVER['SERVER_NAME']);
-		$port = intval($_SERVER['SERVER_PORT']);
+		$serverHost = $_SERVER['SERVER_NAME'];
+		$serverPort = intval($_SERVER['SERVER_PORT']);
 
 		if (is_file($file)) {
 			/** @noinspection PhpIncludeInspection */
@@ -37,11 +37,17 @@ class Configuration {
 				if (array_key_exists('*', $data)) {
 					$this->_data = $data['*'];
 
-					if (array_key_exists($server, $data)) {
-						// Cascade data.
-						$this->_data = array_replace_recursive($this->_data, $data[$server]);
-					} else if (array_key_exists($server . ':' . $port, $data)) {
-						$this->_data = array_replace_recursive($this->_data, $data[$server . ':' . $port]);
+					foreach ($data as $hosts => $block) {
+						$hosts = preg_split('/,\s*/', $hosts);
+
+						foreach ($hosts as $host) {
+							$port = parse_url($host, PHP_URL_PORT);
+
+							if ((empty($port) && $serverHost === $host) || ($serverHost . ':' . $serverPort === $host)) {
+								$this->_data = array_replace_recursive($this->_data, $block);
+								break;
+							}
+						}
 					}
 				} else {
 					$this->_data = $data;
