@@ -26,7 +26,7 @@ class Configuration {
 	public function __construct($file) {
 		$file = $file . '.php';
 
-		$serverHost = $_SERVER['SERVER_NAME'];
+		$serverHost = preg_replace('/^www\./', '', $_SERVER['SERVER_NAME']);
 		$serverPort = intval($_SERVER['SERVER_PORT']);
 
 		if (is_file($file)) {
