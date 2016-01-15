@@ -96,10 +96,10 @@ final class Router {
 			if ($info[0] === Dispatcher::NOT_FOUND) {
 				$useTemplate = false;
 
-				if (!empty($this->uri)) {
+				if (!empty($this->_request->uri)) {
 					// Attempt to load HTML file with the same name.
 					// Hitting the root looks for index.html.
-					$template = ($this->uri === '/' ? 'index' : $this->uri) . '.html';
+					$template = ($this->_request->uri === '/' ? 'index' : $this->_request->uri) . '.html';
 
 					if ($this->_request->method === 'GET' && app()->twig->loader->exists($template)) {
 						$useTemplate = true;

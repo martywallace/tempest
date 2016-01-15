@@ -54,6 +54,15 @@ class SessionService extends Service {
 	}
 
 	/**
+	 * Delete some data from the current user session.
+	 *
+	 * @param string $prop The property to delete.
+	 */
+	public function del($prop) {
+		unset($_SESSION[$prop]);
+	}
+
+	/**
 	 * Determine whether some session information has been defined.
 	 *
 	 * @param string $prop The name of the data to check for.
