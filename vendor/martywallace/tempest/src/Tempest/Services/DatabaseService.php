@@ -119,7 +119,7 @@ class DatabaseService extends Service {
 	 * @param array|null $params Parameters to bind to the query.
 	 * @param string|null $class The name of a class to optionally create and inject the returned values into.
 	 *
-	 * @return array
+	 * @return mixed
 	 *
 	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
 	 * @throws Exception If the provided class does not exist.
