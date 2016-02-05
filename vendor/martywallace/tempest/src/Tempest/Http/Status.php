@@ -1,12 +1,14 @@
 <?php namespace Tempest\Http;
 
+use Tempest\Utils\Enum;
+
 /**
  * Stores common HTTP status codes and provides some utility methods related to status codes.
  *
  * @package Tempest\Http
  * @author Marty Wallace
  */
-class Status {
+class Status extends Enum {
 
 	const OK = 200;
 	const CREATED = 201;

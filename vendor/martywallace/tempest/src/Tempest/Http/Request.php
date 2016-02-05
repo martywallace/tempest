@@ -2,6 +2,7 @@
 
 use Exception;
 use Tempest\Utils\Memoizer;
+use Tempest\Utils\JSONUtil;
 use Tempest\Models\UploadedFileModel;
 
 
@@ -9,10 +10,12 @@ use Tempest\Models\UploadedFileModel;
  * A request made to the application.
  *
  * @property-read string $method The request method e.g. GET, POST.
+ * @property-read string $contentType The request content-type.
  * @property-read string $uri The request URI e.g. /about.
  * @property-read string[] $headers The request headers. Returns an empty array if the getallheaders() function does not
  * exist.
  * @property-read string $ip The IP address making the request.
+ * @property-read string $body The raw request body.
  *
  * @package Tempest\Http
  * @author Marty Wallace
@@ -39,7 +42,15 @@ final class Request extends Memoizer {
 	}
 
 	public function __get($prop) {
-		if ($prop === 'method') return strtoupper($_SERVER['REQUEST_METHOD']);
+		if ($prop === 'method') {
+			if (array_key_exists('x-http-method-override', $this->headers)) {
+				return strtoupper($this->headers['x-http-method-override']);
+			}
+
+			return strtoupper($_SERVER['REQUEST_METHOD']);
+		}
+
+		if ($prop === 'contentType') return strtolower($_SERVER['CONTENT_TYPE']);
 		if ($prop === 'uri') return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 		if ($prop === 'ip') return $_SERVER['REMOTE_ADDR'];
 
@@ -57,6 +68,12 @@ final class Request extends Memoizer {
 			});
 		}
 
+		if ($prop === 'body') {
+			return $this->memoize('body', function() {
+				return file_get_contents('php://input');
+			});
+		}
+
 		return null;
 	}
 
@@ -66,7 +83,9 @@ final class Request extends Memoizer {
 	}
 
 	/**
-	 * Returns request data e.g. GET or POST data, based on the request method.
+	 * Get request data. This method only behaves correctly if the request content-type is
+	 * {@link ContentType::APPLICATION_X_WWW_FORM_URLENCODED} or {@link ContentType::APPLICATION_JSON}, or the request
+	 * method is POST.
 	 *
 	 * @param string $name The name of the data to get.
 	 * @param mixed $fallback A fallback value to use if the data does not exist.
@@ -75,10 +94,26 @@ final class Request extends Memoizer {
 	 */
 	public function data($name = null, $fallback = null) {
 		$stack = $this->memoize('_stack', function() {
-			if ($this->method === 'GET') return $_GET;
-			if ($this->method === 'POST') return $_POST;
+			if ($this->method === 'GET') {
+				return $_GET;
+			} else {
+				$data = array();
 
-			return array();
+				if (ContentType::matches($this->contentType, ContentType::APPLICATION_X_WWW_FORM_URLENCODED)) {
+					parse_str($this->body, $data);
+				} else if (ContentType::matches($this->contentType, ContentType::APPLICATION_JSON)) {
+					$data = JSONUtil::decode($this->body, true);
+				} else {
+					// PHP's $_POST knows what's up with various content-types so we'll have one more crack.
+					if ($this->method === 'POST') {
+						return $_POST;
+					} else {
+						throw new Exception('Cannot extract data from a "' . $this->method . '" request with the content-type "' . $this->contentType . '".');
+					}
+				}
+
+				return $data;
+			}
 		});
 
 		if ($name === null) return $stack;
@@ -100,7 +135,7 @@ final class Request extends Memoizer {
 	}
 
 	/**
-	 * Returns an UploadedFileModel representing a file that was sent in the request.
+	 * Returns an {@link UploadedFileModel} representing a file that was sent in the request.
 	 *
 	 * @param string $name The name associated with the uploaded file.
 	 *
