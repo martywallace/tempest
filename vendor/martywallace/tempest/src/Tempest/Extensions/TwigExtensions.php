@@ -33,7 +33,8 @@ class TwigExtensions extends Twig_Extension {
 
 	public function getFunctions() {
 		return array(
-			new Twig_SimpleFunction('link', array($this, 'link'))
+			new Twig_SimpleFunction('link', array($this, 'link')),
+			new Twig_SimpleFunction('asset', array($this, 'asset'))
 		);
 	}
 
@@ -45,7 +46,11 @@ class TwigExtensions extends Twig_Extension {
 	 * @return string
 	 */
 	public function link($value) {
-		return app()->url . '/' . ltrim($value, '/');
+		return app()->public . '/' . ltrim($value, '/');
+	}
+
+	public function asset($value) {
+		// TODO.
 	}
 
 	/**

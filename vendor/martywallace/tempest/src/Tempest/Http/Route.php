@@ -51,7 +51,11 @@ final class Route extends Memoizer {
 	public function __get($prop) {
 		if ($prop === 'uri') {
 			return $this->memoize('uri', function() {
-				return $this->_definition[0];
+				if ($this->_definition[0] === '/' && !empty(app()->public)) {
+					return app()->public;
+				}
+
+				return app()->public . '/' . trim($this->_definition[0], '/');
 			});
 		}
 
@@ -89,6 +93,8 @@ final class Route extends Memoizer {
 				if ($dl === 2) return self::FORMAT_URI_CONTROLLER;
 				if ($dl === 3) return self::FORMAT_URI_METHOD_CONTROLLER;
 				if ($dl > 3) return self::FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER;
+
+				return self::FORMAT_INVALID;
 			});
 		}
 

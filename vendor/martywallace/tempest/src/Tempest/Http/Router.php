@@ -31,7 +31,7 @@ final class Router {
 	/** @var Route */
 	private $_matched;
 
-	/** @var IRequestChainElement[] */
+	/** @var IRequestHandler[] */
 	private $_instantiated = array();
 
 	/** @var bool */
@@ -168,7 +168,7 @@ final class Router {
 		}
 
 		if (!empty($instance)) {
-			if ($instance instanceof IRequestChainElement) {
+			if ($instance instanceof IRequestHandler) {
 				if (method_exists($instance, $method)) {
 					return $instance->{$method}($request, $response);
 				} else {
