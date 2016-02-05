@@ -33,13 +33,12 @@ class TwigExtensions extends Twig_Extension {
 
 	public function getFunctions() {
 		return array(
-			new Twig_SimpleFunction('link', array($this, 'link')),
-			new Twig_SimpleFunction('asset', array($this, 'asset'))
+			new Twig_SimpleFunction('link', array($this, 'link'))
 		);
 	}
 
 	/**
-	 * Creates an absolute link relative to the "url" configuration value.
+	 * Creates an absolute link relative to {@link App::public public} path.
 	 *
 	 * @param string $value The link relative to the public site URL.
 	 *
@@ -47,10 +46,6 @@ class TwigExtensions extends Twig_Extension {
 	 */
 	public function link($value) {
 		return app()->public . '/' . ltrim($value, '/');
-	}
-
-	public function asset($value) {
-		// TODO.
 	}
 
 	/**

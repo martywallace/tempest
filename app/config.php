@@ -20,10 +20,6 @@ return array(
 		'dev' => true
 	),
 
-	'localhost' => array(
-		'url' => 'http://localhost:1212/public'
-	),
-
 	'staging.yourwebsite.com' => array(
 		'dev' => true,
 		'url' => 'http://staging.yourwebsite.com'
