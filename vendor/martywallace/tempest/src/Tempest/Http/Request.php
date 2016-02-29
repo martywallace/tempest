@@ -51,8 +51,19 @@ final class Request extends Memoizer {
 		}
 
 		if ($prop === 'contentType') return strtolower($_SERVER['CONTENT_TYPE']);
-		if ($prop === 'uri') return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 		if ($prop === 'ip') return $_SERVER['REMOTE_ADDR'];
+		
+		if ($prop === 'uri') {
+			return $this->memoize('uri', function() {
+				$base = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+				if (empty($base) || $base === '/') {
+					return '/';
+				}
+
+				return rtrim($base, '/');
+			});
+		}
 
 		if ($prop === 'headers') {
 			return $this->memoize('headers', function() {
