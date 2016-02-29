@@ -17,8 +17,8 @@ class StringUtil {
 	 * @return string
 	 */
 	public static function slugify($value) {
-		$base = preg_replace('/[^\w\s]+/', '', $value);
-		$base = preg_replace('/\s+/', '-', $base);
+		$base = preg_replace('/[^\w\s\-]+/', '', $value);
+		$base = preg_replace('/[\s\-]+/', '-', $base);
 
 		return trim(strtolower($base));
 	}
