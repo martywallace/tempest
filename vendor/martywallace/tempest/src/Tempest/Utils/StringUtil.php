@@ -23,4 +23,30 @@ class StringUtil {
 		return trim(strtolower($base));
 	}
 
+	/**
+	 * Converts a snake_case_string into a camelCaseString.
+	 *
+	 * @param string $value The input text.
+	 *
+	 * @return string
+	 */
+	public static function snakeCaseToCamelCase($value) {
+		return preg_replace_callback('/(_+\w)/', function($matches) {
+			return strtoupper(substr($matches[0], 1));
+		}, $value);
+	}
+
+	/**
+	 * Convers a camelCaseString into a snake_case_string.
+	 *
+	 * @param string $value The input text.
+	 *
+	 * @return string
+	 */
+	public static function camelCaseToSnakeCase($value) {
+		return preg_replace_callback('/([A-Z]+)/', function($matches) {
+			return '_' . strtolower($matches[0]);
+		}, $value);
+	}
+
 }
