@@ -13,6 +13,7 @@ use Tempest\Services\CryptService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Response;
+use Tempest\Utils\Memoizer;
 
 /**
  * Tempest's core, extended by your application class.
@@ -20,6 +21,7 @@ use Tempest\Http\Response;
  * @property-read bool $dev Whether the application is in development mode.
  * @property-read bool $enabled Whether the application is currently enabled.
  * @property-read string $url The public application URL, always without a trailing slash.
+ * @property-read string $public The public facing root relative to the app domain, always without a trailing slash.
  * @property-read string $root The framework root directory, always without a trailing slash.
  * @property-read string $timezone The application timezone.
  *
@@ -37,7 +39,7 @@ use Tempest\Http\Response;
  * @package Tempest
  * @author Marty Wallace
  */
-abstract class Tempest {
+abstract class Tempest extends Memoizer {
 
 	/** @var Tempest */
 	private static $_instance;
@@ -97,13 +99,22 @@ abstract class Tempest {
 		if ($prop === 'enabled') return $this->config('enabled', true);
 
 		if ($prop === 'url') {
-			// Attempt to guess the website URL based on whether the request was over HTTPS, the serverName variable and
-			// the port the request was made over.
-			$guess = ($this->secure ? 'https://' : 'http://') .
-				$_SERVER['SERVER_NAME'] .
-				($this->port === 80 || $this->port === 443 ? '' : ':' . $this->port);
+			return $this->memoize('url', function() {
+				// Attempt to guess the website URL based on whether the request was over HTTPS, the serverName variable and
+				// the port the request was made over.
+				$guess = ($this->secure ? 'https://' : 'http://') .
+					$_SERVER['SERVER_NAME'] .
+					($this->port === 80 || $this->port === 443 ? '' : ':' . $this->port);
 
-			return rtrim($this->config('url', $guess), '/');
+				return rtrim($this->config('url', $guess), '/');
+			});
+		}
+
+		if ($prop === 'public') {
+			return $this->memoize('public', function() {
+				$path = '/' . trim(parse_url($this->url, PHP_URL_PATH), '/');
+				return $path === '/' ? '' : $path;
+			});
 		}
 
 		if ($prop === 'root') return rtrim($this->_root, '/');
@@ -114,9 +125,11 @@ abstract class Tempest {
 		if ($prop === 'port') return intval($_SERVER['SERVER_PORT']);
 
 		if ($prop === 'secure') {
-			return (!empty($_SERVER['HTTPS']) &&
-				strtolower($_SERVER['HTTPS']) !== 'off') ||
-				$this->port === 443;
+			return $this->memoize('secure', function() {
+				return (!empty($_SERVER['HTTPS']) &&
+					strtolower($_SERVER['HTTPS']) !== 'off') ||
+					$this->port === 443;
+			});
 		}
 
 		if ($prop === 'timezone') {
@@ -164,9 +177,28 @@ abstract class Tempest {
 	 * Output some data for debugging and stop the application.
 	 *
 	 * @param mixed $data The data to debug.
+	 * @param string $format The output format.
 	 */
-	public function dump($data) {
-		print_r($data); exit;
+	public function dump($data, $format = 'print_r') {
+		$format = strtolower($format);
+		$output = null;
+
+		if ($format === 'json') {
+			$data = json_encode($data, JSON_PRETTY_PRINT);
+		} else {
+			ob_start();
+
+			if ($format === 'print_r') print_r($data);
+			if ($format === 'var_dump') var_dump($data);
+
+			$data = ob_get_clean();
+		}
+
+		echo app()->twig->render('@tempest/dump.html', array(
+			'data' => $data
+		));
+
+		exit;
 	}
 
 	/**

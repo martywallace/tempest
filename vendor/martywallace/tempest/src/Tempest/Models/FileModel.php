@@ -11,6 +11,7 @@ use Exception;
  *
  * @property-read int $size The filesize, in bytes.
  * @property-read string $extension The file extension.
+ * @property-read int $updated Unix timestamp representing last modification time.
  *
  * @package Tempest\Models
  * @author Marty Wallace
@@ -53,6 +54,10 @@ class FileModel extends Model {
 			return $this->memoize('size', function() {
 				return filesize($this->_absolute);
 			});
+		}
+
+		if ($prop === 'updated') {
+			return filemtime($this->_absolute);
 		}
 
 		return null;

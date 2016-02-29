@@ -7,7 +7,7 @@
  * @package Tempest\Http
  * @author Marty Wallace
  */
-abstract class Controller implements IRequestChainElement {
+abstract class Controller implements IRequestHandler {
 
 	//
 

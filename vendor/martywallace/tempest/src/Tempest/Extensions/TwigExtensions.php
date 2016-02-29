@@ -38,14 +38,14 @@ class TwigExtensions extends Twig_Extension {
 	}
 
 	/**
-	 * Creates an absolute link relative to the "url" configuration value.
+	 * Creates an absolute link relative to {@link App::public public} path.
 	 *
 	 * @param string $value The link relative to the public site URL.
 	 *
 	 * @return string
 	 */
 	public function link($value) {
-		return app()->url . '/' . ltrim($value, '/');
+		return app()->public . '/' . ltrim($value, '/');
 	}
 
 	/**
