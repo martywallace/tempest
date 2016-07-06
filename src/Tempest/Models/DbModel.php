@@ -11,6 +11,11 @@ use Tempest\Tempest;
  */
 abstract class DbModel extends Model {
 
+	const FIELD_INT = 'int';
+	const FIELD_STRING = 'string';
+	const FIELD_JSON = 'json';
+	const FIELD_DATE = 'date';
+
 	protected static $_instance = null;
 
 	/**
@@ -85,20 +90,41 @@ abstract class DbModel extends Model {
 		}
 	}
 
-	public function save() {
+	/**
+	 * Saves this model to its table in the database.
+	 *
+	 * @param callable $validator A method to use to validate this model before attempting to save it. The validator
+	 * should return an array of error messages mapped to keys with the same name as the fields being validated, e.g.
+	 *
+	 * <pre>
+	 * return array(
+	 *     'email' => 'Email address is invalid',
+	 *     'postcode' => 'Postcode is too long'
+	 * );
+	 * </pre>
+	 *
+	 * @return array The array produced by the validator, or an empty array.
+	 */
+	public function save(callable $validator = null) {
 		$result = array();
 
-		$fields = array_keys($this->_data);
-		$placeholders = array_map(function($value) { return ':' . $value; }, $fields);
-		$update = array_map(function($value) { return $value . '= :' . $value; }, $fields);
+		if (is_callable($validator)) {
+			$result = $validator($this);
+		}
 
-		$query = 'INSERT INTO ' . $this->getTable() . ' (' . implode(',', $fields) . ') VALUES(' . implode(',', $placeholders) . ')
-			ON DUPLICATE KEY UPDATE ' . implode(',', $update);
+		if (empty($result)) {
+			$fields = array_keys($this->_data);
+			$placeholders = array_map(function($value) { return ':' . $value; }, $fields);
+			$update = array_map(function($value) { return $value . '= :' . $value; }, $fields);
 
-		Tempest::get()->db->query($query, $this->_data);
+			$query = 'INSERT INTO ' . $this->getTable() . ' (' . implode(',', $fields) . ') VALUES(' . implode(',', $placeholders) . ')
+				ON DUPLICATE KEY UPDATE ' . implode(',', $update);
 
-		if (empty($this->{$this->definePrimary()})) {
-			$this->{$this->definePrimary()} = Tempest::get()->db->lastInsertId;
+			Tempest::get()->db->query($query, $this->_data);
+
+			if (empty($this->{$this->definePrimary()})) {
+				$this->{$this->definePrimary()} = Tempest::get()->db->lastInsertId;
+			}
 		}
 
 		return $result;
