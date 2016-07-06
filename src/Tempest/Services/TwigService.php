@@ -34,9 +34,12 @@ class TwigService extends Service {
 
 	protected function setup() {
 		$this->_loader = new Twig_Loader_Filesystem();
+		$this->_loader->prependPath(realpath(__DIR__ . '/../../../templates/'), self::TEMPEST_NAMESPACE);
 
-		$this->addTemplatePath('/vendor/martywallace/tempest/templates', self::TEMPEST_NAMESPACE);
-		$this->addTemplatePath(Tempest::get()->config('templates', '/app/templates'));
+		if (Tempest::get()->config('templates')) {
+			// One or more custom template paths.
+			$this->addTemplatePath(Tempest::get()->config('templates'));
+		}
 
 		$this->_environment = new Twig_Environment($this->_loader, array(
 			'debug' => Tempest::get()->dev

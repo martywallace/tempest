@@ -21,7 +21,8 @@ use Tempest\Utils\Memoizer;
  * @property-read bool $enabled Whether the application is currently enabled.
  * @property-read string $url The public application URL, always without a trailing slash.
  * @property-read string $public The public facing root relative to the app domain, always without a trailing slash.
- * @property-read string $root The framework root directory, always without a trailing slash.
+ * @property-read string $environment The current environment the app is running in.
+ * @property-read string $root The application root directory provided by the outer application when instantiating Tempest, always without a trailing slash.
  * @property-read string $timezone The application timezone.
  *
  * @property-read Router $router The application router.
@@ -47,10 +48,11 @@ abstract class Tempest extends Memoizer {
 	 *
 	 * @param string $root The framework root directory.
 	 * @param string $configPath The application configuration file path, relative to the application root.
+	 * @param string $environment The application environment (dev, stage, prod).
 	 *
 	 * @return Tempest
 	 */
-	public static function instantiate($root, $configPath = null) {
+	public static function instantiate($root, $configPath = null, $environment = Environment::DEV) {
 		if (empty(self::$_instance))  {
 			self::$_instance = new static($root, $configPath);
 		}
@@ -58,14 +60,17 @@ abstract class Tempest extends Memoizer {
 		return self::$_instance;
 	}
 
-	/** @var Router */
-	private $_router;
-
 	/** @var string */
 	private $_root;
 
 	/** @var Configuration */
 	private $_config;
+
+	/** @var string */
+	private $_environment;
+
+	/** @var Router */
+	private $_router;
 
 	/** @var Service[] */
 	private $_services = array();
@@ -92,9 +97,11 @@ abstract class Tempest extends Memoizer {
 	 *
 	 * @param string $root The application root directory.
 	 * @param string $configPath The application configuration file path, relative to the application root.
+	 * @param string $environment The application environment (dev, stage, prod).
 	 */
-	public function __construct($root, $configPath = null) {
+	public function __construct($root, $configPath = null, $environment = Environment::DEV) {
 		$this->_root = $root;
+		$this->_environment = empty($environment) ? Environment::DEV : $environment;
 		$this->_router = new Router();
 
 		if ($configPath !== null) {
@@ -108,7 +115,7 @@ abstract class Tempest extends Memoizer {
 
 	public function __get($prop) {
 		// Settings provided by app configuration.
-		if ($prop === 'dev') return $this->config('dev', false);
+		if ($prop === 'dev') return true; // $this->config('dev', false);
 		if ($prop === 'enabled') return $this->config('enabled', true);
 
 		if ($prop === 'url') {
@@ -130,6 +137,7 @@ abstract class Tempest extends Memoizer {
 			});
 		}
 
+		if ($prop === 'environment') return $this->_environment;
 		if ($prop === 'root') return rtrim($this->_root, '/');
 		if ($prop === 'router') return $this->_router;
 
@@ -158,10 +166,6 @@ abstract class Tempest extends Memoizer {
 		}
 
 		return null;
-	}
-
-	public function __set($prop, $value) {
-		//
 	}
 
 	public function __isset($prop) {
@@ -268,9 +272,7 @@ abstract class Tempest extends Memoizer {
 				$response->send();
 			}
 		} catch (Exception $exception) {
-			// Application did not run correctly.
-			$response = new Response(Status::INTERNAL_SERVER_ERROR, static::get()->twig->render('@tempest/500.html', array('exception' => $exception)));
-			$response->send();
+			$this->onException($exception);
 		}
 	}
 
@@ -302,6 +304,17 @@ abstract class Tempest extends Memoizer {
 	 */
 	public function hasService($name) {
 		return array_key_exists($name, $this->_services);
+	}
+
+	/**
+	 * This method runs if an exception was thrown by the application. It can be overridden in your own application
+	 * class for custom error handling (e.g. you could palm the errors off to Slack for review).
+	 *
+	 * @param Exception $exception The exception that was thrown.
+	 */
+	protected function onException(Exception $exception) {
+		$response = new Response(Status::INTERNAL_SERVER_ERROR, static::get()->twig->render('@tempest/500.html', array('exception' => $exception)));
+		$response->send();
 	}
 
 	/**

@@ -14,10 +14,6 @@ class SessionService extends Service {
 		session_start();
 	}
 
-	protected function setup() {
-		// ...
-	}
-
 	public function __get($prop) {
 		if ($prop === 'id') {
 			return session_id();

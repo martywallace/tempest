@@ -1,17 +1,11 @@
-<!DOCTYPE html>
-<html lang="en-GB">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1">
-		<meta name="robots" content="noindex, nofollow">
+{% extends '@tempest/_base.html' %}
 
-		<title>{{ title }}</title>
-	</head>
-	<body>
-		<h1>{{ title }}</h1>
+{% block meta %}
+	<meta name="robots" content="noindex, nofollow">
+{% endblock %}
 
-		<div class="content">
-			{% block content %}{% endblock %}
-		</div>
-	</body>
-</html>
+{% block body %}
+	<div class="content">
+		{% block content %}{% endblock %}
+	</div>
+{% endblock %}
