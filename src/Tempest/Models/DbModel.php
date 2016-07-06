@@ -1,6 +1,8 @@
 <?php namespace Tempest\Models;
 
+use DateTime;
 use Tempest\Tempest;
+use Tempest\Utils\JSONUtil;
 
 
 /**
@@ -14,7 +16,7 @@ abstract class DbModel extends Model {
 	const FIELD_INT = 'int';
 	const FIELD_STRING = 'string';
 	const FIELD_JSON = 'json';
-	const FIELD_DATE = 'date';
+	const FIELD_DATETIME = 'dateTime';
 
 	protected static $_instance = null;
 
@@ -73,6 +75,25 @@ abstract class DbModel extends Model {
 			foreach ($initial as $prop => $value) {
 				$this->__set($prop, $value);
 			}
+		} else {
+			// Fields fetched from PDO.
+			$fields = array_keys($this->defineFields());
+
+			foreach ($fields as $field) {
+				if (!empty($this->{$field})) {
+					$mutated = $this->mutate($field, $this->{$field}, function($type, $value) {
+						switch ($type) {
+							default: return $value; break;
+
+							case self::FIELD_INT: return intval($value); break;
+							case self::FIELD_JSON: return JSONUtil::decode($value); break;
+							case self::FIELD_DATETIME: return new DateTime($value); break;
+						}
+					});
+
+					$this->__set($field, $mutated);
+				}
+			}
 		}
 	}
 
@@ -109,12 +130,14 @@ abstract class DbModel extends Model {
 	public function save($validator = null) {
 		$result = array();
 
-		if (is_callable($validator)) {
-			$validator = array($validator);
-		}
+		if (!empty($validator)) {
+			if (is_callable($validator)) {
+				$validator = array($validator);
+			}
 
-		foreach ($validator as $method) {
-			$result = array_replace_recursive($result, $method($this));
+			foreach ($validator as $method) {
+				$result = array_replace_recursive($result, $method($this));
+			}
 		}
 
 		if (empty($result)) {
@@ -125,7 +148,7 @@ abstract class DbModel extends Model {
 			$query = 'INSERT INTO ' . $this->getTable() . ' (' . implode(',', $fields) . ') VALUES(' . implode(',', $placeholders) . ')
 				ON DUPLICATE KEY UPDATE ' . implode(',', $update);
 
-			Tempest::get()->db->query($query, $this->_data);
+			Tempest::get()->db->query($query, $this->getPrimitiveData());
 
 			if (empty($this->{$this->definePrimary()})) {
 				$this->{$this->definePrimary()} = Tempest::get()->db->lastInsertId;
@@ -133,6 +156,42 @@ abstract class DbModel extends Model {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Returns data mutated based on the data type provided in the {@link defineFields()} definition.
+	 *
+	 * @param callable $mutator A method used to mutate the data. It accepts the field type and the value to mutate and
+	 * should return the mutated value.
+	 *
+	 * @return mixed[]
+	 */
+	public function getMutatedData(callable $mutator) {
+		$mutated = array();
+
+		foreach ($this->getData() as $field => $value) {
+			$mutated[$field] = $this->mutate($field, $value, $mutator);
+		}
+
+		return $mutated;
+	}
+
+	/**
+	 * Mutate a field based on its type.
+	 *
+	 * @param string $field The field to mutate.
+	 * @param mixed $value The value of the field.
+	 * @param callable $mutator A method used to mutate the value. It accepts the field type and the value to mutate and
+	 * should return the mutated value.
+	 *
+	 * @return mixed
+	 */
+	public function mutate($field, $value, callable $mutator) {
+		if ($value !== null) {
+			return $mutator($this->getFieldType($field), $value);
+		}
+
+		return null;
 	}
 
 	/**
@@ -144,6 +203,40 @@ abstract class DbModel extends Model {
 	 */
 	public function hasField($field) {
 		return array_key_exists($field, $this->defineFields());
+	}
+
+	/**
+	 * Returns the user defined type for a field.
+	 *
+	 * @param string $field The field to get the type for.
+	 *
+	 * @return string
+	 */
+	public function getFieldType($field) {
+		return $this->hasField($field) ? $this->getFields()[$field] : null;
+	}
+
+	/**
+	 * Returns the current data for this model.
+	 *
+	 * @return mixed[]
+	 */
+	public function getData() {
+		return $this->_data;
+	}
+
+	/**
+	 * Returns a primitive representation of the data stored in this model, ready for saving in the database.
+	 */
+	public function getPrimitiveData() {
+		return $this->getMutatedData(function($type, $value) {
+			switch ($type) {
+				default: return $value; break;
+
+				case self::FIELD_JSON: return JSONUtil::encode($value); break;
+				case self::FIELD_DATETIME: return $value->format('Y-m-d H:i:s'); break;
+			}
+		});
 	}
 
 	public function jsonSerialize() {

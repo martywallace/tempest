@@ -1,6 +1,8 @@
 <?php namespace Tempest\Utils;
 
 use Exception;
+use JsonSerializable;
+use stdClass;
 
 /**
  * A very thin wrapper around the JSON encoding and decoding functions provided by PHP.
@@ -9,6 +11,19 @@ use Exception;
  * @author Marty Wallace
  */
 class JSONUtil {
+
+	/**
+	 * Determine whether a value can be encoded into JSON correctly.
+	 *
+	 * @param mixed $value The value to check.
+	 *
+	 * @return bool
+	 */
+	public static function isSerializable($value) {
+		return $value instanceof JsonSerializable ||
+			$value instanceof stdClass ||
+			is_array($value);
+	}
 
 	/**
 	 * Behaves the same as {@link json_encode()} unless {@link php_error_info()} returns anything other than
