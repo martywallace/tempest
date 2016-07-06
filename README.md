@@ -8,7 +8,7 @@ A very rough overview of the architecture:
 
 ## Installation.
 
-	$ composer install martywallace/tempest
+	$ composer require martywallace/tempest
 
 ## Usage.
 
