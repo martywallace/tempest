@@ -1,6 +1,7 @@
 <?php namespace Tempest\Models;
 
 use Exception;
+use Tempest\Tempest;
 
 
 /**
@@ -32,10 +33,10 @@ class FileModel extends Model {
 	 * @throws Exception If the path does not represent an existing file.
 	 */
 	public function __construct($path) {
-		$this->_absolute = app()->filesystem->absolute($path);
+		$this->_absolute = Tempest::get()->filesystem->absolute($path);
 		$this->_relative = $path;
 
-		if (!app()->filesystem->exists($path)) {
+		if (!Tempest::get()->filesystem->exists($path)) {
 			throw new Exception('File "' . $this->_absolute . '" does not exist and cannot be represented as a FileModel.');
 		}
 	}

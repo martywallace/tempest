@@ -6,15 +6,15 @@ A very rough overview of the architecture:
 
 ![0](http://i.imgur.com/hGOIaWk.png)
 
-The core application is accessible via `app()`. Services are accessible by name via `app()`, e.g.
+## Installation.
 
-	$html = app()->twig->render('template.html');
+	$ composer install martywallace/tempest
+
+## Usage.
+
+There is a [template available](https://github.com/MartyWallace/tempest-template) as a demonstration of how to get started with Tempest.
 
 ## Configuration.
-
-Configuration can be provided via `/app/config.php`. Configuration can be accessed using:
-
-	app()->config('variable');
 
 The inbuilt configuration options are:
 

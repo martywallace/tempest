@@ -1,6 +1,7 @@
 <?php namespace Tempest\Http;
 
 use Exception;
+use Tempest\Tempest;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 
@@ -43,8 +44,8 @@ final class Router {
 	}
 
 	public function __get($prop) {
-		if ($prop === 'baseControllerNamespace') return '\\' . trim(app()->config('controllers', 'Controllers'), '\\') . '\\';
-		if ($prop === 'baseMiddlewareNamespace') return '\\' . trim(app()->config('middleware', 'Middleware'), '\\') . '\\';
+		if ($prop === 'baseControllerNamespace') return '\\' . trim(Tempest::get()->config('controllers', 'Controllers'), '\\') . '\\';
+		if ($prop === 'baseMiddlewareNamespace') return '\\' . trim(Tempest::get()->config('middleware', 'Middleware'), '\\') . '\\';
 
 		if ($prop === 'request') return $this->_request;
 		if ($prop === 'response') return $this->_response;
@@ -101,7 +102,7 @@ final class Router {
 					// Hitting the root looks for index.html.
 					$template = ($this->_request->uri === '/' ? 'index' : $this->_request->uri) . '.html';
 
-					if ($this->_request->method === 'GET' && app()->twig->loader->exists($template)) {
+					if ($this->_request->method === 'GET' && Tempest::get()->twig->loader->exists($template)) {
 						$useTemplate = true;
 
 						foreach (explode('/', $template) as $part) {
@@ -112,21 +113,21 @@ final class Router {
 							}
 						}
 
-						if ($useTemplate) $this->_response->body = app()->twig->render($template);
+						if ($useTemplate) $this->_response->body = Tempest::get()->twig->render($template);
 					}
 				}
 
 				if (!$useTemplate) {
 					$this->_response->status = Status::NOT_FOUND;
 
-					if (app()->twig->loader->exists('404.html')) $this->_response->body = app()->twig->render('404.html');
-					else $this->_response->body = app()->twig->render('@tempest/404.html');
+					if (Tempest::get()->twig->loader->exists('404.html')) $this->_response->body = Tempest::get()->twig->render('404.html');
+					else $this->_response->body = Tempest::get()->twig->render('@tempest/404.html');
 				}
 			}
 
 			if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {
 				$this->_response->status = Status::METHOD_NOT_ALLOWED;
-				$this->_response->body = app()->twig->render('@tempest/405.html');
+				$this->_response->body = Tempest::get()->twig->render('@tempest/405.html');
 			}
 
 			$this->_response->send();

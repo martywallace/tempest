@@ -11,7 +11,6 @@
 class SessionService extends Service {
 
 	public function __construct() {
-		session_save_path(app()->root . '/app/storage/sessions');
 		session_start();
 	}
 

@@ -1,5 +1,6 @@
 <?php namespace Tempest\Services;
 
+use Tempest\Tempest;
 use Tempest\Extensions\TwigExtensions;
 use Twig_Environment;
 use Twig_Error_Loader;
@@ -35,10 +36,10 @@ class TwigService extends Service {
 		$this->_loader = new Twig_Loader_Filesystem();
 
 		$this->addTemplatePath('/vendor/martywallace/tempest/templates', self::TEMPEST_NAMESPACE);
-		$this->addTemplatePath(app()->config('templates', '/app/templates'));
+		$this->addTemplatePath(Tempest::get()->config('templates', '/app/templates'));
 
 		$this->_environment = new Twig_Environment($this->_loader, array(
-			'debug' => app()->dev
+			'debug' => Tempest::get()->dev
 		));
 
 		$this->_extensions = new TwigExtensions();
@@ -96,7 +97,7 @@ class TwigService extends Service {
 			}
 		} else {
 			$path = trim($path, '/');
-			$this->_loader->prependPath(app()->filesystem->absolute($path), $namespace);
+			$this->_loader->prependPath(Tempest::get()->filesystem->absolute($path), $namespace);
 		}
 	}
 

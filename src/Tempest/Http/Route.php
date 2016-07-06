@@ -1,6 +1,7 @@
 <?php namespace Tempest\Http;
 
 use Exception;
+use Tempest\Tempest;
 use Tempest\Utils\Memoizer;
 
 
@@ -15,6 +16,7 @@ use Tempest\Utils\Memoizer;
  * @property-read string $controller The controller responsible for this route.
  *
  * @package Tempest\Http
+ * @author Marty Wallace
  */
 final class Route extends Memoizer {
 
@@ -51,11 +53,11 @@ final class Route extends Memoizer {
 	public function __get($prop) {
 		if ($prop === 'uri') {
 			return $this->memoize('uri', function() {
-				if ($this->_definition[0] === '/' && !empty(app()->public)) {
-					return app()->public;
+				if ($this->_definition[0] === '/' && !empty(Tempest::get()->public)) {
+					return Tempest::get()->public;
 				}
 
-				return app()->public . '/' . trim($this->_definition[0], '/');
+				return Tempest::get()->public . '/' . trim($this->_definition[0], '/');
 			});
 		}
 

@@ -1,6 +1,7 @@
 <?php namespace Tempest\Services;
 
 use Exception;
+use Tempest\Tempest;
 use Tempest\Models\FileModel;
 
 
@@ -26,7 +27,7 @@ class FilesystemService extends Service {
 	 * @return string
 	 */
 	public function absolute($relative) {
-		return app()->root . '/' . ltrim($relative, '/');
+		return Tempest::get()->root . '/' . ltrim($relative, '/');
 	}
 
 	/**

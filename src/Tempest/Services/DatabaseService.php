@@ -1,5 +1,6 @@
 <?php namespace Tempest\Services;
 
+use Tempest\Tempest;
 use PDO;
 use PDOStatement;
 use Exception;
@@ -32,7 +33,7 @@ class DatabaseService extends Service {
 	}
 
 	protected function setup() {
-		$config = app()->config('db');
+		$config = Tempest::get()->config('db');
 
 		if (is_array($config)) {
 			if (array_key_exists('host', $config) && array_key_exists('name', $config) &&
@@ -55,7 +56,7 @@ class DatabaseService extends Service {
 	 * @return PDOStatement
 	 */
 	public function prepare($query) {
-		if (app()->dev) {
+		if (Tempest::get()->dev) {
 			$this->_queries[] = $query;
 		}
 

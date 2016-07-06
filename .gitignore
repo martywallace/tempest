@@ -1,6 +1,5 @@
 .idea
-vendor/*
-!vendor/martywallace
+vendor
 output
 composer.lock
 node_modules

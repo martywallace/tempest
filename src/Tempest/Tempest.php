@@ -9,7 +9,6 @@ use Tempest\Services\FilesystemService;
 use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
 use Tempest\Services\DatabaseService;
-use Tempest\Services\CryptService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Response;
@@ -34,7 +33,6 @@ use Tempest\Utils\Memoizer;
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  * @property-read SessionService $session The inbuilt service dealing with user sessions.
  * @property-read DatabaseService $db The inbuilt service dealing with a database and its content.
- * @property-read CryptService $crypt The inbuilt encryption service, used to encrypt and decrypt data.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -53,7 +51,7 @@ abstract class Tempest extends Memoizer {
 	 * @return Tempest
 	 */
 	public static function instantiate($root, $configPath = null) {
-		if (self::$_instance === null)  {
+		if (empty(self::$_instance))  {
 			self::$_instance = new static($root, $configPath);
 		}
 
@@ -71,6 +69,21 @@ abstract class Tempest extends Memoizer {
 
 	/** @var Service[] */
 	private $_services = array();
+
+	/**
+	 * A static reference to Tempest.
+	 *
+	 * @return static
+	 *
+	 * @throws Exception If Tempest has not yet been instantiated.
+	 */
+	public static function get() {
+		if (!empty(self::$_instance)) {
+			return self::$_instance;
+		} else {
+			throw new Exception('You must instantiate Tempest before you can refer to it statically.');
+		}
+	}
 
 	/**
 	 * Constructor. Should not be called directly.
@@ -194,7 +207,7 @@ abstract class Tempest extends Memoizer {
 			$data = ob_get_clean();
 		}
 
-		echo app()->twig->render('@tempest/dump.html', array(
+		echo static::get()->twig->render('@tempest/dump.html', array(
 			'data' => $data
 		));
 
@@ -218,8 +231,7 @@ abstract class Tempest extends Memoizer {
 					'filesystem' => new FilesystemService(),
 					'twig' => new TwigService(),
 					'session' => new SessionService(),
-					'db' => new DatabaseService(),
-					'crypt' => new CryptService()
+					'db' => new DatabaseService()
 				), $customServices);
 
 				foreach ($services as $name => $service) {
@@ -257,7 +269,7 @@ abstract class Tempest extends Memoizer {
 			}
 		} catch (Exception $exception) {
 			// Application did not run correctly.
-			$response = new Response(Status::INTERNAL_SERVER_ERROR, app()->twig->render('@tempest/500.html', array('exception' => $exception)));
+			$response = new Response(Status::INTERNAL_SERVER_ERROR, static::get()->twig->render('@tempest/500.html', array('exception' => $exception)));
 			$response->send();
 		}
 	}

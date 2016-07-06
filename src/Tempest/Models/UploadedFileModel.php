@@ -1,5 +1,8 @@
 <?php namespace Tempest\Models;
 
+use Tempest\Tempest;
+
+
 /**
  * A file contained within a request to the application (an uploaded file).
  *
@@ -54,7 +57,7 @@ class UploadedFileModel extends Model {
 	 * @return bool Whether or not the save was successful.
 	 */
 	public function save($path) {
-		return move_uploaded_file($this->temp, app()->filesystem->absolute($path));
+		return move_uploaded_file($this->temp, Tempest::get()->filesystem->absolute($path));
 	}
 
 	private function _getDetail($name, $fallback = null) {

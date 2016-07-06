@@ -1,6 +1,7 @@
 <?php namespace Tempest\Extensions;
 
 use Exception;
+use Tempest\Tempest;
 use Tempest\Utils\StringUtil;
 use Twig_Extension;
 use Twig_SimpleFunction;
@@ -19,7 +20,7 @@ class TwigExtensions extends Twig_Extension {
 	public function getGlobals() {
 		return array(
 			// Bind the application to Twig templates.
-			'app' => app()
+			'app' => Tempest::get()
 		);
 	}
 
@@ -45,7 +46,7 @@ class TwigExtensions extends Twig_Extension {
 	 * @return string
 	 */
 	public function link($value) {
-		return app()->public . '/' . ltrim($value, '/');
+		return Tempest::get()->public . '/' . ltrim($value, '/');
 	}
 
 	/**
