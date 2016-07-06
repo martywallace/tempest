@@ -38,12 +38,6 @@ The inbuilt configuration options are:
 			<td>Whether or not the site is enabled. If not, the site does not activate any services or trigger any routes. A 503 Service Unavailable response is sent while the site is not enabled.</td>
 		</tr>
 		<tr>
-			<td><code>dev</code></td>
-			<td><code>bool</code></td>
-			<td><code>false</code></td>
-			<td>Whether or not the application is in development mode. If it is, exceptions and errors are shown to the developer when they are encountered.</td>
-		</tr>
-		<tr>
 			<td><code>url</code></td>
 			<td><code>string</code></td>
 			<td>Educated guess using server name and port variables.</td>
@@ -54,12 +48,6 @@ The inbuilt configuration options are:
 			<td><code>string</code></td>
 			<td>Default timezone provided by your PHP installation.</td>
 			<td>The application timezone.</td>
-		</tr>
-		<tr>
-			<td><code>key</code></td>
-			<td><code>string</code></td>
-			<td>-</td>
-			<td>The key used to encrypt and decrypt data via the <code>crypt</code> service.</td>
 		</tr>
 		<tr>
 			<th colspan="4">Routing</th>
@@ -93,7 +81,7 @@ The inbuilt configuration options are:
 		<tr>
 			<td><code>templates</code></td>
 			<td><code>string|string[]</code></td>
-			<td><code>/app/templates</code></td>
+			<td>---</td>
 			<td>A path or array of paths where application level Twig templates can be loaded from.</td>
 		</tr>
 		<tr>
