@@ -1,6 +1,6 @@
 {
 	"name": "martywallace/tempest",
-	"version": "2.0.0",
+	"version": "2.0.0-alpha.1",
 	"description": "A tiny PHP framework.",
 	"homepage": "https://github.com/MartyWallace/Tempest",
 	"type": "library",
@@ -13,8 +13,7 @@
 	}],
 	"autoload": {
 		"psr-4" : {
-			"": "app/src/",
-			"Tempest\\" : "vendor/martywallace/tempest/src/Tempest/"
+			"Tempest\\" : "src/Tempest/"
 		}
 	},
 	"require": {
