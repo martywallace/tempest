@@ -21,9 +21,9 @@ use Tempest\Utils\Memoizer;
  * @property-read bool $enabled Whether the application is currently enabled.
  * @property-read string $url The public application URL, always without a trailing slash.
  * @property-read string $public The public facing root relative to the app domain, always without a trailing slash.
- * @property-read string $environment The current environment the app is running in.
  * @property-read string $root The application root directory provided by the outer application when instantiating Tempest, always without a trailing slash.
  * @property-read string $timezone The application timezone.
+ * @property-read string $environment Alias for {@link Environment::current()}.
  *
  * @property-read Router $router The application router.
  * @property-read string $host The value provided by the server name property on the web server.
@@ -48,11 +48,10 @@ abstract class Tempest extends Memoizer {
 	 *
 	 * @param string $root The framework root directory.
 	 * @param string $configPath The application configuration file path, relative to the application root.
-	 * @param string $environment The application environment (dev, stage, prod).
 	 *
 	 * @return Tempest
 	 */
-	public static function instantiate($root, $configPath = null, $environment = Environment::DEV) {
+	public static function instantiate($root, $configPath = null) {
 		if (empty(self::$_instance))  {
 			self::$_instance = new static($root, $configPath);
 		}
@@ -65,9 +64,6 @@ abstract class Tempest extends Memoizer {
 
 	/** @var Configuration */
 	private $_config;
-
-	/** @var string */
-	private $_environment;
 
 	/** @var Router */
 	private $_router;
@@ -97,11 +93,9 @@ abstract class Tempest extends Memoizer {
 	 *
 	 * @param string $root The application root directory.
 	 * @param string $configPath The application configuration file path, relative to the application root.
-	 * @param string $environment The application environment (dev, stage, prod).
 	 */
-	public function __construct($root, $configPath = null, $environment = Environment::DEV) {
+	public function __construct($root, $configPath = null) {
 		$this->_root = $root;
-		$this->_environment = empty($environment) ? Environment::DEV : $environment;
 		$this->_router = new Router();
 
 		if ($configPath !== null) {
@@ -114,8 +108,7 @@ abstract class Tempest extends Memoizer {
 	}
 
 	public function __get($prop) {
-		// Settings provided by app configuration.
-		if ($prop === 'dev') return true; // $this->config('dev', false);
+		if ($prop === 'dev') return Environment::current() === Environment::DEV;
 		if ($prop === 'enabled') return $this->config('enabled', true);
 
 		if ($prop === 'url') {
@@ -137,9 +130,9 @@ abstract class Tempest extends Memoizer {
 			});
 		}
 
-		if ($prop === 'environment') return $this->_environment;
 		if ($prop === 'root') return rtrim($this->_root, '/');
 		if ($prop === 'router') return $this->_router;
+		if ($prop === 'environment') return Environment::current();
 
 		// Useful server information.
 		if ($prop === 'host') return $_SERVER['SERVER_NAME'];

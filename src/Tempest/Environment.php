@@ -11,8 +11,9 @@ use Tempest\Utils\Enum;
  */
 class Environment extends Enum {
 
-	const ALL = '*';
+	const ENV_VAR_NAME = 'PHP_ENV';
 
+	const ALL = '*';
 	const DEV = 'dev';
 	const STAGE = 'stage';
 	const PROD = 'prod';
@@ -25,10 +26,23 @@ class Environment extends Enum {
 	 *
 	 * @return string
 	 */
-	public static function get($prop, $fallback = null) {
+	public static function prop($prop, $fallback = null) {
 		$value = getenv($prop);
 
 		return $value ? $value : $fallback;
+	}
+
+	/**
+	 * Get the current environment mode (defined by {@link Environment::ENV_VAR_NAME} on the server).
+	 *
+	 * @see Environment::DEV
+	 * @see Environment::STAGE
+	 * @see Environment::PROD
+	 *
+	 * @return string
+	 */
+	public static function current() {
+		return self::prop(self::ENV_VAR_NAME, 'dev');
 	}
 
 }

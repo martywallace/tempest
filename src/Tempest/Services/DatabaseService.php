@@ -104,7 +104,7 @@ class DatabaseService extends Service {
 			$class = '\\' . ltrim($class, '\\');
 
 			if (class_exists($class)) {
-				return $stmt->fetchAll(PDO::FETCH_CLASS, $class);
+				return $stmt->fetchAll(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $class);
 			} else {
 				throw new Exception('Class "' . $class . '" does not exist.');
 			}

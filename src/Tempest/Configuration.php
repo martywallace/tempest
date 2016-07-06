@@ -25,29 +25,18 @@ class Configuration {
 	 */
 	public function __construct($file) {
 		$file = $file . '.php';
-
-		$serverHost = preg_replace('/^www\./', '', $_SERVER['SERVER_NAME']);
-		$serverPort = intval($_SERVER['SERVER_PORT']);
+		$env = Environment::current();
 
 		if (is_file($file)) {
 			/** @noinspection PhpIncludeInspection */
 			$data = require($file);
 
 			if (is_array($data)) {
-				if (array_key_exists('*', $data)) {
-					$this->_data = $data['*'];
+				if (array_key_exists(Environment::ALL, $data)) {
+					$this->_data = $data[Environment::ALL];
 
-					foreach ($data as $hosts => $block) {
-						$hosts = preg_split('/,\s*/', $hosts);
-
-						foreach ($hosts as $host) {
-							$port = parse_url($host, PHP_URL_PORT);
-
-							if ((empty($port) && $serverHost === $host) || ($serverHost . ':' . $serverPort === $host)) {
-								$this->_data = array_replace_recursive($this->_data, $block);
-								break;
-							}
-						}
+					if (array_key_exists($env, $data)) {
+						$this->_data = array_replace_recursive($this->_data, $data[$env]);
 					}
 				} else {
 					$this->_data = $data;
