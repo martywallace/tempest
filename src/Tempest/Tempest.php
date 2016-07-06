@@ -175,7 +175,7 @@ abstract class Tempest extends Memoizer {
 	 *
 	 * @return mixed
 	 */
-	public function config($prop, $fallback = null) {
+	public function config($prop = null, $fallback = null) {
 		if ($this->_config !== null) {
 			return $this->_config->get($prop, $fallback);
 		}

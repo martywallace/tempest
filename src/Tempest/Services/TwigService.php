@@ -7,6 +7,7 @@ use Twig_Error_Loader;
 use Twig_Error_Syntax;
 use Twig_Error_Runtime;
 use Twig_Loader_Filesystem;
+use Twig_Extension_Debug;
 
 
 /**
@@ -44,6 +45,10 @@ class TwigService extends Service {
 		$this->_environment = new Twig_Environment($this->_loader, array(
 			'debug' => Tempest::get()->dev
 		));
+
+		if (Tempest::get()->dev) {
+			$this->_environment->addExtension(new Twig_Extension_Debug());
+		}
 
 		$this->_extensions = new TwigExtensions();
 		$this->_environment->addExtension($this->_extensions);
