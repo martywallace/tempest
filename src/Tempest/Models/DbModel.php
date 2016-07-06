@@ -93,8 +93,9 @@ abstract class DbModel extends Model {
 	/**
 	 * Saves this model to its table in the database.
 	 *
-	 * @param callable $validator A method to use to validate this model before attempting to save it. The validator
-	 * should return an array of error messages mapped to keys with the same name as the fields being validated, e.g.
+	 * @param callable|callable[] $validator A method or array of methods to use to validate this model before
+	 * attempting to save it. The validators should return an array of error messages mapped to keys with the same name
+	 * as the fields being validated, e.g.
 	 *
 	 * <pre>
 	 * return array(
@@ -103,13 +104,17 @@ abstract class DbModel extends Model {
 	 * );
 	 * </pre>
 	 *
-	 * @return array The array produced by the validator, or an empty array.
+	 * @return array The array produced by the validators, or an empty array.
 	 */
-	public function save(callable $validator = null) {
+	public function save($validator = null) {
 		$result = array();
 
 		if (is_callable($validator)) {
-			$result = $validator($this);
+			$validator = array($validator);
+		}
+
+		foreach ($validator as $method) {
+			$result = array_replace_recursive($result, $method($this));
 		}
 
 		if (empty($result)) {
