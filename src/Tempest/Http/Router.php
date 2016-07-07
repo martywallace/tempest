@@ -44,8 +44,8 @@ final class Router {
 	}
 
 	public function __get($prop) {
-		if ($prop === 'baseControllerNamespace') return '\\' . trim(Tempest::get()->config('controllers', 'Controllers'), '\\') . '\\';
-		if ($prop === 'baseMiddlewareNamespace') return '\\' . trim(Tempest::get()->config('middleware', 'Middleware'), '\\') . '\\';
+		if ($prop === 'baseControllerNamespace') return '\\' . trim(Tempest::get()->config->get('controllers', 'Controllers'), '\\') . '\\';
+		if ($prop === 'baseMiddlewareNamespace') return '\\' . trim(Tempest::get()->config->get('middleware', 'Middleware'), '\\') . '\\';
 
 		if ($prop === 'request') return $this->_request;
 		if ($prop === 'response') return $this->_response;

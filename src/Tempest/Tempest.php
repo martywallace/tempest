@@ -30,6 +30,7 @@ use Tempest\Utils\Memoizer;
  * @property-read string $port The port on which the application is running.
  * @property-read bool $secure Attempts to determine whether the application is running over SSL.
  *
+ * @property-read Configuration $config The configuration service, used to get config data.
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  * @property-read SessionService $session The inbuilt service dealing with user sessions.
@@ -109,7 +110,7 @@ abstract class Tempest extends Memoizer {
 
 	public function __get($prop) {
 		if ($prop === 'dev') return Environment::current() === Environment::DEV;
-		if ($prop === 'enabled') return $this->config('enabled', true);
+		if ($prop === 'enabled') return $this->_config->get('enabled', true);
 
 		if ($prop === 'url') {
 			return $this->memoize('url', function() {
@@ -119,7 +120,7 @@ abstract class Tempest extends Memoizer {
 					$_SERVER['SERVER_NAME'] .
 					($this->port === 80 || $this->port === 443 ? '' : ':' . $this->port);
 
-				return rtrim($this->config('url', $guess), '/');
+				return rtrim($this->_config->get('url', $guess), '/');
 			});
 		}
 
@@ -147,8 +148,10 @@ abstract class Tempest extends Memoizer {
 		}
 
 		if ($prop === 'timezone') {
-			return $this->config('timezone', @date_default_timezone_get());
+			return $this->_config->get('timezone', @date_default_timezone_get());
 		}
+
+		if ($prop === 'config') return $this->_config;
 
 		if ($this->hasService($prop)) {
 			// We found a service with a matching name. Set it up and return it.
@@ -165,22 +168,6 @@ abstract class Tempest extends Memoizer {
 		return property_exists($this, $prop) ||
 			$this->hasService($prop) ||
 			$this->{$prop} !== null;
-	}
-
-	/**
-	 * Get application configuration data.
-	 *
-	 * @param string $prop The configuration data to get.
-	 * @param mixed $fallback A fallback value to use if the specified data does not exist.
-	 *
-	 * @return mixed
-	 */
-	public function config($prop = null, $fallback = null) {
-		if ($this->_config !== null) {
-			return $this->_config->get($prop, $fallback);
-		}
-
-		return $fallback;
 	}
 
 	/**
@@ -238,7 +225,7 @@ abstract class Tempest extends Memoizer {
 				// Set up the application after services are bound.
 				$this->setup();
 
-				$routes = $this->config('routes', array());
+				$routes = $this->_config->get('routes', array());
 
 				if (!empty($routes)) {
 					if (is_string($routes)) {

@@ -18,9 +18,9 @@ class DatabaseService extends Service {
 	private $_locator;
 
 	protected function setup() {
-		if (Tempest::get()->config('db')) {
+		if (Tempest::get()->config->get('db')) {
 			$config = new Config();
-			$config->addConnection('mysql', Tempest::get()->config('db'));
+			$config->addConnection('mysql', Tempest::get()->config->get('db'));
 
 			$this->_locator = new Locator($config);
 		} else {
@@ -37,6 +37,21 @@ class DatabaseService extends Service {
 	 */
 	public function mapper($name) {
 		return $this->_locator->mapper($name);
+	}
+
+	/**
+	 * Perform migration on a series of models.
+	 *
+	 * @param string|string[] $models One or more model names to migrate.
+	 */
+	public function migrate(array $models) {
+		if (!is_array($models)) {
+			$models = array($models);
+		}
+		
+		foreach ($models as $model) {
+			$this->mapper($model)->migrate();
+		}
 	}
 
 }

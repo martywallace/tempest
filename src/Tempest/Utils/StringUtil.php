@@ -37,7 +37,7 @@ class StringUtil {
 	}
 
 	/**
-	 * Convers a camelCaseString into a snake_case_string.
+	 * Converts a camelCaseString into a snake_case_string.
 	 *
 	 * @param string $value The input text.
 	 *
