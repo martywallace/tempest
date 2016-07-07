@@ -1,0 +1,66 @@
+{% extends '@tempest/_layouts/base.html' %}
+
+{% block meta %}
+	<meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block css %}
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: 'Open Sans', sans-serif;
+			font-size: 14px;
+		}
+
+		header {
+			background: #147B89;
+			color: #FFF;
+			padding: 50px 30px;
+		}
+
+		h2 {
+			font-weight: 100;
+			font-size: 180%;
+		}
+
+		main {
+			padding: 60px 30px;
+		}
+
+		footer {
+			border-top: 1px solid #EEE;
+			padding: 30px;
+			color: #AAA;
+			font-size: 12px;
+		}
+
+		a {
+			color: #888;
+			text-decoration: none;
+		}
+
+		a:hover {
+			color: #333;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<header>
+		{% block header %}{% endblock %}
+	</header>
+
+	<main>
+		{% block content %}{% endblock %}
+	</main>
+
+	<footer>
+		<p><a href="{{ app.url }}">Back to homepage</a> &middot; Build with <a href="https://github.com/MartyWallace/Tempest" target="_blank">Tempest v2</a>.</p>
+	</footer>
+{% endblock %}

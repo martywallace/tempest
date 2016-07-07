@@ -1,0 +1,38 @@
+{% set title = 'Exception Encountered.' %}
+
+{% extends '@tempest/_layouts/framework.html' %}
+
+{% block css %}
+	{{ parent() }}
+
+	<style>
+		h3, h4 {
+			margin-bottom: 20px;
+		}
+
+		h3 {
+			padding-bottom: 10px;
+			border-bottom: 3px solid #EEE;
+		}
+
+		ul {
+			list-style: none;
+		}
+	</style>
+{% endblock  %}
+
+{% block header %}
+	<h2>Exception Encountered.</h2>
+{% endblock %}
+
+{% block content %}
+	<h3>{{ exception.message }}</h3>
+
+	<ul>
+		<li>{{ exception.file }} at line {{ exception.line }}.</li>
+
+		{% for item in exception.trace %}
+			<li>{{ item.file }} at line {{ item.line }}.</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

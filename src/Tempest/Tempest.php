@@ -191,7 +191,7 @@ abstract class Tempest extends Memoizer {
 			$data = ob_get_clean();
 		}
 
-		echo static::get()->twig->render('@tempest/dump.html', array(
+		echo static::get()->twig->render('@tempest/_utils/dump.html', array(
 			'data' => $data
 		));
 
@@ -293,7 +293,7 @@ abstract class Tempest extends Memoizer {
 	 * @param Exception $exception The exception that was thrown.
 	 */
 	protected function onException(Exception $exception) {
-		$response = new Response(Status::INTERNAL_SERVER_ERROR, static::get()->twig->render('@tempest/500.html', array('exception' => $exception)));
+		$response = new Response(Status::INTERNAL_SERVER_ERROR, static::get()->twig->render('@tempest/_errors/500.html', array('exception' => $exception)));
 		$response->send();
 	}
 
