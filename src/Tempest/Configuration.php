@@ -3,6 +3,7 @@
 namespace Tempest;
 
 use Exception;
+use Tempest\Utils\ObjectUtil;
 
 
 /**
@@ -56,7 +57,8 @@ class Configuration {
 	/**
 	 * Gets the value of the specified configuration data.
 	 *
-	 * @param string $prop The configuration data to get.
+	 * @param string $prop The configuration data to get. Dot delimited values for sub-configuration data is allowed and
+	 * passed through {@link ObjectUtil::getDeepValue()}.
 	 * @param mixed $fallback A fallback value to use if the requested property does not exist.
 	 *
 	 * @return mixed
@@ -67,7 +69,7 @@ class Configuration {
 			return $fallback === null ? $this->_data : $fallback;
 		}
 
-		return array_key_exists($prop, $this->_data) ? $this->_data[$prop] : $fallback;
+		return ObjectUtil::getDeepValue($this->_data, $prop, $fallback);
 	}
 
 }
