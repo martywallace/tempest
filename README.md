@@ -50,12 +50,6 @@ The inbuilt configuration options are:
 			<td>The application timezone.</td>
 		</tr>
 		<tr>
-			<td><code>dbconfig</code></td>
-			<td><code>bool</code></td>
-			<td><code>false</code></td>
-			<td>Whether or not database level configuration is available. If this is enabled and a valid database connection is set up, the configuration table will be created automatically with the name <code>__config</code>.</td>
-		</tr>
-		<tr>
 			<th colspan="4">Routing</th>
 		</tr>
 		<tr>
