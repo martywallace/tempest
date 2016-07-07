@@ -50,6 +50,12 @@ The inbuilt configuration options are:
 			<td>The application timezone.</td>
 		</tr>
 		<tr>
+			<td><code>dbconfig</code></td>
+			<td><code>bool</code></td>
+			<td><code>false</code></td>
+			<td>Whether or not database level configuration is available. If this is enabled and a valid database connection is set up, the configuration table will be created automatically with the name <code>__config</code>.</td>
+		</tr>
+		<tr>
 			<th colspan="4">Routing</th>
 		</tr>
 		<tr>
@@ -71,9 +77,9 @@ The inbuilt configuration options are:
 		</tr>
 		<tr>
 			<td><code>db</code></td>
-			<td><code>array</code></td>
+			<td><code>string</code></td>
 			<td>-</td>
-			<td>If defined, provides the connection details used by the internal database service. The value expected in an array with the following keys: <code>host</code>, <code>name</code>, <code>user</code> and <code>pass</code>.</td>
+			<td>If defined, provides the connection details used by the internal database service. The value expected in a string in the following format: <code>mysql://user:password@host/database</code>.</td>
 		</tr>
 		<tr>
 			<th colspan="4">Paths</th>
