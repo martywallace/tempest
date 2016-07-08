@@ -1,8 +1,10 @@
 <?php namespace Tempest\Http;
 
 use Exception;
+use Tempest\Tempest;
 use Tempest\Utils\Memoizer;
 use Tempest\Utils\JSONUtil;
+use Tempest\Models\UserModel;
 use Tempest\Models\UploadedFileModel;
 
 
@@ -16,6 +18,9 @@ use Tempest\Models\UploadedFileModel;
  * exist.
  * @property-read string $ip The IP address making the request.
  * @property-read string $body The raw request body.
+ * @property-read UserModel $user The user making the request. The user is defined by providing either their email and
+ * password information as headers called X-Tempest-User-Email and X-Tempest-User-Password or by having a current user
+ * session with the application.
  *
  * @package Tempest\Http
  * @author Marty Wallace
@@ -76,6 +81,19 @@ final class Request extends Memoizer {
 				}
 
 				return $headers;
+			});
+		}
+
+		if ($prop === 'user') {
+			return $this->memoize('user', function() {
+				$email = $this->header('x-tempest-user-email');
+				$password = $this->header('x-tempest-user-password');
+
+				if ($email && $password) {
+					return Tempest::get()->users->login($email, $password);
+				}
+
+				return null;
 			});
 		}
 
