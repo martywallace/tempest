@@ -13,6 +13,7 @@ use Tempest\Tempest;
  * @property-read int $size The filesize, in bytes.
  * @property-read string $extension The file extension.
  * @property-read int $updated Unix timestamp representing last modification time.
+ * @property-read string $content The file contents.
  *
  * @package Tempest\Models
  * @author Marty Wallace
@@ -59,6 +60,12 @@ class FileModel extends Model {
 
 		if ($prop === 'updated') {
 			return filemtime($this->_absolute);
+		}
+
+		if ($prop === 'content') {
+			return $this->memoize('__content', function() {
+				return file_get_contents($this->_absolute);
+			});
 		}
 
 		return null;

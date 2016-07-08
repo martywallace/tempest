@@ -44,7 +44,7 @@ class DatabaseService extends Service {
 	 *
 	 * @param string|string[] $models One or more model names to migrate.
 	 */
-	public function migrate(array $models) {
+	public function migrate($models) {
 		if (!is_array($models)) {
 			$models = array($models);
 		}

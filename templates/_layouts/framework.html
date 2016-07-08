@@ -16,12 +16,28 @@
 		body {
 			font-family: 'Open Sans', sans-serif;
 			font-size: 14px;
+			line-height: 1.4;
+		}
+
+		code, pre {
+			background: #FDFDFD;
+			border: 1px solid #DDD;
+			border-radius: 2px;
+			box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+			font-family: 'Consolas', monospace;
+			color: #444;
+		}
+
+		h2, main, footer {
+			max-width: 1000px;
+			margin: 0 auto;
+			padding: 0 30px;
 		}
 
 		header {
-			background: #147B89;
+			background: #C50D26;
 			color: #FFF;
-			padding: 50px 30px;
+			padding: 70px 30px;
 		}
 
 		h2 {
@@ -30,14 +46,17 @@
 		}
 
 		main {
-			padding: 60px 30px;
+			padding-top: 60px;
+			padding-bottom: 60px;
 		}
 
 		footer {
-			border-top: 1px solid #EEE;
-			padding: 30px;
 			color: #AAA;
-			font-size: 12px;
+		}
+
+		footer p {
+			padding: 20px 0;
+			border-top: 1px solid #E0E0E0;
 		}
 
 		a {
@@ -48,12 +67,18 @@
 		a:hover {
 			color: #333;
 		}
+
+		code {
+			display: inline-block;
+			padding: 4px 6px;
+			word-break: break-all;
+		}
 	</style>
 {% endblock %}
 
 {% block body %}
 	<header>
-		{% block header %}{% endblock %}
+		{% block header %}<h2>{{ title }}</h2>{% endblock %}
 	</header>
 
 	<main>
@@ -61,6 +86,6 @@
 	</main>
 
 	<footer>
-		<p><a href="{{ app.url }}">Back to homepage</a> &middot; Build with <a href="https://github.com/MartyWallace/Tempest" target="_blank">Tempest v2</a>.</p>
+		<p><a href="{{ app.url }}">Back to homepage</a> &middot; Built with <a href="https://github.com/MartyWallace/Tempest" target="_blank">Tempest v2</a>.</p>
 	</footer>
 {% endblock %}
