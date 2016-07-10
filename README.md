@@ -10,6 +10,6 @@ Tempest can be [found on Packagist](https://packagist.org/packages/martywallace/
 
 ## Resources.
 
+* [Wiki](https://github.com/MartyWallace/Tempest/wiki).
 * [Class Reference](http://reference.tempest.martywallace.com).
 * [Example Project Template](https://github.com/MartyWallace/tempest-template).
-* [Wiki](https://github.com/MartyWallace/Tempest/wiki)
