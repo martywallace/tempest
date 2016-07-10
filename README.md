@@ -1,18 +1,17 @@
-# Tempest v2.
+# Tempest.
 
-Yet another minimal PHP framework by [Marty Wallace](http://martywallace.com). Tempest provides a foundation on which you can define services and make use of basic routing.
-
-A very rough overview of the architecture:
-
-![0](http://i.imgur.com/hGOIaWk.png)
+A minimal PHP framework by [Marty Wallace](http://martywallace.com). The goal of Tempest is to glue together a handful of libraries for [routing](https://github.com/nikic/FastRoute), [data management](https://github.com/vlucas/spot2) and [templating](https://github.com/twigphp/Twig) and provide a clean foundation for your application.
 
 ## Installation.
 
+Tempest can be [found on Packagist](https://packagist.org/packages/martywallace/tempest) and installed with Composer:
+
 	$ composer require martywallace/tempest
 
-## Usage.
+## Resources.
 
-There is a [template available](https://github.com/MartyWallace/tempest-template) as a demonstration of how to get started with Tempest.
+* [Class Reference](http://reference.tempest.martywallace.com).
+* [Example Project Template](https://github.com/MartyWallace/tempest-template).
 
 ## Configuration.
 
