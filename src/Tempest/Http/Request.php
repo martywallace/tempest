@@ -20,7 +20,8 @@ use Tempest\Models\UploadedFileModel;
  * @property-read string $body The raw request body.
  * @property-read UserModel $user The user making the request. The user is defined by providing either their email and
  * password information as headers called X-Tempest-User-Email and X-Tempest-User-Password or by having a current user
- * session with the application.
+ * session with the application. If the user credentials are supplied in the request, those credentials are valid for
+ * that request only - there is no session based login triggered.
  *
  * @package Tempest\Http
  * @author Marty Wallace
@@ -90,7 +91,7 @@ final class Request extends Memoizer {
 				$password = $this->header('x-tempest-user-password');
 
 				if ($email && $password) {
-					return Tempest::get()->users->login($email, $password);
+					return Tempest::get()->users->findByCredentials($email, $password);
 				}
 
 				return null;
@@ -147,6 +148,7 @@ final class Request extends Memoizer {
 
 		if ($name === null) return $stack;
 
+		// TODO: return ObjectUtils::getDeepValue($stack, $name, $fallback) should work but want a chance to test thoroughly.
 		return array_key_exists($name, $stack) ? $stack[$name] : $fallback;
 	}
 

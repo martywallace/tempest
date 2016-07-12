@@ -24,7 +24,7 @@ class UserService extends Service {
 
 				if (!empty($id) && !empty($token)) {
 					/** @var UserModel $user */
-					$user = Tempest::get()->db->mapper(UserModel::class)->first(array('id' => $id));
+					$user = $this->find($id);
 
 					if (!empty($user)) {
 						if ($user->getToken() === $token) {
@@ -43,14 +43,48 @@ class UserService extends Service {
 	/**
 	 * Finds and returns a user.
 	 *
+	 * @param string $id The user's id.
+	 *
+	 * @return UserModel
+	 */
+	public function find($id) {
+		return $this->memoize('__user_' . $id, function() use ($id) {
+			return Tempest::get()->db->one('SELECT * FROM ' . Tempest::get()->config->get('users.table', 'users') . ' WHERE id = ?', array($id), UserModel::class);
+		});
+	}
+
+	/**
+	 * Finds and returns a user.
+	 *
 	 * @param string $email The user's email address.
 	 *
 	 * @return UserModel
 	 */
-	public function find($email) {
-		return $this->memoize('__user_' . $email, function() use ($email) {
-			return Tempest::get()->db->mapper(UserModel::class)->first(array('email' => $email));
+	public function findByEmail($email) {
+		return $this->memoize('__useByEmail_' . $email, function() use ($email) {
+			return Tempest::get()->db->one('SELECT * FROM ' . Tempest::get()->config->get('users.table', 'users') . ' WHERE email = ?', array($email), UserModel::class);
 		});
+	}
+
+	/**
+	 * Finds and returns a user with matching email and password values. Returns null if the credentials were not valid
+	 * for any known users.
+	 *
+	 * @param string $email The user's email address.
+	 * @param string $password The user's password.
+	 *
+	 * @return UserModel
+	 */
+	public function findByCredentials($email, $password) {
+		$user = $this->find($email);
+
+		if (!empty($user)) {
+			if (password_verify($password, $user->password)) {
+				return $user;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -80,14 +114,13 @@ class UserService extends Service {
 			throw new Exception('You must provide a password for the new user.');
 		}
 
-		/** @var UserModel $user */
-		$user = Tempest::get()->db->mapper(UserModel::class)->create(array(
+		$user = UserModel::create(array(
 			'email' => $email,
 			'password' => password_hash($password, CRYPT_BLOWFISH),
 			'type' => $type
 		));
 
-		if (Tempest::get()->db->mapper(UserModel::class)->save($user)) {
+		if ($user->save()) {
 			return $user;
 		}
 
@@ -103,11 +136,13 @@ class UserService extends Service {
 	 * @return bool
 	 */
 	public function exists($email) {
-		return Tempest::get()->db->mapper(UserModel::class)->where(array('email' => $email))->count() > 0;
+		return Tempest::get()->db->prop('SELECT COUNT(*) FROM ' . Tempest::get()->config->get('users.table', 'users') . ' WHERE email = ?', array($email)) > 0;
 	}
 
 	/**
-	 * Attempt to login to the application. Returns the logged in user if successful, else null.
+	 * Attempt to login to the application. Returns the logged in user if successful, else null. This method has the
+	 * same input and output as {@link findByCredentials()} except it retains the logged in user in the current session,
+	 * making them available via {@link $user} thereafter.
 	 *
 	 * @param string $email The user email address.
 	 * @param string $password The user password.
@@ -118,18 +153,14 @@ class UserService extends Service {
 		// Force logout before a new attempt.
 		$this->logout();
 
-		$user = $this->find($email);
+		$user = $this->findByCredentials($email, $password);
 
 		if (!empty($user)) {
-			if (password_verify($password, $user->password)) {
-				Tempest::get()->session->set('__user_id', $user->id);
-				Tempest::get()->session->set('__user_token', $user->getToken());
-
-				return $user;
-			}
+			Tempest::get()->session->set('__user_id', $user->id);
+			Tempest::get()->session->set('__user_token', $user->getToken());
 		}
 
-		return null;
+		return $user;
 	}
 
 	/**

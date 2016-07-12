@@ -1,34 +1,38 @@
 <?php namespace Tempest\Models;
 
-use Spot\Entity;
-
 
 /**
- * A model stored in the database. This class is a very thin wrapper for Spot's {@link Entity} class.
+ * A model stored in the database.
  *
  * @package Tempest\Models
  * @author Marty Wallace
  */
-abstract class DbModel extends Entity {
+abstract class DbModel extends Model {
 
-	const FIELD_SMALLINT = 'smallint';
-	const FIELD_INT = 'integer';
-	const FIELD_BIGINT = 'bigint';
-	const FIELD_DECIMAL = 'decimal';
-	const FIELD_FLOAT = 'float';
-	const FIELD_STRING = 'string';
-	const FIELD_TEXT = 'text';
-	const FIELD_GUID = 'guid';
-	const FIELD_BINARY = 'binary';
-	const FIELD_BLOB = 'blob';
-	const FIELD_BOOLEAN = 'boolean';
-	const FIELD_DATE = 'date';
-	const FIELD_DATETIME = 'datetime';
-	const FIELD_DATETIMEZ = 'datetimez';
-	const FIELD_TIME = 'time';
-	const FIELD_ARRAY = 'array';
-	const FIELD_SIMPLEARRAY = 'simple_array';
-	const FIELD_JSON = 'json_array';
-	const FIELD_OBJECT = 'object';
+	/**
+	 * Creates a new instance of this model.
+	 *
+	 * @param array $data Data to fill the new model with.
+	 *
+	 * @return static
+	 */
+	public static function create(array $data = array()) {
+		$instance = new static();
+
+		foreach ($data as $field => $value) {
+			if (property_exists($instance, $field)) {
+				$instance[$field] = $value;
+			}
+		}
+
+		return $instance;
+	}
+
+	/**
+	 * Store changes to this model in the database.
+	 *
+	 * @return bool
+	 */
+	public abstract function save();
 
 }
