@@ -12,7 +12,7 @@ use ReflectionClass;
 abstract class Enum {
 
 	/** @var string[] */
-	private static $_reflection;
+	private static $_reflections = array();
 
 	/**
 	 * Get all the constants defined by this enum.
@@ -20,18 +20,18 @@ abstract class Enum {
 	 * @return array
 	 */
 	public static function getAll() {
-		return self::_reflect()->getConstants();
+		return static::_reflect()->getConstants();
 	}
 
 	/**
 	 * @return ReflectionClass
 	 */
-	private static function _reflect() {
-		if (empty(self::$_reflection)) {
-			self::$_reflection = new ReflectionClass(static::class);
+	protected static function _reflect() {
+		if (!array_key_exists(static::class, self::$_reflections)) {
+			self::$_reflections[static::class] = new ReflectionClass(static::class);
 		}
 
-		return self::$_reflection;
+		return self::$_reflections[static::class];
 	}
 
 }
