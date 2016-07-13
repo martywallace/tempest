@@ -1,4 +1,5 @@
 <?php namespace Tempest\Models;
+use Tempest\Services\UserService;
 use Tempest\Tempest;
 
 /**
@@ -20,8 +21,13 @@ class UserModel extends DbModel {
 	/** @var string $type */
 	public $type;
 
+	/**
+	 * Save this user. Users should not be created and saved manually; use {@link UserService::create} instead.
+	 *
+	 * @return bool
+	 */
 	public function save() {
-		$query = 'INSERT INTO ' . Tempest::get()->config->get('users.table', 'users') . ' (email, password, type)
+		$query = 'INSERT INTO ' . UserService::table() . ' (email, password, type)
 			VALUES(:email, :password, :type) ON DUPLICATE KEY UPDATE password = :password, type = :type';
 
 		Tempest::get()->db->query($query, array(

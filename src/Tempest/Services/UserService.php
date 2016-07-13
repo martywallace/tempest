@@ -16,6 +16,26 @@ use Tempest\Models\UserModel;
  */
 class UserService extends Service {
 
+	/**
+	 * Get the name of the users table as defined in the configuration, falling back to "users".
+	 *
+	 * @return string
+	 */
+	public static function table() {
+		return Tempest::get()->config->get('users.table', 'users');
+	}
+
+	/**
+	 * Gets the available user types as defined in the configuration. All types are converted to lowercase.
+	 *
+	 * @return string[]
+	 */
+	public static function types() {
+		return array_map(function($type) {
+			return strtolower($type);
+		}, Tempest::get()->config->get('users.types', array()));
+	}
+
 	public function __get($prop) {
 		if ($prop === 'user') {
 			return $this->memoize('__user', function() {
@@ -49,7 +69,7 @@ class UserService extends Service {
 	 */
 	public function find($id) {
 		return $this->memoize('__user_' . $id, function() use ($id) {
-			return Tempest::get()->db->one('SELECT * FROM ' . Tempest::get()->config->get('users.table', 'users') . ' WHERE id = ?', array($id), UserModel::class);
+			return Tempest::get()->db->one('SELECT * FROM ' . static::table() . ' WHERE id = ?', array($id), UserModel::class);
 		});
 	}
 
@@ -62,7 +82,7 @@ class UserService extends Service {
 	 */
 	public function findByEmail($email) {
 		return $this->memoize('__useByEmail_' . $email, function() use ($email) {
-			return Tempest::get()->db->one('SELECT * FROM ' . Tempest::get()->config->get('users.table', 'users') . ' WHERE email = ?', array($email), UserModel::class);
+			return Tempest::get()->db->one('SELECT * FROM ' . static::table() . ' WHERE email = ?', array($email), UserModel::class);
 		});
 	}
 
@@ -76,7 +96,7 @@ class UserService extends Service {
 	 * @return UserModel
 	 */
 	public function findByCredentials($email, $password) {
-		$user = $this->find($email);
+		$user = $this->findByEmail($email);
 
 		if (!empty($user)) {
 			if (password_verify($password, $user->password)) {
@@ -100,6 +120,7 @@ class UserService extends Service {
 	 * @throws Exception If the email address supplied was not valid.
 	 * @throws Exception If there was no value provided as the password.
 	 * @throws Exception If a user already exists with the email address provided.
+	 * @throws Exception If there is a type provided and the type does not match a type defined in the configuration.
 	 */
 	public function create($email, $password, $type = null) {
 		$email = strtolower($email);
@@ -112,6 +133,14 @@ class UserService extends Service {
 
 		if (empty($password)) {
 			throw new Exception('You must provide a password for the new user.');
+		}
+
+		if (!empty($type)) {
+			$type = strtolower($type);
+
+			if (!in_array($type, static::types())) {
+				throw new Exception('There is no user type named "' . $type . '".');
+			}
 		}
 
 		$user = UserModel::create(array(
@@ -136,7 +165,7 @@ class UserService extends Service {
 	 * @return bool
 	 */
 	public function exists($email) {
-		return Tempest::get()->db->prop('SELECT COUNT(*) FROM ' . Tempest::get()->config->get('users.table', 'users') . ' WHERE email = ?', array($email)) > 0;
+		return Tempest::get()->db->prop('SELECT COUNT(*) FROM ' . static::table() . ' WHERE email = ?', array($email)) > 0;
 	}
 
 	/**

@@ -21,7 +21,7 @@ abstract class DbModel extends Model {
 
 		foreach ($data as $field => $value) {
 			if (property_exists($instance, $field)) {
-				$instance[$field] = $value;
+				$instance->{$field} = $value;
 			}
 		}
 

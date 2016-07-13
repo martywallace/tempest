@@ -35,16 +35,33 @@ class DatabaseService extends Service {
 	protected function setup() {
 		$config = Tempest::get()->config->get('db');
 
-		if (is_array($config)) {
-			if (array_key_exists('host', $config) && array_key_exists('name', $config) &&
-				array_key_exists('user', $config) && array_key_exists('pass', $config)) {
-				// Set up connection.
-				$this->_pdo = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['name'], $config['user'], $config['pass']);
-			} else {
-				throw new Exception('Incomplete database connection information provided in app configuration.');
-			}
+		if (!empty($config)) {
+			$config = $this->parseConnectionString($config);
+			$this->_pdo = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['dbname'], $config['user'], $config['password']);
 		} else {
 			throw new Exception('No database configuration was provided.');
+		}
+	}
+
+	/**
+	 * Extract login information from a connection string formatted <code>user:password@host/database</code>. Returns
+	 * an array with the keys host, user, password and dbname.
+	 *
+	 * @param string $value The connection string.
+	 *
+	 * @return string[]
+	 *
+	 * @throws Exception If the connection string is not valid.
+	 */
+	public function parseConnectionString($value) {
+		$value = trim($value);
+
+		preg_match('/^(?<user>[^:@]+):?(?<password>.*)?@(?<host>[^\/]+)\/(?<dbname>.+)$/', $value, $matches);
+
+		if (!empty($matches)) {
+			return $matches;
+		} else {
+			throw new Exception('The supplied connection string is invalid.');
 		}
 	}
 
