@@ -1,6 +1,7 @@
 <?php namespace Tempest\Services;
 
 use Exception;
+use Illuminate\Database\Schema\Blueprint;
 use Tempest\Tempest;
 use Tempest\Models\UserModel;
 
@@ -8,33 +9,13 @@ use Tempest\Models\UserModel;
 /**
  * A service to interact with application users.
  *
- * @see Tempest\Models\UserModel
+ * @see UserModel
  *
  * @property-read UserModel $user The current logged in user, if there is one.
  *
  * @package Tempest\Services
  */
 class UserService extends Service {
-
-	/**
-	 * Get the name of the users table as defined in the configuration, falling back to "users".
-	 *
-	 * @return string
-	 */
-	public static function table() {
-		return Tempest::get()->config->get('users.table', 'users');
-	}
-
-	/**
-	 * Gets the available user types as defined in the configuration. All types are converted to lowercase.
-	 *
-	 * @return string[]
-	 */
-	public static function types() {
-		return array_map(function($type) {
-			return strtolower($type);
-		}, Tempest::get()->config->get('users.types', array()));
-	}
 
 	public function __get($prop) {
 		if ($prop === 'user') {
@@ -47,7 +28,7 @@ class UserService extends Service {
 					$user = $this->find($id);
 
 					if (!empty($user)) {
-						if ($user->getToken() === $token) {
+						if (hash_equals($user->getToken(), $token)) {
 							return $user;
 						}
 					}
@@ -68,9 +49,7 @@ class UserService extends Service {
 	 * @return UserModel
 	 */
 	public function find($id) {
-		return $this->memoize('__user_' . $id, function() use ($id) {
-			return Tempest::get()->db->one('SELECT * FROM ' . static::table() . ' WHERE id = ?', array($id), UserModel::class);
-		});
+		return Tempest::get()->db->model(UserModel::class)->find($id)->first();
 	}
 
 	/**
@@ -81,9 +60,7 @@ class UserService extends Service {
 	 * @return UserModel
 	 */
 	public function findByEmail($email) {
-		return $this->memoize('__useByEmail_' . $email, function() use ($email) {
-			return Tempest::get()->db->one('SELECT * FROM ' . static::table() . ' WHERE email = ?', array($email), UserModel::class);
-		});
+		return Tempest::get()->db->model(UserModel::class)->where('email', $email)->first();
 	}
 
 	/**
@@ -112,17 +89,14 @@ class UserService extends Service {
 	 *
 	 * @param string $email The user's email address. It must be unique.
 	 * @param string $password The user's password. It will be hashed before insertion into the new user record.
-	 * @param string $type The user type. Not required but can be used by your application to implement alternate
-	 * permission levels, etc.
 	 *
 	 * @return UserModel
 	 *
 	 * @throws Exception If the email address supplied was not valid.
 	 * @throws Exception If there was no value provided as the password.
 	 * @throws Exception If a user already exists with the email address provided.
-	 * @throws Exception If there is a type provided and the type does not match a type defined in the configuration.
 	 */
-	public function create($email, $password, $type = null) {
+	public function create($email, $password) {
 		$email = strtolower($email);
 
 		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -135,25 +109,12 @@ class UserService extends Service {
 			throw new Exception('You must provide a password for the new user.');
 		}
 
-		if (!empty($type)) {
-			$type = strtolower($type);
-
-			if (!in_array($type, static::types())) {
-				throw new Exception('There is no user type named "' . $type . '".');
-			}
-		}
-
-		$user = UserModel::create(array(
+		$user = new UserModel([
 			'email' => $email,
-			'password' => password_hash($password, CRYPT_BLOWFISH),
-			'type' => $type
-		));
+			'password' => password_hash($password, CRYPT_BLOWFISH)
+		]);
 
-		if ($user->save()) {
-			return $user;
-		}
-
-		return null;
+		return $user->save() ? $user : null;
 	}
 
 
@@ -165,7 +126,7 @@ class UserService extends Service {
 	 * @return bool
 	 */
 	public function exists($email) {
-		return Tempest::get()->db->prop('SELECT COUNT(*) FROM ' . static::table() . ' WHERE email = ?', array($email)) > 0;
+		return Tempest::get()->db->model(UserModel::class)->where('email', $email)->exists();
 	}
 
 	/**
@@ -200,6 +161,14 @@ class UserService extends Service {
 
 		Tempest::get()->session->del('__user_id');
 		Tempest::get()->session->del('__user_token');
+	}
+
+	public function createTable() {
+		Tempest::get()->db->schema()->create('users', function(Blueprint $table) {
+			$table->increments('id');
+			$table->string('email')->unique();
+			$table->string('password');
+		});
 	}
 
 }

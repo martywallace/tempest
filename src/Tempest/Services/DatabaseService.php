@@ -3,6 +3,8 @@
 use Exception;
 use Tempest\Tempest;
 use Illuminate\Database\Capsule\Manager;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Schema\Builder as SchemaBuilder;
 use Tempest\Utils\ObjectUtil;
 
 /**
@@ -16,7 +18,7 @@ class DatabaseService extends Service {
 	/** @var Manager */
 	private $_capsule = null;
 
-	protected function setup() {
+	public function __construct() {
 		$config = Tempest::get()->config->get('db');
 
 		if (!empty($config)) {
@@ -29,11 +31,11 @@ class DatabaseService extends Service {
 			$connection = $this->parseConnectionString(ObjectUtil::getDeepValue($config, 'connection'));
 			$connection = array_merge($config, $connection);
 
-			unset($connection['connection']);
-
 			$this->_capsule = new Manager();
+
 			$this->_capsule->addConnection($connection);
 			$this->_capsule->setAsGlobal();
+			$this->_capsule->bootEloquent();
 		} else {
 			throw new Exception('No database connection details were provided by the application.');
 		}
@@ -61,21 +63,38 @@ class DatabaseService extends Service {
 	/**
 	 * Get a schema builder.
 	 *
-	 * @return \Illuminate\Database\Schema\Builder
+	 * @return SchemaBuilder
 	 */
 	public function schema() {
 		return Manager::schema();
 	}
 
 	/**
-	 * Get a query builder.
+	 * Get a query builder for a specific table.
 	 *
 	 * @param string $table The name of the table.
 	 *
-	 * @return \Illuminate\Database\Query\Builder
+	 * @return QueryBuilder
 	 */
 	public function table($table) {
 		return Manager::table($table);
+	}
+
+	/**
+	 * Get a query builder for a specific model.
+	 *
+	 * @param string $model The model name, usually provided by the static class property e.g. MyModel::class.
+	 *
+	 * @return QueryBuilder
+	 *
+	 * @throws Exception If the model name does not resolve to an existing class.
+	 */
+	public function model($model) {
+		if (class_exists($model)) {
+			return ($model)::query();
+		} else {
+			throw new Exception('Model "' . $model . '" does not exist.');
+		}
 	}
 
 }
