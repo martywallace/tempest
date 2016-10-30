@@ -11,7 +11,7 @@ use Tempest\Utils\Enum;
  */
 class Environment extends Enum {
 
-	const ENV_VAR_NAME = 'PHP_ENV';
+	const ENV_VAR_NAME = 'TempestEnv';
 
 	const ALL = '*';
 	const DEV = 'dev';
@@ -42,7 +42,7 @@ class Environment extends Enum {
 	 * @return string
 	 */
 	public static function current() {
-		return self::prop(self::ENV_VAR_NAME, 'dev');
+		return self::prop(self::ENV_VAR_NAME, self::DEV);
 	}
 
 }

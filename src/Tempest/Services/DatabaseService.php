@@ -1,45 +1,41 @@
 <?php namespace Tempest\Services;
 
-use Tempest\Tempest;
-use PDO;
-use PDOStatement;
 use Exception;
+use Tempest\Tempest;
+use Illuminate\Database\Capsule\Manager;
+use Tempest\Utils\ObjectUtil;
 
 /**
- * Provides methods for interacting with a database via PDO.
- *
- * @property-read int $lastInsertId The last insert ID value.
- * @property-read array $errors Any errors provided by PDO::errorInfo() internally.
- * @property-read string[] $queries An array of all previously executed queries for this request. This array does not
- * populate unless the application is in development mode.
+ * Provides methods for interacting with a database via Illuminate\Database.
  *
  * @package Tempest\Services
  * @author Marty Wallace
  */
 class DatabaseService extends Service {
 
-	/** @var PDO */
-	private $_pdo;
-
-	/** @var string[] */
-	private $_queries = array();
-
-	public function __get($prop) {
-		if ($prop === 'lastInsertId') return $this->_pdo->lastInsertId();
-		if ($prop === 'errors') return $this->_pdo->errorInfo();
-		if ($prop === 'queries') return $this->_queries;
-
-		return null;
-	}
+	/** @var Manager */
+	private $_capsule = null;
 
 	protected function setup() {
 		$config = Tempest::get()->config->get('db');
 
 		if (!empty($config)) {
-			$config = $this->parseConnectionString($config);
-			$this->_pdo = new PDO('mysql:host=' . $config['host'] . ';dbname=' . $config['dbname'], $config['user'], $config['password']);
+			$config = array_merge(array(
+				'driver' => 'mysql',
+				'charset' => 'utf8',
+				'collation' => 'utf8_unicode_ci'
+			), $config);
+
+			$connection = $this->parseConnectionString(ObjectUtil::getDeepValue($config, 'connection'));
+			$connection = array_merge($config, $connection);
+
+			unset($connection['connection']);
+
+			$this->_capsule = new Manager();
+			$this->_capsule->addConnection($connection);
+			$this->_capsule->setAsGlobal();
 		} else {
-			throw new Exception('No database configuration was provided.');
+			throw new Exception('No database connection details were provided by the application.');
 		}
 	}
 
@@ -56,121 +52,30 @@ class DatabaseService extends Service {
 	public function parseConnectionString($value) {
 		$value = trim($value);
 
-		preg_match('/^(?<user>[^:@]+):?(?<password>.*)?@(?<host>[^\/]+)\/(?<dbname>.+)$/', $value, $matches);
+		preg_match('/^(?<username>[^:@]+):?(?<password>.*)?@(?<host>[^\/]+)\/(?<database>.+)$/', $value, $matches);
 
-		if (!empty($matches)) {
-			return $matches;
-		} else {
-			throw new Exception('The supplied connection string is invalid.');
-		}
+		if (!empty($matches)) return $matches;
+		else throw new Exception('The supplied connection string is invalid.');
 	}
 
 	/**
-	 * Prepares a PDOStatement.
+	 * Get a schema builder.
 	 *
-	 * @param string $query The query to prepare.
-	 *
-	 * @return PDOStatement
+	 * @return \Illuminate\Database\Schema\Builder
 	 */
-	public function prepare($query) {
-		if (Tempest::get()->dev) {
-			$this->_queries[] = $query;
-		}
-
-		return $this->_pdo->prepare($query);
+	public function schema() {
+		return Manager::schema();
 	}
 
 	/**
-	 * Prepare and execute a query, returning the PDOStatement that is created when preparing the query.
+	 * Get a query builder.
 	 *
-	 * @param string $query The query to execute.
-	 * @param array|null $params Parameters to bind to the query.
+	 * @param string $table The name of the table.
 	 *
-	 * @return PDOStatement
-	 *
-	 * @throws Exception If the PDOStatement returns any errors, they are thrown as an exception.
+	 * @return \Illuminate\Database\Query\Builder
 	 */
-	public function query($query, array $params = null) {
-		$stmt = $this->prepare($query);
-		$stmt->execute($params);
-
-		if ($stmt->errorCode() !== '00000') {
-			$err = $stmt->errorInfo();
-			throw new Exception($err[0] . ': ' . $err[2]);
-		}
-
-		return $stmt;
-	}
-
-	/**
-	 * Returns all rows provided by executing a query.
-	 *
-	 * @param string $query The query to execute.
-	 * @param array|null $params Parameters to bind to the query.
-	 * @param string|null $class The name of a class to optionally create and inject the returned values into.
-	 *
-	 * @return array
-	 *
-	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
-	 * @throws Exception If the provided class does not exist.
-	 */
-	public function all($query, array $params = null, $class = null) {
-		$stmt = $this->query($query, $params);
-
-		if (!empty($class)) {
-			$class = '\\' . ltrim($class, '\\');
-
-			if (class_exists($class)) {
-				return $stmt->fetchAll(PDO::FETCH_CLASS, $class);
-			} else {
-				throw new Exception('Class "' . $class . '" does not exist.');
-			}
-		} else {
-			return $stmt->fetchAll(PDO::FETCH_OBJ);
-		}
-	}
-
-	/**
-	 * Returns the first row provided by executing a query.
-	 *
-	 * @param string $query The query to execute.
-	 * @param array|null $params Parameters to bind to the query.
-	 * @param string|null $class The name of a class to optionally create and inject the returned values into.
-	 *
-	 * @return mixed
-	 *
-	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
-	 * @throws Exception If the provided class does not exist.
-	 */
-	public function one($query, array $params = null, $class = null) {
-		$all = $this->all($query, $params, $class);
-
-		if (!empty($all)) {
-			return $all[0];
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns the first value in the first column returned from executing a query.
-	 *
-	 * @param string $query The query to execute.
-	 * @param array|null $params Parameters to bind to the query.
-	 * @param mixed $fallback A fallback value to use if no results were returned by the query.
-	 *
-	 * @return mixed
-	 *
-	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
-	 */
-	public function prop($query, array $params = null, $fallback = null) {
-		$result = $this->query($query, $params)->fetch(PDO::FETCH_NUM);
-
-		if (!empty($result)) {
-			return $result[0];
-		}
-
-		return $fallback;
+	public function table($table) {
+		return Manager::table($table);
 	}
 
 }
