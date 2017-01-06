@@ -7,4 +7,4 @@
  * @package Tempest\Http
  * @author Marty Wallace
  */
-abstract class Controller implements RequestHandler { }
+abstract class Controller extends RequestHandler { }
