@@ -11,12 +11,22 @@ use Tempest\Utils\Enum;
  */
 class Environment extends Enum {
 
-	const ENV_VAR_NAME = 'TempestEnv';
+	/** @var string */
+	private static $_envVarName = 'TEMPEST_ENV';
 
 	const ALL = '*';
 	const DEV = 'dev';
 	const STAGE = 'stage';
 	const PROD = 'prod';
+
+	/**
+	 * Sets the name of the environment variable used to determine the application environment.
+	 *
+	 * @param string $var The new
+	 */
+	public static function setEnvironmentVarName($var) {
+		self::$_envVarName = $var;
+	}
 
 	/**
 	 * Get an environment variable.
@@ -33,7 +43,7 @@ class Environment extends Enum {
 	}
 
 	/**
-	 * Get the current environment mode (defined by {@link Environment::ENV_VAR_NAME} on the server).
+	 * Get the current environment.
 	 *
 	 * @see Environment::DEV
 	 * @see Environment::STAGE
@@ -42,7 +52,7 @@ class Environment extends Enum {
 	 * @return string
 	 */
 	public static function current() {
-		return self::prop(self::ENV_VAR_NAME, self::DEV);
+		return self::prop(self::$_envVarName, self::DEV);
 	}
 
 }

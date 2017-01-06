@@ -8,7 +8,6 @@ use Tempest\Services\Service;
 use Tempest\Services\FilesystemService;
 use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
-use Tempest\Services\DatabaseService;
 use Tempest\Services\UserService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
@@ -18,7 +17,8 @@ use Tempest\Utils\Memoizer;
 /**
  * Tempest's core, extended by your application class.
  *
- * @property-read bool $dev Whether the application is in development mode.
+ * @property-read bool $dev Whether the application is in development mode, which is determined by whether a
+ * configuration option called "dev" is provided and true, or whether the current environment is "dev".
  * @property-read bool $enabled Whether the application is currently enabled.
  * @property-read string $url The public application URL, always without a trailing slash.
  * @property-read string $public The public facing root relative to the app domain, always without a trailing slash.
@@ -35,7 +35,6 @@ use Tempest\Utils\Memoizer;
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  * @property-read SessionService $session The inbuilt service dealing with user sessions.
- * @property-read DatabaseService $db The inbuilt service dealing with a database and its content.
  * @property-read UserService $users The inbuilt service dealing with application users.
  *
  * @package Tempest
@@ -52,7 +51,7 @@ abstract class Tempest extends Memoizer {
 	 * @param string $root The framework root directory.
 	 * @param string $configPath The application configuration file path, relative to the application root.
 	 *
-	 * @return Tempest
+	 * @return static
 	 */
 	public static function instantiate($root, $configPath = null) {
 		if (empty(self::$_instance))  {
@@ -111,7 +110,7 @@ abstract class Tempest extends Memoizer {
 	}
 
 	public function __get($prop) {
-		if ($prop === 'dev') return Environment::current() === Environment::DEV;
+		if ($prop === 'dev') return $this->_config->get('dev') || Environment::current() === Environment::DEV;
 		if ($prop === 'enabled') return $this->_config->get('enabled', true);
 
 		if ($prop === 'url') {
@@ -217,7 +216,6 @@ abstract class Tempest extends Memoizer {
 					'filesystem' => new FilesystemService(),
 					'twig' => new TwigService(),
 					'session' => new SessionService(),
-					'db' => new DatabaseService(),
 					'users' => new UserService()
 				), $customServices);
 
