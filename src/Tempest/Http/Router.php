@@ -27,13 +27,13 @@ final class Router {
 	private $_response;
 
 	/** @var Route[] */
-	private $_routes = array();
+	private $_routes = [];
 
 	/** @var Route */
 	private $_matched;
 
 	/** @var RequestHandler[] */
-	private $_instantiated = array();
+	private $_instantiated = [];
 
 	/** @var bool */
 	private $_dispatched = false;

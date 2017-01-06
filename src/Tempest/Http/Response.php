@@ -32,7 +32,7 @@ final class Response {
 	 */
 	public function __construct($status = 200, $body = null) {
 		$this->status = $status;
-		$this->contentType = array('text/html', 'charset' => 'utf-8');
+		$this->contentType = ['text/html', 'charset' => 'utf-8'];
 		$this->body = $body;
 	}
 
@@ -76,10 +76,10 @@ final class Response {
 	 */
 	public function header($name, $values) {
 		if (!is_array($values)) {
-			$values = array($values);
+			$values = [$values];
 		}
 
-		$value = array();
+		$value = [];
 
 		foreach ($values as $key => $val) {
 			if (is_numeric($key)) $value[] = $val;
@@ -96,7 +96,7 @@ final class Response {
 	 */
 	public function isDownload($filename) {
 		if (!empty($filename)) {
-			$this->header('Content-Disposition', array('attachment', 'filename' => $filename));
+			$this->header('Content-Disposition', ['attachment', 'filename' => $filename]);
 		}
 	}
 
@@ -108,7 +108,7 @@ final class Response {
 	 */
 	public function flash($seconds, $location) {
 		if (intval($seconds) >= 0 && !empty($location)) {
-			$this->header('Refresh', array($seconds, 'url' => $location));
+			$this->header('Refresh', [$seconds, 'url' => $location]);
 		}
 	}
 
@@ -129,7 +129,7 @@ final class Response {
 	public function send() {
 		if (is_array($this->_body) || $this->_body instanceof JsonSerializable) {
 			// Convert the response to JSON.
-			$this->contentType = array('application/json', 'charset' => 'utf-8');
+			$this->contentType = ['application/json', 'charset' => 'utf-8'];
 			$this->_body = JSONUtil::encode($this->_body);
 		}
 

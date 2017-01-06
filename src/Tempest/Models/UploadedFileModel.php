@@ -40,13 +40,13 @@ class UploadedFileModel extends Model {
 	}
 
 	public function jsonSerialize() {
-		return array(
+		return [
 			'name' => $this->name,
 			'extension' => $this->extension,
 			'type' => $this->type,
 			'size' => $this->size,
 			'temp' => $this->temp
-		);
+		];
 	}
 
 	/**

@@ -10,8 +10,4 @@ use Tempest\Utils\Memoizer;
  * @package Tempest\Models
  * @author Marty Wallace
  */
-abstract class Model extends Memoizer implements JsonSerializable {
-
-	//
-
-}
+abstract class Model extends Memoizer implements JsonSerializable { }

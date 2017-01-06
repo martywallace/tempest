@@ -1,10 +1,9 @@
 <?php namespace Tempest\Http;
 
 use Exception;
-use Tempest\Tempest;
 use Tempest\Utils\Memoizer;
 use Tempest\Utils\JSONUtil;
-use Tempest\Models\UserModel;
+use Tempest\Utils\ObjectUtil;
 use Tempest\Models\UploadedFileModel;
 
 
@@ -18,10 +17,6 @@ use Tempest\Models\UploadedFileModel;
  * exist.
  * @property-read string $ip The IP address making the request.
  * @property-read string $body The raw request body.
- * @property-read UserModel $user The user making the request. The user is defined by providing either their email and
- * password information as headers called X-Tempest-User-Email and X-Tempest-User-Password or by having a current user
- * session with the application. If the user credentials are supplied in the request, those credentials are valid for
- * that request only - there is no session based login triggered.
  *
  * @package Tempest\Http
  * @author Marty Wallace
@@ -29,7 +24,7 @@ use Tempest\Models\UploadedFileModel;
 final class Request extends Memoizer {
 
 	/** @var array */
-	private $_named = array();
+	private $_named = [];
 
 	/**
 	 * Attaches data provided by named route components. This method is used internally by the router when a route
@@ -73,7 +68,7 @@ final class Request extends Memoizer {
 
 		if ($prop === 'headers') {
 			return $this->memoize('headers', function() {
-				$headers = array();
+				$headers = [];
 
 				if (function_exists('getallheaders')) {
 					foreach (getallheaders() as $header => $value) {
@@ -82,19 +77,6 @@ final class Request extends Memoizer {
 				}
 
 				return $headers;
-			});
-		}
-
-		if ($prop === 'user') {
-			return $this->memoize('user', function() {
-				$email = $this->header('x-tempest-user-email');
-				$password = $this->header('x-tempest-user-password');
-
-				if ($email && $password) {
-					return Tempest::get()->users->findByCredentials($email, $password);
-				}
-
-				return null;
 			});
 		}
 
@@ -127,7 +109,7 @@ final class Request extends Memoizer {
 			if ($this->method === 'GET') {
 				return $_GET;
 			} else {
-				$data = array();
+				$data = [];
 
 				if (ContentType::matches($this->contentType, ContentType::APPLICATION_X_WWW_FORM_URLENCODED)) {
 					parse_str($this->body, $data);
@@ -148,8 +130,7 @@ final class Request extends Memoizer {
 
 		if ($name === null) return $stack;
 
-		// TODO: return ObjectUtils::getDeepValue($stack, $name, $fallback) should work but want a chance to test thoroughly.
-		return array_key_exists($name, $stack) ? $stack[$name] : $fallback;
+		return ObjectUtil::getDeepValue($stack, $name, $fallback);
 	}
 
 	/**
@@ -220,8 +201,7 @@ final class Request extends Memoizer {
 	 */
 	public function header($name, $fallback = null) {
 		$name = strtolower($name);
-
-		return array_key_exists($name, $this->headers) ? $this->headers[$name] : $fallback;
+		return ObjectUtil::getDeepValue($this->headers, $name, $fallback);
 	}
 
 }

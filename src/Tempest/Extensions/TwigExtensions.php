@@ -1,8 +1,8 @@
 <?php namespace Tempest\Extensions;
 
-use Exception;
 use Tempest\Tempest;
 use Tempest\Utils\StringUtil;
+use Tempest\Utils\ObjectUtil;
 use Twig_Extension;
 use Twig_SimpleFunction;
 use Twig_SimpleFilter;
@@ -18,61 +18,36 @@ class TwigExtensions extends Twig_Extension {
 	public function getName() { return 'TempestTwigExtensions'; }
 
 	public function getGlobals() {
-		return array(
+		return [
 			// Bind the application to Twig templates.
 			'app' => Tempest::get()
-		);
+		];
 	}
 
 	public function getFilters() {
-		return array(
+		return [
 			new Twig_SimpleFilter('sha1', 'sha1'),
-			new Twig_SimpleFilter('slugify', array(StringUtil::class, 'slugify')),
-			new Twig_SimpleFilter('pluck', array($this, 'pluck'))
-		);
+			new Twig_SimpleFilter('slugify', [StringUtil::class, 'slugify']),
+			new Twig_SimpleFilter('pluck', [ObjectUtil::class, 'pluck'])
+		];
 	}
 
 	public function getFunctions() {
-		return array(
-			new Twig_SimpleFunction('link', array($this, 'link'))
-		);
+		return [
+			new Twig_SimpleFunction('link', [$this, 'link'])
+		];
 	}
 
 	/**
 	 * Creates an absolute link relative to {@link App::public public} path.
 	 *
 	 * @param string $value The link relative to the public site URL.
+	 * @param bool $full Whether or not to include the full site URL at the front of the result.
 	 *
 	 * @return string
 	 */
-	public function link($value) {
-		return Tempest::get()->public . '/' . ltrim($value, '/');
-	}
-
-	/**
-	 * Returns an array of plucked values. The values are plucked from an array of nested arrays or objects using their
-	 * keys or properties.
-	 *
-	 * @param array $values An array of arrays or objects to pluck properties from.
-	 * @param string $property The property or key to pluck from each item.
-	 *
-	 * @return array
-	 *
-	 * @throws Exception If the provided value is not an array.
-	 */
-	public function pluck(array $values, $property) {
-		if (is_array($values)) {
-			$result = array();
-
-			foreach ($values as $value) {
-				if (is_array($value) && array_key_exists($property, $value)) $result[] = $value[$property];
-				if (is_object($value) && property_exists($value, $property)) $result[] = $value->{$property};
-			}
-
-			return $result;
-		} else {
-			throw new Exception('pluck() expects an array.');
-		}
+	public function link($value, $full = false) {
+		return ($full ? Tempest::get()->url : Tempest::get()->public) . '/' . ltrim($value, '/');
 	}
 
 }

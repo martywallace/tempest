@@ -72,11 +72,11 @@ class FileModel extends Model {
 	}
 
 	public function jsonSerialize() {
-		return array(
+		return [
 			'path' => $this->_relative,
 			'extension' => $this->extension,
 			'size' => $this->size
-		);
+		];
 	}
 
 }

@@ -73,11 +73,8 @@ final class Route extends Memoizer {
 
 		if ($prop === 'middleware') {
 			return $this->memoize('middleware', function() {
-				if ($this->format === self::FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER) {
-					return array_slice($this->_definition, 2, -1);
-				} else {
-					return array();
-				}
+				if ($this->format === self::FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER) return array_slice($this->_definition, 2, -1);
+				else return [];
 			});
 		}
 
