@@ -1,6 +1,6 @@
 # Tempest.
 
-A minimal PHP framework by [Marty Wallace](http://martywallace.com). The goal of Tempest is to glue together a handful of libraries for [routing](https://github.com/nikic/FastRoute) and [templating](https://github.com/twigphp/Twig) and provide a clean foundation for your application.
+A minimal PHP framework by [Marty Wallace](http://martywallace.com). Tempest provides a clean project foundation through the concept of application services, as well as routing and templating inbuilt.
 
 ## Installation.
 
@@ -13,3 +13,4 @@ Tempest can be [found on Packagist](https://packagist.org/packages/martywallace/
 * [Wiki](https://github.com/MartyWallace/Tempest/wiki).
 * [Class Reference](http://reference.tempest.martywallace.com).
 * [Example Project Template](https://github.com/MartyWallace/tempest-template).
+* [More Information](https://martywallace.com/projects/tempest).

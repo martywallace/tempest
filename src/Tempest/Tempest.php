@@ -196,9 +196,7 @@ abstract class Tempest extends Memoizer {
 			$data = ob_get_clean();
 		}
 
-		echo static::get()->twig->render('@tempest/_utils/dump.html', [
-			'data' => $data
-		]);
+		echo static::get()->twig->render('@tempest/_utils/dump.html', ['data' => $data]);
 
 		exit;
 	}

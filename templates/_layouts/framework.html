@@ -35,9 +35,17 @@
 		}
 
 		header {
-			background: #C50D26;
+			background: #DDD;
 			color: #FFF;
 			padding: 70px 30px;
+		}
+
+		.theme-error {
+			background: #C50D26;
+		}
+
+		.theme-ok {
+			background: #529341;
 		}
 
 		h2 {
@@ -82,8 +90,10 @@
 {% endblock %}
 
 {% block body %}
-	<header>
-		{% block header %}<h2>{{ title }}</h2>{% endblock %}
+	<header class="theme-{{ theme|default('error') }}">
+		{% block header %}
+			<h2>{{ title }}</h2>
+		{% endblock %}
 	</header>
 
 	<main>
@@ -91,6 +101,8 @@
 	</main>
 
 	<footer>
-		<p><a href="{{ app.url }}">Back to homepage</a>.</p>
+		{% block footer %}
+			<p><a href="{{ app.url }}">Back to homepage</a>.</p>
+		{% endblock %}
 	</footer>
 {% endblock %}
