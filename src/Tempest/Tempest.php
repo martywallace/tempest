@@ -8,7 +8,6 @@ use Tempest\Services\Service;
 use Tempest\Services\FilesystemService;
 use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
-use Tempest\Services\UserService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Response;
@@ -35,7 +34,6 @@ use Tempest\Utils\Memoizer;
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  * @property-read SessionService $session The inbuilt service dealing with user sessions.
- * @property-read UserService $users The inbuilt service dealing with application users.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -49,13 +47,13 @@ abstract class Tempest extends Memoizer {
 	 * Instantiate the application.
 	 *
 	 * @param string $root The framework root directory.
-	 * @param string $configPath The application configuration file path, relative to the application root.
+	 * @param string $config The application configuration file path, relative to the application root.
 	 *
 	 * @return static
 	 */
-	public static function instantiate($root, $configPath = null) {
+	public static function instantiate($root, $config = null) {
 		if (empty(self::$_instance))  {
-			self::$_instance = new static($root, $configPath);
+			self::$_instance = new static($root, $config);
 		}
 
 		return self::$_instance;
@@ -71,7 +69,10 @@ abstract class Tempest extends Memoizer {
 	private $_router;
 
 	/** @var Service[] */
-	private $_services = array();
+	private $_services = [];
+
+	/** @var string[] */
+	private $_setupServices = [];
 
 	/**
 	 * A static reference to Tempest.
@@ -94,15 +95,15 @@ abstract class Tempest extends Memoizer {
 	 * @see Tempest::instantiate() To create a new instance instead.
 	 *
 	 * @param string $root The application root directory.
-	 * @param string $configPath The application configuration file path, relative to the application root.
+	 * @param string $config The application configuration file path, relative to the application root.
 	 */
-	public function __construct($root, $configPath = null) {
+	public function __construct($root, $config = null) {
 		$this->_root = $root;
 		$this->_router = new Router();
 
-		if ($configPath !== null) {
+		if ($config !== null) {
 			// Initialize configuration.
-			$this->_config = new Configuration($this->root . '/' . trim($configPath, '/'));
+			$this->_config = new Configuration($this->root . '/' . trim($config, '/'));
 		}
 
 		date_default_timezone_set($this->timezone);
@@ -155,9 +156,12 @@ abstract class Tempest extends Memoizer {
 		if ($prop === 'config') return $this->_config;
 
 		if ($this->hasService($prop)) {
-			// We found a service with a matching name. Set it up and return it.
 			$service = $this->_services[$prop];
-			$service->runSetup();
+
+			if (!array_key_exists($prop, $this->_setupServices)) {
+				// First time being accessed, setup the service.
+				$service->setup();
+			}
 
 			return $service;
 		}
@@ -192,9 +196,9 @@ abstract class Tempest extends Memoizer {
 			$data = ob_get_clean();
 		}
 
-		echo static::get()->twig->render('@tempest/_utils/dump.html', array(
+		echo static::get()->twig->render('@tempest/_utils/dump.html', [
 			'data' => $data
-		));
+		]);
 
 		exit;
 	}
@@ -205,19 +209,18 @@ abstract class Tempest extends Memoizer {
 	public function start() {
 		try {
 			if ($this->enabled) {
-				$customServices = $this->bindServices();
+				$customServices = $this->services();
 
 				if (empty($customServices) || !is_array($customServices)) {
-					$customServices = array();
+					$customServices = [];
 				}
 
-				$services = array_merge(array(
+				$services = array_merge([
 					// Services that the core depends on.
 					'filesystem' => new FilesystemService(),
 					'twig' => new TwigService(),
-					'session' => new SessionService(),
-					'users' => new UserService()
-				), $customServices);
+					'session' => new SessionService()
+				], $customServices);
 
 				foreach ($services as $name => $service) {
 					$this->addService($name, $service);
@@ -226,7 +229,7 @@ abstract class Tempest extends Memoizer {
 				// Set up the application after services are bound.
 				$this->setup();
 
-				$routes = $this->_config->get('routes', array());
+				$routes = $this->_config->get('routes', []);
 
 				if (!empty($routes)) {
 					if (is_string($routes)) {
@@ -294,7 +297,7 @@ abstract class Tempest extends Memoizer {
 	 * @param Exception $exception The exception that was thrown.
 	 */
 	protected function onException(Exception $exception) {
-		$response = new Response(Status::INTERNAL_SERVER_ERROR, static::get()->twig->render('@tempest/_errors/500.html', array('exception' => $exception)));
+		$response = new Response(Status::INTERNAL_SERVER_ERROR, static::get()->twig->render('@tempest/_errors/500.html', ['exception' => $exception]));
 		$response->send();
 	}
 
@@ -303,7 +306,7 @@ abstract class Tempest extends Memoizer {
 	 *
 	 * @return Service[]
 	 */
-	abstract protected function bindServices();
+	abstract protected function services();
 
 	/**
 	 * Additional application setup, run after services are bound.

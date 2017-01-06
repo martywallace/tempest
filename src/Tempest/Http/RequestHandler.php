@@ -6,7 +6,7 @@
  * @package Tempest\Http
  * @author Marty Wallace
  */
-interface IRequestHandler {
+interface RequestHandler {
 
 	//
 

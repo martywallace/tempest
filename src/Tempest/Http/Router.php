@@ -32,7 +32,7 @@ final class Router {
 	/** @var Route */
 	private $_matched;
 
-	/** @var IRequestHandler[] */
+	/** @var RequestHandler[] */
 	private $_instantiated = array();
 
 	/** @var bool */
@@ -137,10 +137,10 @@ final class Router {
 	}
 
 	/**
-	 * Instantiate an instance of an IRequestChainElement and call a method attached to that instance, passing the
-	 * current Request and Response objects to that method. The created instance is stored for future method calls (e.g.
-	 * if the same middleware class has multiple methods that are called in one chain, only one instance of that
-	 * middleware is actually created.
+	 * Instantiate an instance of a RequestHandler and call a method attached to that instance, passing the current
+	 * Request and Response objects to that method. The created instance is stored for future method calls (e.g. if
+	 * the same middleware class has multiple methods that are called in one chain, only one instance of that middleware
+	 * is actually created.
 	 *
 	 * @param string $handler The handler used to reference the class and method within that class to call. If no method
 	 * detail is provided, the default is index. The handler follows the format "ClassName" to target a class and call a
@@ -169,7 +169,7 @@ final class Router {
 		}
 
 		if (!empty($instance)) {
-			if ($instance instanceof IRequestHandler) {
+			if ($instance instanceof RequestHandler) {
 				if (method_exists($instance, $method)) {
 					return $instance->{$method}($request, $response);
 				} else {

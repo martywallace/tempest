@@ -10,7 +10,7 @@
 abstract class Memoizer {
 
 	/** @var mixed[] */
-	private $_memoized = array();
+	private $_memoized = [];
 
 	public function __isset($prop) {
 		return property_exists($this, $prop) ||
@@ -46,7 +46,7 @@ abstract class Memoizer {
 		if ($key !== null) {
 			unset($this->_memoized[$key]);
 		} else {
-			$this->_memoized = array();
+			$this->_memoized = [];
 		}
 	}
 

@@ -8,16 +8,14 @@
  * @package Tempest\Services
  * @author Marty Wallace
  */
-class SessionService extends Service {
+class SessionService implements Service {
 
-	public function __construct() {
+	public function setup() {
 		session_start();
 	}
 
 	public function __get($prop) {
-		if ($prop === 'id') {
-			return session_id();
-		}
+		if ($prop === 'id') return session_id();
 
 		return $this->get($prop);
 	}

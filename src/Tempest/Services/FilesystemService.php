@@ -3,6 +3,7 @@
 use Exception;
 use Tempest\Tempest;
 use Tempest\Models\FileModel;
+use Tempest\Utils\Memoizer;
 
 
 /**
@@ -13,7 +14,9 @@ use Tempest\Models\FileModel;
  * @package Tempest\Services
  * @author Marty Wallace
  */
-class FilesystemService extends Service {
+class FilesystemService extends Memoizer implements Service {
+
+	public function setup() { }
 
 	/**
 	 * Creates an absolute filesystem link based on the application root.

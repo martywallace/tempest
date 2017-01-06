@@ -15,7 +15,7 @@ use Tempest\Utils\ObjectUtil;
 class Configuration {
 
 	/** @var array */
-	private $_data = array();
+	private $_data = [];
 
 	/**
 	 * Constructor.
@@ -25,7 +25,6 @@ class Configuration {
 	 * @throws Exception
 	 */
 	public function __construct($file) {
-		$file = $file . '.php';
 		$env = Environment::current();
 
 		if (is_file($file)) {

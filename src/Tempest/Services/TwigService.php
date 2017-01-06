@@ -20,7 +20,7 @@ use Twig_Extension_Debug;
  * @package Tempest\Services
  * @author Marty Wallace
  */
-class TwigService extends Service {
+class TwigService implements Service {
 
 	const TEMPEST_NAMESPACE = 'tempest';
 
@@ -33,7 +33,7 @@ class TwigService extends Service {
 	/** @var TwigExtensions */
 	private $_extensions;
 
-	protected function setup() {
+	public function setup() {
 		$this->_loader = new Twig_Loader_Filesystem();
 		$this->_loader->prependPath(realpath(__DIR__ . '/../../../templates/'), self::TEMPEST_NAMESPACE);
 

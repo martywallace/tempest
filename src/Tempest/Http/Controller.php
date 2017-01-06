@@ -7,8 +7,4 @@
  * @package Tempest\Http
  * @author Marty Wallace
  */
-abstract class Controller implements IRequestHandler {
-
-	//
-
-}
+abstract class Controller implements RequestHandler { }

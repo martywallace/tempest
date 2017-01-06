@@ -124,7 +124,7 @@ final class Response {
 	}
 
 	/**
-	 * Send the response back to the client.
+	 * Send the response back to the client. This terminates all other application actions.
 	 */
 	public function send() {
 		if (is_array($this->_body) || $this->_body instanceof JsonSerializable) {
