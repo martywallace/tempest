@@ -94,7 +94,7 @@ final class Response {
 	 *
 	 * @param string $filename The filename to use for the downloaded data.
 	 */
-	public function isDownload($filename) {
+	public function setDownloadable($filename) {
 		if (!empty($filename)) {
 			$this->header('Content-Disposition', ['attachment', 'filename' => $filename]);
 		}
@@ -110,6 +110,15 @@ final class Response {
 		if (intval($seconds) >= 0 && !empty($location)) {
 			$this->header('Refresh', [$seconds, 'url' => $location]);
 		}
+	}
+
+	/**
+	 * Determine whether the body of this response is empty (null, false or an empty string).
+	 *
+	 * @return bool
+	 */
+	public function isEmpty() {
+		return $this->_body === null || $this->_body === false || $this->_body === '';
 	}
 
 	/**
@@ -131,6 +140,10 @@ final class Response {
 			// Convert the response to JSON.
 			$this->contentType = ['application/json', 'charset' => 'utf-8'];
 			$this->_body = JSONUtil::encode($this->_body);
+		}
+
+		if (!Status::isSuccessful($this->_status) && $this->isEmpty()) {
+			// Show an error page.
 		}
 
 		echo $this->_body;

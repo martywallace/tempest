@@ -92,8 +92,8 @@ final class Router {
 				if ($respond) {
 					$controllerValue = $this->instantiateAndCall($this->baseControllerNamespace . ltrim($this->_matched->controller, '\\'), $this->_request, $this->_response);
 
-					if (!empty($controllerValue)) {
-						// If the controller returns a non-empty value, overwrite the response body with that value.
+					if ($controllerValue !== null && $controllerValue !== false) {
+						// If the controller returns a non-null or non-false value, overwrite the response body with that value.
 						$this->_response->body = $controllerValue;
 					}
 				}

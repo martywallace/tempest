@@ -11,6 +11,7 @@ use Tempest\Services\SessionService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Response;
+use Tempest\Utils\JSONUtil;
 use Tempest\Utils\Memoizer;
 
 /**
@@ -39,6 +40,10 @@ use Tempest\Utils\Memoizer;
  * @author Marty Wallace
  */
 abstract class Tempest extends Memoizer {
+
+	const DUMP_JSON = 'json';
+	const DUMP_PRINT_R = 'print_r';
+	const DUMP_VAR_DUMP = 'var_dump';
 
 	/** @var Tempest */
 	private static $_instance;
@@ -178,27 +183,30 @@ abstract class Tempest extends Memoizer {
 	/**
 	 * Output some data for debugging and stop the application.
 	 *
+	 * @see Tempest::DUMP_JSON
+	 * @see Tempest::DUMP_PRINT_R
+	 * @see Tempest::DUMP_VAR_DUMP
+	 *
 	 * @param mixed $data The data to debug.
 	 * @param string $format The output format.
 	 */
-	public function dump($data, $format = 'print_r') {
+	public function dump($data, $format = self::DUMP_PRINT_R) {
 		$format = strtolower($format);
 		$output = null;
 
-		if ($format === 'json') {
-			$data = json_encode($data, JSON_PRETTY_PRINT);
+		if ($format === self::DUMP_JSON) {
+			$data = JSONUtil::encode($data, JSON_PRETTY_PRINT);
 		} else {
 			ob_start();
 
-			if ($format === 'print_r') print_r($data);
-			if ($format === 'var_dump') var_dump($data);
+			if ($format === self::DUMP_PRINT_R) print_r($data);
+			if ($format === self::DUMP_VAR_DUMP) var_dump($data);
 
 			$data = ob_get_clean();
 		}
 
-		echo static::get()->twig->render('@tempest/_utils/dump.html', ['data' => $data]);
-
-		exit;
+		$response = new Response(Status::OK, static::get()->twig->render('@tempest/_utils/dump.html', ['data' => $data]));
+		$response->send();
 	}
 
 	/**

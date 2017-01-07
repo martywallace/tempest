@@ -10,7 +10,5 @@ Tempest can be [found on Packagist](https://packagist.org/packages/martywallace/
 
 ## Resources.
 
-* [Wiki](https://github.com/MartyWallace/Tempest/wiki).
-* [Class Reference](http://reference.tempest.martywallace.com).
+* [Guide](https://martywallace.com/projects/tempest/guide).
 * [Example Project Template](https://github.com/MartyWallace/tempest-template).
-* [More Information](https://martywallace.com/projects/tempest).

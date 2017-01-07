@@ -39,7 +39,7 @@ class TwigExtensions extends Twig_Extension {
 	}
 
 	/**
-	 * Creates an absolute link relative to {@link App::public public} path.
+	 * Creates a link to an application resource.
 	 *
 	 * @param string $value The link relative to the public site URL.
 	 * @param bool $full Whether or not to include the full site URL at the front of the result.

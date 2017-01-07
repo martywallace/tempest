@@ -7,7 +7,18 @@ use Tempest\Utils\ObjectUtil;
 
 
 /**
- * The Configuration class loads cascading configuration data.
+ * The Configuration class loads cascading configuration data. Note that values obtained directly via the configuration
+ * does not reflect the main application's interpretation of them (e.g. "url" could be empty via here, but will be
+ * populated with a best-guess via {@link App::get()->url}).
+ *
+ * @property-read bool $dev
+ * @property-read bool $enabled
+ * @property-read string $url
+ * @property-read string|string[] $templates
+ * @property-read array[] $routes
+ * @property-read string $controllers
+ * @property-read string $middleware
+ * @property-read string $timezone
  *
  * @package Tempest
  * @author Marty Wallace
@@ -51,6 +62,10 @@ class Configuration {
 
 	public function __get($prop) {
 		return $this->get($prop);
+	}
+
+	public function __isset($prop) {
+		return array_key_exists($prop, $this->_data);
 	}
 
 	/**
