@@ -124,15 +124,11 @@ final class Router {
 
 				if (!$useTemplate) {
 					$this->_response->status = Status::NOT_FOUND;
-
-					if (Tempest::get()->twig->loader->exists('404.html')) $this->_response->body = Tempest::get()->twig->render('404.html');
-					else $this->_response->body = Tempest::get()->twig->render('@tempest/_errors/404.html');
 				}
 			}
 
 			if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {
 				$this->_response->status = Status::METHOD_NOT_ALLOWED;
-				$this->_response->body = Tempest::get()->twig->render('@tempest/_errors/405.html');
 			}
 
 			$this->_response->send();

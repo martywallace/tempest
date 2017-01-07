@@ -175,9 +175,7 @@ abstract class Tempest extends Memoizer {
 	}
 
 	public function __isset($prop) {
-		return property_exists($this, $prop) ||
-			$this->hasService($prop) ||
-			$this->{$prop} !== null;
+		return property_exists($this, $prop) || $this->hasService($prop) || $this->{$prop} !== null;
 	}
 
 	/**

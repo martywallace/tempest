@@ -1,6 +1,7 @@
 <?php namespace Tempest\Http;
 
 use JsonSerializable;
+use Tempest\Tempest;
 use Tempest\Utils\JSONUtil;
 
 /**
@@ -143,7 +144,12 @@ final class Response {
 		}
 
 		if (!Status::isSuccessful($this->_status) && $this->isEmpty()) {
-			// Show an error page.
+			// Look for an error page to render matching the HTTP status.
+			if (Tempest::get()->twig->loader->exists($this->_status . '.html')) {
+				$this->_body = Tempest::get()->twig->render($this->_status . '.html');
+			} else if (Tempest::get()->twig->loader->exists('@tempest/_errors/' .$this->_status . '.html')) {
+				$this->_body = Tempest::get()->twig->render('@tempest/_errors/' .$this->_status . '.html');
+			}
 		}
 
 		echo $this->_body;

@@ -10,6 +10,8 @@ use Twig_Extension_Debug;
 /**
  * The application Twig service.
  *
+ * @property-read Twig_Loader_Filesystem $loader The internal Twig_Loader_Filesystem instance.
+ *
  * @package Tempest\Services
  * @author Marty Wallace
  */
@@ -41,6 +43,12 @@ class TwigService extends Twig_Environment implements Service {
 		}
 
 		$this->addExtension(new TwigExtensions());
+	}
+
+	public function __get($prop) {
+		if ($prop === 'loader') return $this->_loader;
+
+		return null;
 	}
 
 }
