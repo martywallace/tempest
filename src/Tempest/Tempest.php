@@ -165,6 +165,7 @@ abstract class Tempest extends Memoizer {
 
 			if (!array_key_exists($prop, $this->_setupServices)) {
 				// First time being accessed, setup the service.
+				$this->_setupServices[$prop] = true;
 				$service->setup();
 			}
 
