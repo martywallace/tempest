@@ -16,7 +16,7 @@ use Twig_Extension_Debug;
  * @package Tempest\Services
  * @author Marty Wallace
  */
-class TwigService extends Twig_Environment implements Service {
+class TwigService extends Twig_Environment {
 
 	const TEMPEST_NAMESPACE = 'tempest';
 

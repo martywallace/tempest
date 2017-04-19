@@ -1,5 +1,7 @@
 <?php namespace Tempest\Utils;
 
+use Tempest\Tempest;
+
 /**
  * Utilities dealing with strings.
  *

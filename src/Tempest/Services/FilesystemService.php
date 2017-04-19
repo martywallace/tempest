@@ -14,7 +14,7 @@ use Tempest\Utils\Memoizer;
  * @package Tempest\Services
  * @author Marty Wallace
  */
-class FilesystemService extends Memoizer implements Service {
+class FilesystemService extends Memoizer {
 
 	/**
 	 * Creates an absolute filesystem link based on the application root.

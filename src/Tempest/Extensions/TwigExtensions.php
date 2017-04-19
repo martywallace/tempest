@@ -27,7 +27,8 @@ class TwigExtensions extends Twig_Extension {
 
 	public function getFunctions() {
 		return [
-			new Twig_SimpleFunction('link', [$this, 'link'])
+			new Twig_SimpleFunction('link', [$this, 'link']),
+			new Twig_SimpleFunction('getDeepValue', [ObjectUtil::class, 'getDeepValue'])
 		];
 	}
 

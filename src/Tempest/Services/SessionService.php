@@ -8,7 +8,7 @@
  * @package Tempest\Services
  * @author Marty Wallace
  */
-class SessionService implements Service {
+class SessionService {
 
 	public function __construct() {
 		session_start();
