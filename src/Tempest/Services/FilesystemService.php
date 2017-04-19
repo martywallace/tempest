@@ -16,8 +16,6 @@ use Tempest\Utils\Memoizer;
  */
 class FilesystemService extends Memoizer implements Service {
 
-	public function setup() { }
-
 	/**
 	 * Creates an absolute filesystem link based on the application root.
 	 *

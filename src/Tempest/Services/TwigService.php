@@ -26,9 +26,7 @@ class TwigService extends Twig_Environment implements Service {
 	public function __construct() {
 		$this->_loader = new Twig_Loader_Filesystem();
 		parent::__construct($this->_loader, ['debug' => Tempest::get()->dev]);
-	}
 
-	public function setup() {
 		$this->addGlobal('app', Tempest::get());
 		$this->_loader->prependPath(realpath(__DIR__ . '/../../../templates/'), self::TEMPEST_NAMESPACE);
 

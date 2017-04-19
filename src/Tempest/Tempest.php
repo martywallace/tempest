@@ -141,10 +141,10 @@ abstract class Tempest extends Memoizer {
 
 		if ($prop === 'root') return rtrim($this->_root, '/');
 		if ($prop === 'router') return $this->_router;
-
-		// Useful server information.
 		if ($prop === 'host') return $_SERVER['SERVER_NAME'];
 		if ($prop === 'port') return intval($_SERVER['SERVER_PORT']);
+		if ($prop === 'timezone') return $this->_config->get('timezone', @date_default_timezone_get());
+		if ($prop === 'config') return $this->_config;
 
 		if ($prop === 'secure') {
 			return $this->memoize('secure', function() {
@@ -154,22 +154,13 @@ abstract class Tempest extends Memoizer {
 			});
 		}
 
-		if ($prop === 'timezone') {
-			return $this->_config->get('timezone', @date_default_timezone_get());
-		}
-
-		if ($prop === 'config') return $this->_config;
-
 		if ($this->hasService($prop)) {
-			$service = $this->_services[$prop];
-
 			if (!array_key_exists($prop, $this->_setupServices)) {
 				// First time being accessed, setup the service.
-				$this->_setupServices[$prop] = true;
-				$service->setup();
+				$this->_setupServices[$prop] = new $this->_services[$prop]();
 			}
 
-			return $service;
+			return $this->_setupServices[$prop];
 		}
 
 		return null;
@@ -222,9 +213,9 @@ abstract class Tempest extends Memoizer {
 
 				$services = array_merge([
 					// Services that the core depends on.
-					'filesystem' => new FilesystemService(),
-					'twig' => new TwigService(),
-					'session' => new SessionService()
+					'filesystem' => FilesystemService::class,
+					'twig' => TwigService::class,
+					'session' => SessionService::class
 				], $customServices);
 
 				foreach ($services as $name => $service) {
@@ -269,16 +260,13 @@ abstract class Tempest extends Memoizer {
 	 * Add a service to the application.
 	 *
 	 * @param string $name The name used to reference the service.
-	 * @param Service $service The service to add.
+	 * @param string $service The class name of the service to add.
 	 *
-	 * @return Service|null
-	 *
-	 * @throws Exception
+	 * @throws Exception If a service with the provided name already exists.
 	 */
-	public function addService($name, Service $service) {
+	public function addService($name, $service) {
 		if (!$this->hasService($name)) {
 			$this->_services[$name] = $service;
-			return $service;
 		} else {
 			throw new Exception('A service named "' . $name . '" already exists.');
 		}
@@ -309,7 +297,7 @@ abstract class Tempest extends Memoizer {
 	/**
 	 * Defines the list of services to be bound to the application at startup.
 	 *
-	 * @return Service[]
+	 * @return string[]
 	 */
 	abstract protected function services();
 

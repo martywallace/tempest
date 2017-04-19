@@ -9,11 +9,6 @@
  */
 interface Service {
 
-	/**
-	 * Contains service provisioning code. Run the first time the service is accessed.
-	 *
-	 * @return $this
-	 */
-	function setup();
+	//
 
 }

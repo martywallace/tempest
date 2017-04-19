@@ -10,7 +10,7 @@
  */
 class SessionService implements Service {
 
-	public function setup() {
+	public function __construct() {
 		session_start();
 	}
 
