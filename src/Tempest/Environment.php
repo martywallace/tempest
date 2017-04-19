@@ -1,31 +1,34 @@
 <?php namespace Tempest;
 
-use Tempest\Utils\Enum;
+use Exception;
+use Dotenv\Dotenv;
 
 
 /**
- * Various default environment types for your application.
+ * A thin layer providing enchanced access to environment variables.
  *
  * @package Tempest
  * @author Marty Wallace
  */
-class Environment extends Enum {
+class Environment {
 
-	/** @var string */
-	private static $_envVarName = 'TEMPEST_ENV';
-
-	const ALL = '*';
-	const DEV = 'dev';
-	const STAGE = 'stage';
-	const PROD = 'prod';
+	/** @var DotEnv */
+	private static $_env = null;
 
 	/**
-	 * Sets the name of the environment variable used to determine the application environment.
+	 * Load the environment.
 	 *
-	 * @param string $var The new
+	 * @param string $root The application root, where the .env file will be loaded.
+	 *
+	 * @throws Exception If the environment has already been loaded.
 	 */
-	public static function setEnvironmentVarName($var) {
-		self::$_envVarName = $var;
+	public static function load($root) {
+		if (empty(self::$_env)) {
+			self::$_env = new DOtEnv($root);
+			self::$_env->load();
+		} else {
+			throw new Exception('Attempting to reload the environment.');
+		}
 	}
 
 	/**
@@ -36,23 +39,10 @@ class Environment extends Enum {
 	 *
 	 * @return string
 	 */
-	public static function prop($prop, $fallback = null) {
+	public static function get($prop, $fallback = null) {
 		$value = getenv($prop);
 
 		return $value ? $value : $fallback;
-	}
-
-	/**
-	 * Get the current environment.
-	 *
-	 * @see Environment::DEV
-	 * @see Environment::STAGE
-	 * @see Environment::PROD
-	 *
-	 * @return string
-	 */
-	public static function current() {
-		return self::prop(self::$_envVarName, self::DEV);
 	}
 
 }

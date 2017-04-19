@@ -7,18 +7,7 @@ use Tempest\Utils\ObjectUtil;
 
 
 /**
- * The Configuration class loads cascading configuration data. Note that values obtained directly via the configuration
- * does not reflect the main application's interpretation of them (e.g. "url" could be empty via here, but will be
- * populated with a best-guess via {@link App::get()->url}).
- *
- * @property-read bool $dev
- * @property-read bool $enabled
- * @property-read string $url
- * @property-read string|string[] $templates
- * @property-read array[] $routes
- * @property-read string $controllers
- * @property-read string $middleware
- * @property-read string $timezone
+ * The Configuration class loads your application's configuration data.
  *
  * @package Tempest
  * @author Marty Wallace
@@ -36,25 +25,12 @@ class Configuration {
 	 * @throws Exception
 	 */
 	public function __construct($file) {
-		$env = Environment::current();
-
 		if (is_file($file)) {
 			/** @noinspection PhpIncludeInspection */
 			$data = require($file);
 
-			if (is_array($data)) {
-				if (array_key_exists(Environment::ALL, $data)) {
-					$this->_data = $data[Environment::ALL];
-
-					if (array_key_exists($env, $data)) {
-						$this->_data = array_replace_recursive($this->_data, $data[$env]);
-					}
-				} else {
-					$this->_data = $data;
-				}
-			} else {
-				throw new Exception('Configuration data must be an array.');
-			}
+			if (is_array($data)) $this->_data = $data;
+			else throw new Exception('Configuration data must be an array.');
 		} else {
 			throw new Exception('Configuration file "' . $file . '" does not exist.');
 		}

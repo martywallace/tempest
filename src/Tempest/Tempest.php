@@ -103,6 +103,8 @@ abstract class Tempest extends Memoizer {
 	 * @param string $config The application configuration file path, relative to the application root.
 	 */
 	public function __construct($root, $config = null) {
+		Environment::load($root);
+
 		$this->_root = $root;
 		$this->_router = new Router();
 
@@ -116,7 +118,7 @@ abstract class Tempest extends Memoizer {
 	}
 
 	public function __get($prop) {
-		if ($prop === 'dev') return $this->_config->get('dev') || Environment::current() === Environment::DEV;
+		if ($prop === 'dev') return $this->_config->get('dev', false);
 		if ($prop === 'enabled') return $this->_config->get('enabled', true);
 
 		if ($prop === 'url') {
