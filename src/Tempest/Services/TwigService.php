@@ -30,7 +30,7 @@ class TwigService extends Twig_Environment implements Service {
 		$this->addGlobal('app', Tempest::get());
 		$this->_loader->prependPath(realpath(__DIR__ . '/../../../templates/'), self::TEMPEST_NAMESPACE);
 
-		foreach (ArrayUtil::forceArray(Tempest::get()->config->get('templates', [])) as $directory) {
+		foreach (ArrayUtil::forceArray(Tempest::get()->config('templates', [])) as $directory) {
 			$this->_loader->prependPath(Tempest::get()->filesystem->absolute(trim($directory, '/')));
 		}
 

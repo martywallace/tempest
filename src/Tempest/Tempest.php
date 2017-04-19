@@ -4,7 +4,6 @@ namespace Tempest;
 
 use Exception;
 use Tempest\Http\Status;
-use Tempest\Services\Service;
 use Tempest\Services\FilesystemService;
 use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
@@ -30,7 +29,6 @@ use Tempest\Utils\Memoizer;
  * @property-read string $port The port on which the application is running.
  * @property-read bool $secure Attempts to determine whether the application is running over SSL.
  *
- * @property-read Configuration $config The configuration service, used to get config data.
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  * @property-read SessionService $session The inbuilt service dealing with user sessions.
@@ -72,7 +70,7 @@ abstract class Tempest extends Memoizer {
 	/** @var Router */
 	private $_router;
 
-	/** @var Service[] */
+	/** @var string[] */
 	private $_services = [];
 
 	/** @var string[] */
@@ -144,7 +142,6 @@ abstract class Tempest extends Memoizer {
 		if ($prop === 'host') return $_SERVER['SERVER_NAME'];
 		if ($prop === 'port') return intval($_SERVER['SERVER_PORT']);
 		if ($prop === 'timezone') return $this->_config->get('timezone', @date_default_timezone_get());
-		if ($prop === 'config') return $this->_config;
 
 		if ($prop === 'secure') {
 			return $this->memoize('secure', function() {
@@ -171,6 +168,18 @@ abstract class Tempest extends Memoizer {
 	}
 
 	/**
+	 * Get application configuration.
+	 *
+	 * @param string $prop The name of the configuration property to get.
+	 * @param mixed $fallback The fallback value to return if the configuration property does not exist.
+	 *
+	 * @return mixed
+	 */
+	public function config($prop, $fallback = null) {
+		return $this->_config->get($prop, $fallback);
+	}
+
+	/**
 	 * Output data for debugging and stop the application.
 	 *
 	 * @see Tempest::DUMP_JSON
@@ -182,6 +191,12 @@ abstract class Tempest extends Memoizer {
 	 */
 	public function dump($data, $format = self::DUMP_PRINT_R) {
 		$format = strtolower($format);
+		$class = gettype($data);
+
+		if ($class === 'object') {
+			$class = get_class($data);
+		}
+
 		$output = null;
 
 		if ($format === self::DUMP_JSON) {
@@ -195,7 +210,13 @@ abstract class Tempest extends Memoizer {
 			$data = ob_get_clean();
 		}
 
-		$response = new Response(Status::OK, static::get()->twig->render('@tempest/_utils/dump.html', ['data' => $data]));
+		$response = new Response(Status::OK, static::get()->twig->render('@tempest/dump.html', [
+			'data' => $data,
+			'format' => $format,
+			'class' => $class,
+			'stack' => debug_backtrace()
+		]));
+
 		$response->send();
 	}
 

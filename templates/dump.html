@@ -1,0 +1,52 @@
+{% set title = 'Data dump for ' ~ class ~ '.' %}
+
+{% extends '@tempest/_layouts/base.html' %}
+
+{% block meta %}
+	<meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block css %}
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		body {
+			font-family: 'Open Sans', sans-serif;
+			font-size: 14px;
+			line-height: 1.4;
+		}
+
+		header {
+			padding: 20px;
+			background: #EEE;
+			color: #666;
+		}
+
+		header p {
+			color: #999;
+		}
+
+		pre {
+			padding: 20px;
+			overflow: auto;
+			font-family: 'Consolas', monospace;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<header>
+		<h2>Data dump for {{ class }}.</h2>
+
+		{% if stack|length %}
+			<p>Called by {{ stack[0].file }}, Line {{ stack[0].line }}.</p>
+		{% endif %}
+	</header>
+
+	<pre>{{ data }}</pre>
+{% endblock %}
