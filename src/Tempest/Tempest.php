@@ -24,7 +24,6 @@ use Tempest\Utils\Memoizer;
  * @property-read string $public The public facing root relative to the app domain, always without a trailing slash.
  * @property-read string $root The application root directory provided by the outer application when instantiating Tempest, always without a trailing slash.
  * @property-read string $timezone The application timezone.
- * @property-read string $environment Alias for {@link Environment::current()}.
  *
  * @property-read Router $router The application router.
  * @property-read string $host The value provided by the server name property on the web server.
@@ -118,7 +117,7 @@ abstract class Tempest extends Memoizer {
 	}
 
 	public function __get($prop) {
-		if ($prop === 'dev') return $this->_config->get('dev', false);
+		if ($prop === 'dev') return Environment::getBool('dev');
 		if ($prop === 'enabled') return $this->_config->get('enabled', true);
 
 		if ($prop === 'url') {
@@ -142,7 +141,6 @@ abstract class Tempest extends Memoizer {
 
 		if ($prop === 'root') return rtrim($this->_root, '/');
 		if ($prop === 'router') return $this->_router;
-		if ($prop === 'environment') return Environment::current();
 
 		// Useful server information.
 		if ($prop === 'host') return $_SERVER['SERVER_NAME'];
@@ -182,7 +180,7 @@ abstract class Tempest extends Memoizer {
 	}
 
 	/**
-	 * Output some data for debugging and stop the application.
+	 * Output data for debugging and stop the application.
 	 *
 	 * @see Tempest::DUMP_JSON
 	 * @see Tempest::DUMP_PRINT_R

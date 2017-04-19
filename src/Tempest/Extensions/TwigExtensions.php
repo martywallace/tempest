@@ -17,13 +17,6 @@ class TwigExtensions extends Twig_Extension {
 
 	public function getName() { return 'TempestTwigExtensions'; }
 
-	public function getGlobals() {
-		return [
-			// Bind the application to Twig templates.
-			'app' => Tempest::get()
-		];
-	}
-
 	public function getFilters() {
 		return [
 			new Twig_SimpleFilter('sha1', 'sha1'),

@@ -24,8 +24,10 @@ class Environment {
 	 */
 	public static function load($root) {
 		if (empty(self::$_env)) {
-			self::$_env = new DOtEnv($root);
+			self::$_env = new DotEnv($root);
 			self::$_env->load();
+
+			self::$_env->required('dev')->allowedValues(['true', 'false']);
 		} else {
 			throw new Exception('Attempting to reload the environment.');
 		}
@@ -43,6 +45,26 @@ class Environment {
 		$value = getenv($prop);
 
 		return $value ? $value : $fallback;
+	}
+
+	/**
+	 * Get an environment variable and cast it to a boolean. If the environment variable is the string null, false or 0
+	 * it will be considered false.
+	 *
+	 * @param string $prop The name of the environment variable to get.
+	 * @param bool $fallback THe fallback value to use of the environment variable does not exist.
+	 *
+	 * @return bool
+	 */
+	public static function getBool($prop, $fallback = false) {
+		$value = strtolower(self::get($prop, $fallback));
+
+		if ($value === 'false' || $value === 'null' || $value === '0') {
+			// The value should be interpreted as false.
+			$value = false;
+		}
+
+		return !!$value;
 	}
 
 }

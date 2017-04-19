@@ -2,6 +2,7 @@
 
 use Tempest\Tempest;
 use Tempest\Extensions\TwigExtensions;
+use Tempest\Utils\ArrayUtil;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 use Twig_Extension_Debug;
@@ -28,13 +29,10 @@ class TwigService extends Twig_Environment implements Service {
 	}
 
 	public function setup() {
+		$this->addGlobal('app', Tempest::get());
 		$this->_loader->prependPath(realpath(__DIR__ . '/../../../templates/'), self::TEMPEST_NAMESPACE);
 
-		$directories = Tempest::get()->config->get('templates', []);
-
-		if (!is_array($directories)) $directories = [$directories];
-
-		foreach ($directories as $directory) {
+		foreach (ArrayUtil::forceArray(Tempest::get()->config->get('templates', [])) as $directory) {
 			$this->_loader->prependPath(Tempest::get()->filesystem->absolute(trim($directory, '/')));
 		}
 
