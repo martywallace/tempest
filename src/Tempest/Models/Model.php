@@ -1,7 +1,6 @@
 <?php namespace Tempest\Models;
 
 use JsonSerializable;
-use Tempest\Utils\Memoizer;
 
 
 /**
@@ -10,4 +9,4 @@ use Tempest\Utils\Memoizer;
  * @package Tempest\Models
  * @author Marty Wallace
  */
-abstract class Model extends Memoizer implements JsonSerializable { }
+abstract class Model implements JsonSerializable { }

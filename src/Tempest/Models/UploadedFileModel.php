@@ -31,9 +31,7 @@ class UploadedFileModel extends Model {
 		if ($prop === 'temp') return $this->_getDetail('tmp_name');
 
 		if ($prop === 'extension') {
-			return $this->memoize('extension', function() {
-				return strtolower(pathinfo($this->name, PATHINFO_EXTENSION));
-			});
+			return Tempest::get()->memoization->cache(static::class, 'extension', strtolower(pathinfo($this->name, PATHINFO_EXTENSION)));
 		}
 
 		return null;

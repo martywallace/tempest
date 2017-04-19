@@ -1,7 +1,7 @@
 <?php namespace Tempest\Http;
 
 use Exception;
-use Tempest\Utils\Memoizer;
+use Tempest\Tempest;
 use Tempest\Utils\JSONUtil;
 use Tempest\Utils\ObjectUtil;
 use Tempest\Models\UploadedFileModel;
@@ -21,7 +21,7 @@ use Tempest\Models\UploadedFileModel;
  * @package Tempest\Http
  * @author Marty Wallace
  */
-final class Request extends Memoizer {
+final class Request {
 
 	/** @var array */
 	private $_named = [];
@@ -55,7 +55,7 @@ final class Request extends Memoizer {
 		if ($prop === 'ip') return $_SERVER['REMOTE_ADDR'];
 		
 		if ($prop === 'uri') {
-			return $this->memoize('uri', function() {
+			return Tempest::get()->memoization->cache(static::class, 'uri', function() {
 				$base = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 				if (empty($base) || $base === '/') {
@@ -67,7 +67,7 @@ final class Request extends Memoizer {
 		}
 
 		if ($prop === 'headers') {
-			return $this->memoize('headers', function() {
+			return Tempest::get()->memoization->cache(static::class, 'headers', function() {
 				$headers = [];
 
 				if (function_exists('getallheaders')) {
@@ -81,7 +81,7 @@ final class Request extends Memoizer {
 		}
 
 		if ($prop === 'body') {
-			return $this->memoize('body', function() {
+			return Tempest::get()->memoization->cache(static::class, 'body', function() {
 				return file_get_contents('php://input');
 			});
 		}
@@ -105,7 +105,7 @@ final class Request extends Memoizer {
 	 * @return mixed
 	 */
 	public function data($name = null, $fallback = null) {
-		$stack = $this->memoize('_stack', function() {
+		$stack = Tempest::get()->memoization->cache(static::class, '_stack', function() {
 			if ($this->method === 'GET') {
 				return $_GET;
 			} else {
@@ -157,7 +157,7 @@ final class Request extends Memoizer {
 	 * writable or some other error outlined in {@link http://php.net/manual/en/features.file-upload.errors.php}.
 	 */
 	public function file($name) {
-		return $this->memoize('_file_' . $name, function() use ($name) {
+		return Tempest::get()->memoization->cache(static::class, '_file_' . $name, function() use ($name) {
 			$file = isset($_FILES[$name]) ? $_FILES[$name] : null;
 
 			if (!empty($file)) {

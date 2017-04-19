@@ -2,7 +2,6 @@
 
 use Exception;
 use Tempest\Tempest;
-use Tempest\Utils\Memoizer;
 
 
 /**
@@ -18,7 +17,7 @@ use Tempest\Utils\Memoizer;
  * @package Tempest\Http
  * @author Marty Wallace
  */
-final class Route extends Memoizer {
+final class Route {
 
 	/** An invalid definition format. */
 	const FORMAT_INVALID = 0;
@@ -52,7 +51,7 @@ final class Route extends Memoizer {
 
 	public function __get($prop) {
 		if ($prop === 'uri') {
-			return $this->memoize('uri', function() {
+			return Tempest::get()->memoization->cache(static::class, 'uri', function() {
 				if ($this->_definition[0] === '/' && !empty(Tempest::get()->public)) {
 					return Tempest::get()->public;
 				}
@@ -62,7 +61,7 @@ final class Route extends Memoizer {
 		}
 
 		if ($prop === 'method') {
-			return $this->memoize('method', function() {
+			return Tempest::get()->memoization->cache(static::class, 'method', function() {
 				if ($this->format === self::FORMAT_INVALID || $this->format === self::FORMAT_URI_CONTROLLER) {
 					return 'GET';
 				} else {
@@ -72,20 +71,20 @@ final class Route extends Memoizer {
 		}
 
 		if ($prop === 'middleware') {
-			return $this->memoize('middleware', function() {
+			return Tempest::get()->memoization->cache(static::class, 'middleware', function() {
 				if ($this->format === self::FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER) return array_slice($this->_definition, 2, -1);
 				else return [];
 			});
 		}
 
 		if ($prop === 'controller') {
-			return $this->memoize('controller', function() {
+			return Tempest::get()->memoization->cache(static::class, 'controller', function() {
 				return end($this->_definition);
 			});
 		}
 
 		if ($prop === 'format') {
-			return $this->memoize('format', function() {
+			return Tempest::get()->memoization->cache(static::class, 'format', function() {
 				$dl = count($this->_definition);
 
 				if ($dl < 2) return self::FORMAT_INVALID;

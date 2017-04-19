@@ -3,7 +3,6 @@
 use Exception;
 use Tempest\Tempest;
 use Tempest\Models\FileModel;
-use Tempest\Utils\Memoizer;
 
 
 /**
@@ -14,7 +13,7 @@ use Tempest\Utils\Memoizer;
  * @package Tempest\Services
  * @author Marty Wallace
  */
-class FilesystemService extends Memoizer {
+class FilesystemService {
 
 	/**
 	 * Creates an absolute filesystem link based on the application root.
@@ -61,7 +60,7 @@ class FilesystemService extends Memoizer {
 	 * @return FileModel
 	 */
 	public function find($path) {
-		return $this->memoize('_file_' . $path, function() use ($path) {
+		return Tempest::get()->memoization->cache(static::class, '_file_' . $path, function() use ($path) {
 			return new FileModel($path);
 		});
 	}

@@ -46,27 +46,10 @@ class FileModel extends Model {
 		if ($prop === 'absolute') return $this->_absolute;
 		if ($prop === 'relative') return $this->_relative;
 
-		if ($prop === 'extension') {
-			return $this->memoize('extension', function() {
-				return strtolower(pathinfo($this->_absolute, PATHINFO_EXTENSION));
-			});
-		}
-
-		if ($prop === 'size') {
-			return $this->memoize('size', function() {
-				return filesize($this->_absolute);
-			});
-		}
-
-		if ($prop === 'updated') {
-			return filemtime($this->_absolute);
-		}
-
-		if ($prop === 'content') {
-			return $this->memoize('__content', function() {
-				return file_get_contents($this->_absolute);
-			});
-		}
+		if ($prop === 'extension') return Tempest::get()->memoization->cache(static::class, 'extension', strtolower(pathinfo($this->_absolute, PATHINFO_EXTENSION)));
+		if ($prop === 'size') return Tempest::get()->memoization->cache(static::class, 'size', filesize($this->_absolute));
+		if ($prop === 'updated') return filemtime($this->_absolute);
+		if ($prop === 'content') return Tempest::get()->memoization->cache(static::class, '__content', file_get_contents($this->_absolute));
 
 		return null;
 	}

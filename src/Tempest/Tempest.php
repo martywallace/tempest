@@ -7,11 +7,11 @@ use Tempest\Http\Status;
 use Tempest\Services\FilesystemService;
 use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
+use Tempest\Services\MemoizeService;
 use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Response;
 use Tempest\Utils\JSONUtil;
-use Tempest\Utils\Memoizer;
 
 /**
  * Tempest's core, extended by your application class.
@@ -32,11 +32,12 @@ use Tempest\Utils\Memoizer;
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
  * @property-read SessionService $session The inbuilt service dealing with user sessions.
+ * @property-read MemoizeService $memoization The inbuilt service dealing with memoization.
  *
  * @package Tempest
  * @author Marty Wallace
  */
-abstract class Tempest extends Memoizer {
+abstract class Tempest {
 
 	const DUMP_JSON = 'json';
 	const DUMP_PRINT_R = 'print_r';
@@ -119,7 +120,7 @@ abstract class Tempest extends Memoizer {
 		if ($prop === 'enabled') return $this->_config->get('enabled', true);
 
 		if ($prop === 'url') {
-			return $this->memoize('url', function() {
+			return $this->memoization->cache(static::class, 'url', function() {
 				// Attempt to guess the website URL based on whether the request was over HTTPS, the serverName variable and
 				// the port the request was made over.
 				$guess = ($this->secure ? 'https://' : 'http://') .
@@ -131,7 +132,7 @@ abstract class Tempest extends Memoizer {
 		}
 
 		if ($prop === 'public') {
-			return $this->memoize('public', function() {
+			return $this->memoization->cache(static::class, 'public', function() {
 				$path = '/' . trim(parse_url($this->url, PHP_URL_PATH), '/');
 				return $path === '/' ? '' : $path;
 			});
@@ -144,7 +145,7 @@ abstract class Tempest extends Memoizer {
 		if ($prop === 'timezone') return $this->_config->get('timezone', @date_default_timezone_get());
 
 		if ($prop === 'secure') {
-			return $this->memoize('secure', function() {
+			return $this->memoization->cache(static::class, 'secure', function() {
 				return (!empty($_SERVER['HTTPS']) &&
 					strtolower($_SERVER['HTTPS']) !== 'off') ||
 					$this->port === 443;
@@ -236,7 +237,8 @@ abstract class Tempest extends Memoizer {
 					// Services that the core depends on.
 					'filesystem' => FilesystemService::class,
 					'twig' => TwigService::class,
-					'session' => SessionService::class
+					'session' => SessionService::class,
+					'memoization' => MemoizeService::class
 				], $customServices);
 
 				foreach ($services as $name => $service) {
