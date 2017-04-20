@@ -60,9 +60,7 @@ class FilesystemService {
 	 * @return FileModel
 	 */
 	public function find($path) {
-		return Tempest::get()->memoization->cache(static::class, '_file_' . $path, function() use ($path) {
-			return new FileModel($path);
-		});
+		return Tempest::get()->memoization->cache(static::class, ['file', $path], new FileModel($path));
 	}
 
 	/**

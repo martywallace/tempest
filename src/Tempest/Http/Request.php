@@ -13,8 +13,8 @@ use Tempest\Models\UploadedFileModel;
  * @property-read string $method The request method e.g. GET, POST.
  * @property-read string $contentType The request content-type.
  * @property-read string $uri The request URI e.g. /about.
- * @property-read string[] $headers The request headers. Returns an empty array if the getallheaders() function does not
- * exist.
+ * @property-read string[] $headers The request headers. Returns an empty array if the {@link getallheaders()} function
+ * does not exist.
  * @property-read string $ip The IP address making the request.
  * @property-read string $body The raw request body.
  *
