@@ -3,6 +3,7 @@
 require('./vendor/autoload.php');
 
 use Tempest\Tempest;
+use Tempest\Http\Router;
 use PHPUnit\Framework\TestCase;
 
 class App extends Tempest {
@@ -18,7 +19,9 @@ class GeneralTest extends TestCase {
 			'nested' => [
 				'value' => 'hello'
 			]
-		]);
+		], function(Router $router) {
+			//
+		});
 	}
 
 	/**
