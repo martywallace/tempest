@@ -1,9 +1,9 @@
 <?php namespace Tempest\Http;
 
-use Exception;
 use Tempest\Tempest;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
+use Tempest\Utils\ArrayUtil;
 
 /**
  * The application router.
@@ -25,8 +25,8 @@ final class Router {
 	/** @var Action[] */
 	private $_middleware = [];
 
-	/** @var Route[] */
-	private $_routes = [];
+	/** @var RouteGroup */
+	private $_routes;
 
 	/** @var bool */
 	private $_dispatched = false;
@@ -34,6 +34,7 @@ final class Router {
 	public function __construct() {
 		$this->_request = new Request();
 		$this->_response = new Response();
+		$this->_routes = new RouteGroup();
 	}
 
 	public function __get($prop) {
@@ -50,10 +51,19 @@ final class Router {
 	/**
 	 * Adds middleware to the beginning of every request.
 	 *
-	 * @param Action $action The middleware action.
+	 * @param Action|Action[] $action The middleware action.
 	 */
 	public function middleware($action) {
-		$this->_middleware[] = $action;
+		$this->_middleware = array_merge($this->_middleware, ArrayUtil::forceArray($action));
+	}
+
+	/**
+	 * Adds routes to listen for in the application.
+	 *
+	 * @param RouteLike[] $routes One or more {@link Route routes} or {@link RouteGroup route groups}.
+	 */
+	public function routes(array $routes) {
+		$this->_routes->add($routes);
 	}
 
 	/**
@@ -66,10 +76,19 @@ final class Router {
 	 * @return Route
 	 */
 	public function route($method, $uri, Action $action) {
-		$route = new Route($method, $uri, $action);
-		$this->_routes[] = $route;
+		return new Route($method, $uri, $action);
+	}
 
-		return $route;
+	/**
+	 * Adds a group of routes to handle, using a prefix URI.
+	 *
+	 * @param string $uri
+	 * @param RouteLike[] $grouped
+	 *
+	 * @return RouteGroup
+	 */
+	public function group($uri, array $grouped) {
+		return new RouteGroup($uri, $grouped);
 	}
 
 	/** @see route() */
@@ -96,7 +115,7 @@ final class Router {
 	public function dispatch() {
 		if (!$this->_dispatched) {
 			$dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
-				foreach ($this->_routes as $route) {
+				foreach ($this->_routes->flatten() as $route) {
 					$collector->addRoute($route->method, $route->uri, $route);
 				}
 			});
