@@ -8,7 +8,6 @@ use Tempest\Services\FilesystemService;
 use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
 use Tempest\Services\MemoizeService;
-use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Response;
 use Tempest\Utils\JSONUtil;

@@ -134,6 +134,8 @@ final class Router {
 				/** @var Action[] $actions */
 				$actions = array_merge($this->_middleware, $route->getMiddleware(), [$route->action]);
 
+				Tempest::get()->dump($actions);
+
 				for ($i = 0; $i < count($actions); $i++) {
 					if ($i < count($actions) - 1) $actions[$i]->bind($this->_request, $this->_response, [$actions[$i + 1], 'execute']);
 					else $actions[$i]->bind($this->_request, $this->_response);

@@ -43,8 +43,12 @@ class RouteGroup extends RouteLike {
 		if (!empty($parent)) $this->setParent($parent);
 
 		foreach ($this->_children as $child) {
-			if ($child instanceof Route) $routes[] = $child->setParent($this);
-			else if ($child instanceof RouteGroup) $routes = array_merge($routes, $child->flatten($this));
+			if ($child instanceof Route) {
+				$child->setParent($this);
+				$routes[] = $child;
+			} else if ($child instanceof RouteGroup) {
+				$routes = array_merge($routes, $child->flatten($this));
+			}
 		}
 
 		return $routes;

@@ -15,6 +15,9 @@ abstract class RouteLike {
 	/** @var string */
 	private $_uri;
 
+	/** @var RouteGroup */
+	private $_parent;
+
 	/** @var Action[] */
 	private $_middleware = [];
 
@@ -23,7 +26,13 @@ abstract class RouteLike {
 	}
 
 	public function __get($prop) {
-		if ($prop === 'uri') return $this->_uri;
+		if ($prop === 'uri') {
+			if (!empty($this->_parent)) {
+				return '/' . trim($this->_parent->uri . $this->_uri, '/');
+			} else {
+				return $this->_uri;
+			}
+		}
 
 		return null;
 	}
@@ -47,7 +56,7 @@ abstract class RouteLike {
 	 * @return Action[]
 	 */
 	public function getMiddleware() {
-		return $this->_middleware;
+		return array_merge(!empty($this->_parent) ? $this->_parent->getMiddleware() : [], $this->_middleware);
 	}
 
 	/**
@@ -63,16 +72,35 @@ abstract class RouteLike {
 	 * Set a parent for this route, prefixing its URI with that of its parent.
 	 *
 	 * @param RouteGroup $parent The target parent.
-	 *
-	 * @return $this
 	 */
-	public function setParent(RouteGroup $parent) {
-		$parts = preg_split('/\/+/', trim($parent->uri, '/'));
-		$parts[] = trim($this->_uri, '/');
+	protected function setParent(RouteGroup $parent) {
+		$this->_parent = $parent;
+	}
 
-		$this->_uri = '/' . implode('/', array_filter($parts, function($part) { return !empty($part); }));
+	/**
+	 * @return RouteGroup
+	 */
+	public function getParent() {
+		return $this->_parent;
+	}
 
-		return $this;
+	/**
+	 * @return RouteGroup[]
+	 */
+	public function getAncestors() {
+		if (!empty($this->_parent)) {
+			$next = $this->_parent;
+			$ancestors = [$this->_parent];
+
+			while ($next->_parent) {
+				$next = $next->_parent;
+				$ancestors[] = $next;
+			}
+
+			return $ancestors;
+		}
+
+		return [];
 	}
 
 }
