@@ -22,6 +22,9 @@ final class Router {
 	/** @var Response */
 	private $_response;
 
+	/** @var Action[] */
+	private $_middleware = [];
+
 	/** @var Route[] */
 	private $_routes = [];
 
@@ -41,8 +44,16 @@ final class Router {
 	}
 
 	public function __isset($prop) {
-		return property_exists($this, $prop) ||
-			$this->{$prop} !== null;
+		return property_exists($this, $prop) || $this->{$prop} !== null;
+	}
+
+	/**
+	 * Adds middleware to the beginning of every request.
+	 *
+	 * @param Action $action The middleware action.
+	 */
+	public function middleware($action) {
+		$this->_middleware[] = $action;
 	}
 
 	/**
@@ -61,17 +72,23 @@ final class Router {
 		return $route;
 	}
 
-	/**
-	 * Adds a GET route to handle.
-	 *
-	 * @param string $uri The request URI that this route handles.
-	 * @param Action $action The controller action that this route triggers when matched.
-	 *
-	 * @return Route
-	 */
-	public function get($uri, Action $action) {
-		return $this->route('GET', $uri, $action);
-	}
+	/** @see route() */
+	public function get($uri, Action $action) { return $this->route('GET', $uri, $action); }
+
+	/** @see route() */
+	public function post($uri, Action $action) { return $this->route('POST', $uri, $action); }
+
+	/** @see route() */
+	public function put($uri, Action $action) { return $this->route('PUT', $uri, $action); }
+
+	/** @see route() */
+	public function patch($uri, Action $action) { return $this->route('PATCH', $uri, $action); }
+
+	/** @see route() */
+	public function delete($uri, Action $action) { return $this->route('DELETE', $uri, $action); }
+
+	/** @see route() */
+	public function head($uri, Action $action) { return $this->route('HEAD', $uri, $action); }
 
 	/**
 	 * @internal
@@ -96,7 +113,7 @@ final class Router {
 				$output = null;
 
 				/** @var Action[] $actions */
-				$actions = array_merge($route->getMiddleware(), [$route->action]);
+				$actions = array_merge($this->_middleware, $route->getMiddleware(), [$route->action]);
 
 				for ($i = 0; $i < count($actions); $i++) {
 					if ($i < count($actions) - 1) $actions[$i]->bind($this->_request, $this->_response, [$actions[$i + 1], 'execute']);

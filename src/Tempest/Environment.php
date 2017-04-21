@@ -24,10 +24,15 @@ class Environment {
 	 */
 	public static function load($root) {
 		if (empty(self::$_env)) {
-			self::$_env = new DotEnv($root);
-			self::$_env->load();
+			if (is_file($root . '.env')) {
+				self::$_env = new DotEnv($root);
+				self::$_env->load();
 
-			self::$_env->required('dev')->allowedValues(['true', 'false']);
+				self::$_env->required('dev')->allowedValues(['true', 'false']);
+			} else {
+				// No .env variables declared.
+				// ...
+			}
 		} else {
 			throw new Exception('Attempting to reload the environment.');
 		}

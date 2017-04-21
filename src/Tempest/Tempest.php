@@ -102,6 +102,8 @@ abstract class Tempest {
 	 * @param string $root
 	 * @param string|array
 	 * @param string|callable
+	 *
+	 * @throws Exception If the $http parameter is not a valid type.
 	 */
 	public function __construct($root, $config = null, $http = null) {
 		Environment::load($root);
@@ -115,7 +117,8 @@ abstract class Tempest {
 
 		if ($http !== null) {
 			if (is_callable($http)) $this->_http = $http;
-			else $this->_http = require($this->root . '/' . trim($http, '/'));
+			else if (is_string($http)) $this->_http = require($this->root . '/' . trim($http, '/'));
+			else throw new Exception(static::class . '::instantiate() requires a string or callable for parameter $http.');
 		}
 
 		date_default_timezone_set($this->timezone);
