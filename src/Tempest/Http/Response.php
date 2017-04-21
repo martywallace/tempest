@@ -147,8 +147,8 @@ final class Response {
 			// Look for an error page to render matching the HTTP status.
 			if (Tempest::get()->twig->loader->exists($this->_status . '.html')) {
 				$this->_body = Tempest::get()->twig->render($this->_status . '.html');
-			} else if (Tempest::get()->twig->loader->exists('@tempest/_errors/' .$this->_status . '.html')) {
-				$this->_body = Tempest::get()->twig->render('@tempest/_errors/' .$this->_status . '.html');
+			} else if (Tempest::get()->twig->loader->exists('@tempest/_errors/' . $this->_status . '.html')) {
+				$this->_body = Tempest::get()->twig->render('@tempest/_errors/' . $this->_status . '.html');
 			}
 		}
 

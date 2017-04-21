@@ -1,102 +1,75 @@
 <?php namespace Tempest\Http;
 
-use Exception;
-use Tempest\Tempest;
+use Tempest\Utils\ArrayUtil;
 
 
 /**
  * A single route definition.
  *
- * @property-read int $format The route format.
- *
- * @property-read string $uri The URI represented by this route.
- * @property-read string $method The request method used to access this route.
- * @property-read string[] $middleware Middleware to trigger before the handler is reached.
- * @property-read string $controller The controller responsible for this route.
+ * @property-read string $method The request method.
+ * @property-read string $uri The request URI.
+ * @property-read Action $action The controller action.
  *
  * @package Tempest\Http
  * @author Marty Wallace
  */
-final class Route {
+class Route {
 
-	/** An invalid definition format. */
-	const FORMAT_INVALID = 0;
+	/** @var string */
+	private $_method;
 
-	/** A definition with the route URI and controller only. */
-	const FORMAT_URI_CONTROLLER = 1;
+	/** @var string */
+	private $_uri;
 
-	/** A definition with the route URI, method and controller. */
-	const FORMAT_URI_METHOD_CONTROLLER = 2;
+	/** @var string */
+	private $_action;
 
-	/** A definition with the route URI, method, one or more middleware options and a controller. */
-	const FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER = 3;
+	/** @var Action[] */
+	private $_middleware = [];
 
-	/** @var array */
-	private $_definition;
-
-	/**
-	 * Creates a route from a route definition array.
-	 *
-	 * @param array $definition The definition array.
-	 *
-	 * @throws Exception If the definition format was not valid.
-	 */
-	public function __construct(array $definition) {
-		$this->_definition = $definition;
-
-		if ($this->format === self::FORMAT_INVALID) {
-			throw new Exception('Invalid route format.');
-		}
+	public function __construct($method, $uri, $action) {
+		$this->_method = $method;
+		$this->_uri = $uri;
+		$this->_action = $action;
 	}
 
 	public function __get($prop) {
-		if ($prop === 'uri') {
-			return Tempest::get()->memoization->cache(static::class, 'uri', function() {
-				if ($this->_definition[0] === '/' && !empty(Tempest::get()->public)) {
-					return Tempest::get()->public;
-				}
-
-				return Tempest::get()->public . '/' . trim($this->_definition[0], '/');
-			});
-		}
-
-		if ($prop === 'method') {
-			return Tempest::get()->memoization->cache(static::class, 'method', function() {
-				if ($this->format === self::FORMAT_INVALID || $this->format === self::FORMAT_URI_CONTROLLER) {
-					return 'GET';
-				} else {
-					return strtoupper($this->_definition[1]);
-				}
-			});
-		}
-
-		if ($prop === 'middleware') {
-			return Tempest::get()->memoization->cache(static::class, 'middleware', function() {
-				if ($this->format === self::FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER) return array_slice($this->_definition, 2, -1);
-				else return [];
-			});
-		}
-
-		if ($prop === 'controller') {
-			return Tempest::get()->memoization->cache(static::class, 'controller', function() {
-				return end($this->_definition);
-			});
-		}
-
-		if ($prop === 'format') {
-			return Tempest::get()->memoization->cache(static::class, 'format', function() {
-				$dl = count($this->_definition);
-
-				if ($dl < 2) return self::FORMAT_INVALID;
-				if ($dl === 2) return self::FORMAT_URI_CONTROLLER;
-				if ($dl === 3) return self::FORMAT_URI_METHOD_CONTROLLER;
-				if ($dl > 3) return self::FORMAT_URI_METHOD_MIDDLEWARE_CONTROLLER;
-
-				return self::FORMAT_INVALID;
-			});
-		}
+		if ($prop === 'method') return $this->_method;
+		if ($prop === 'uri') return $this->_uri;
+		if ($prop === 'action') return $this->_action;
 
 		return null;
+	}
+
+	/**
+	 * Attach middleware to this route.
+	 *
+	 * @param Action|Action[] $middleware One or more middleware actions.
+	 *
+	 * @return $this
+	 */
+	public function middleware($middleware) {
+		$this->_middleware = array_merge($this->_middleware, ArrayUtil::forceArray($middleware));
+
+		return $this;
+	}
+
+	/**
+	 * Get all attached middleware.
+	 *
+	 * @return Action[]
+	 */
+	public function getMiddleware() {
+		return $this->_middleware;
+	}
+
+	/**
+	 * Determine whether this route uses middleware.
+	 *
+	 * @return bool
+	 */
+	public function hasMiddleware() {
+		return count($this->_middleware) > 0;
 	}
 
 }

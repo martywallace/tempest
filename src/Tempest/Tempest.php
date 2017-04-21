@@ -12,6 +12,7 @@ use Tempest\Http\Route;
 use Tempest\Http\Router;
 use Tempest\Http\Response;
 use Tempest\Utils\JSONUtil;
+use Tempest\Utils\ObjectUtil;
 
 /**
  * Tempest's core, extended by your application class.
@@ -23,8 +24,6 @@ use Tempest\Utils\JSONUtil;
  * @property-read string $public The public facing root relative to the app domain, always without a trailing slash.
  * @property-read string $root The application root directory provided by the outer application when instantiating Tempest, always without a trailing slash.
  * @property-read string $timezone The application timezone.
- *
- * @property-read Router $router The application router.
  * @property-read string $host The value provided by the server name property on the web server.
  * @property-read string $port The port on which the application is running.
  * @property-read bool $secure Attempts to determine whether the application is running over SSL.
@@ -50,13 +49,16 @@ abstract class Tempest {
 	 * Instantiate the application.
 	 *
 	 * @param string $root The framework root directory.
-	 * @param string $config The application configuration file path, relative to the application root.
+	 * @param string|array $config The application configuration. This can either be provided as a file path relative to
+	 * the application root, or the configuration array directly.
+	 * @param string|callable $http The application middleware and route declaration method. This can either be provided
+	 * as a file path relative to the application root, or the method directly.
 	 *
 	 * @return static
 	 */
-	public static function instantiate($root, $config = null) {
+	public static function instantiate($root, $config = null, $http = null) {
 		if (empty(self::$_instance))  {
-			self::$_instance = new static($root, $config);
+			self::$_instance = new static($root, $config, $http);
 		}
 
 		return self::$_instance;
@@ -65,11 +67,11 @@ abstract class Tempest {
 	/** @var string */
 	private $_root;
 
-	/** @var Configuration */
-	private $_config;
+	/** @var callable */
+	private $_http;
 
-	/** @var Router */
-	private $_router;
+	/** @var array */
+	private $_config = [];
 
 	/** @var string[] */
 	private $_services = [];
@@ -93,22 +95,27 @@ abstract class Tempest {
 	}
 
 	/**
-	 * Constructor. Should not be called directly.
+	 * @internal
 	 *
 	 * @see Tempest::instantiate() To create a new instance instead.
 	 *
-	 * @param string $root The application root directory.
-	 * @param string $config The application configuration file path, relative to the application root.
+	 * @param string $root
+	 * @param string|array
+	 * @param string|callable
 	 */
-	public function __construct($root, $config = null) {
+	public function __construct($root, $config = null, $http = null) {
 		Environment::load($root);
 
 		$this->_root = $root;
-		$this->_router = new Router();
 
 		if ($config !== null) {
-			// Initialize configuration.
-			$this->_config = new Configuration($this->root . '/' . trim($config, '/'));
+			if (is_array($config)) $this->_config = $config;
+			else $this->_config = require($this->root . '/' . trim($config, '/'));
+		}
+
+		if ($http !== null) {
+			if (is_callable($http)) $this->_http = $http;
+			else $this->_http = require($this->root . '/' . trim($http, '/'));
 		}
 
 		date_default_timezone_set($this->timezone);
@@ -117,7 +124,7 @@ abstract class Tempest {
 
 	public function __get($prop) {
 		if ($prop === 'dev') return Environment::getBool('dev');
-		if ($prop === 'enabled') return $this->_config->get('enabled', true);
+		if ($prop === 'enabled') return $this->config('enabled', true);
 
 		if ($prop === 'url') {
 			return $this->memoization->cache(static::class, 'url', function() {
@@ -127,7 +134,7 @@ abstract class Tempest {
 					$_SERVER['SERVER_NAME'] .
 					($this->port === 80 || $this->port === 443 ? '' : ':' . $this->port);
 
-				return rtrim($this->_config->get('url', $guess), '/');
+				return rtrim($this->config('url', $guess), '/');
 			});
 		}
 
@@ -142,7 +149,7 @@ abstract class Tempest {
 		if ($prop === 'router') return $this->_router;
 		if ($prop === 'host') return $_SERVER['SERVER_NAME'];
 		if ($prop === 'port') return intval($_SERVER['SERVER_PORT']);
-		if ($prop === 'timezone') return $this->_config->get('timezone', @date_default_timezone_get());
+		if ($prop === 'timezone') return $this->config('timezone', @date_default_timezone_get());
 
 		if ($prop === 'secure') {
 			return $this->memoization->cache(static::class, 'secure', function() {
@@ -176,8 +183,10 @@ abstract class Tempest {
 	 *
 	 * @return mixed
 	 */
-	public function config($prop, $fallback = null) {
-		return $this->_config->get($prop, $fallback);
+	public function config($prop = null, $fallback = null) {
+		if ($prop === null) return $fallback === null ? $this->_config : $fallback;
+
+		return ObjectUtil::getDeepValue($this->_config, $prop, $fallback);
 	}
 
 	/**
@@ -222,53 +231,40 @@ abstract class Tempest {
 	}
 
 	/**
-	 * Start running the application.
+	 * Run the application.
 	 */
-	public function start() {
+	public function run() {
 		try {
+			$customServices = $this->services();
+
+			if (empty($customServices) || !is_array($customServices)) {
+				$customServices = [];
+			}
+
+			$services = array_merge([
+				// Services that the core depends on.
+				'filesystem' => FilesystemService::class,
+				'twig' => TwigService::class,
+				'session' => SessionService::class,
+				'memoization' => MemoizeService::class
+			], $customServices);
+
+			foreach ($services as $name => $service) {
+				$this->addService($name, $service);
+			}
+
+			// Set up the application after services are bound.
+			$this->setup();
+
 			if ($this->enabled) {
-				$customServices = $this->services();
+				$router = new Router();
 
-				if (empty($customServices) || !is_array($customServices)) {
-					$customServices = [];
+				if (!empty($this->_http)) {
+					if (is_callable($this->_http)) ($this->_http)($router);
+					else throw new Exception('The HTTP handler must be a function.');
 				}
 
-				$services = array_merge([
-					// Services that the core depends on.
-					'filesystem' => FilesystemService::class,
-					'twig' => TwigService::class,
-					'session' => SessionService::class,
-					'memoization' => MemoizeService::class
-				], $customServices);
-
-				foreach ($services as $name => $service) {
-					$this->addService($name, $service);
-				}
-
-				// Set up the application after services are bound.
-				$this->setup();
-
-				$routes = $this->_config->get('routes', []);
-
-				if (!empty($routes)) {
-					if (is_string($routes)) {
-						// Load routes from an additional configuration file.
-						if ($this->filesystem->exists($routes)) {
-							$routes = $this->filesystem->import($routes);
-						} else {
-							throw new Exception('External routes could not be found at "' . $routes . '".');
-						}
-					}
-
-					foreach ($routes as $definition) {
-						$this->_router->add(new Route($definition));
-					}
-				} else {
-					// No routes defined - always falling back to the templates directory.
-					// ...
-				}
-
-				$this->_router->dispatch();
+				$router->dispatch();
 			} else {
 				// Site is not enabled.
 				$response = new Response(Status::SERVICE_UNAVAILABLE);
