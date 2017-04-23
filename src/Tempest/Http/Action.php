@@ -4,7 +4,6 @@ use Exception;
 use JsonSerializable;
 use Tempest\Tempest;
 
-
 /**
  * A controller or middleware action.
  *

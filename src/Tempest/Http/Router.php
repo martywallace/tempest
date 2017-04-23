@@ -3,7 +3,6 @@
 use Tempest\Tempest;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
-use Tempest\Utils\ArrayUtil;
 
 /**
  * The application router.
@@ -21,9 +20,6 @@ final class Router {
 	
 	/** @var Response */
 	private $_response;
-
-	/** @var Action[] */
-	private $_middleware = [];
 
 	/** @var RouteGroup */
 	private $_routes;
@@ -49,21 +45,14 @@ final class Router {
 	}
 
 	/**
-	 * Adds middleware to the beginning of every request.
-	 *
-	 * @param Action|Action[] $action The middleware action.
-	 */
-	public function middleware($action) {
-		$this->_middleware = array_merge($this->_middleware, ArrayUtil::forceArray($action));
-	}
-
-	/**
-	 * Adds routes to listen for in the application.
+	 * Adds a group of routes to listen for in the application.
 	 *
 	 * @param RouteLike[] $routes One or more {@link Route routes} or {@link RouteGroup route groups}.
+	 *
+	 * @return RouteGroup
 	 */
-	public function routes(array $routes) {
-		$this->_routes->add($routes);
+	public function add(array $routes) {
+		return $this->_routes->add($routes);
 	}
 
 	/**
@@ -82,8 +71,8 @@ final class Router {
 	/**
 	 * Adds a group of routes to handle, using a prefix URI.
 	 *
-	 * @param string $uri
-	 * @param RouteLike[] $grouped
+	 * @param string $uri The base URI for the group, prepended to every descendant route or group.
+	 * @param RouteLike[] $grouped The list of routes and groups within this group.
 	 *
 	 * @return RouteGroup
 	 */
@@ -91,22 +80,64 @@ final class Router {
 		return new RouteGroup($uri, $grouped);
 	}
 
-	/** @see route() */
+	/**
+	 * Adds a GET route to handle.
+	 *
+	 * @param string $uri The request URI that this route handles.
+	 * @param Action $action The controller action that this route triggers when matched.
+	 *
+	 * @return Route
+	 */
 	public function get($uri, Action $action) { return $this->route('GET', $uri, $action); }
 
-	/** @see route() */
+	/**
+	 * Adds a POST route to handle.
+	 *
+	 * @param string $uri The request URI that this route handles.
+	 * @param Action $action The controller action that this route triggers when matched.
+	 *
+	 * @return Route
+	 */
 	public function post($uri, Action $action) { return $this->route('POST', $uri, $action); }
 
-	/** @see route() */
+	/**
+	 * Adds a PUT route to handle.
+	 *
+	 * @param string $uri The request URI that this route handles.
+	 * @param Action $action The controller action that this route triggers when matched.
+	 *
+	 * @return Route
+	 */
 	public function put($uri, Action $action) { return $this->route('PUT', $uri, $action); }
 
-	/** @see route() */
+	/**
+	 * Adds a PATCH route to handle.
+	 *
+	 * @param string $uri The request URI that this route handles.
+	 * @param Action $action The controller action that this route triggers when matched.
+	 *
+	 * @return Route
+	 */
 	public function patch($uri, Action $action) { return $this->route('PATCH', $uri, $action); }
 
-	/** @see route() */
+	/**
+	 * Adds a DELETE route to handle.
+	 *
+	 * @param string $uri The request URI that this route handles.
+	 * @param Action $action The controller action that this route triggers when matched.
+	 *
+	 * @return Route
+	 */
 	public function delete($uri, Action $action) { return $this->route('DELETE', $uri, $action); }
 
-	/** @see route() */
+	/**
+	 * Adds a HEAD route to handle.
+	 *
+	 * @param string $uri The request URI that this route handles.
+	 * @param Action $action The controller action that this route triggers when matched.
+	 *
+	 * @return Route
+	 */
 	public function head($uri, Action $action) { return $this->route('HEAD', $uri, $action); }
 
 	/**
@@ -132,9 +163,7 @@ final class Router {
 				$output = null;
 
 				/** @var Action[] $actions */
-				$actions = array_merge($this->_middleware, $route->getMiddleware(), [$route->action]);
-
-				Tempest::get()->dump($actions);
+				$actions = array_merge($route->getMiddleware(), [$route->action]);
 
 				for ($i = 0; $i < count($actions); $i++) {
 					if ($i < count($actions) - 1) $actions[$i]->bind($this->_request, $this->_response, [$actions[$i + 1], 'execute']);
