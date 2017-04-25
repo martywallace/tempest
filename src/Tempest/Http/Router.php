@@ -1,8 +1,7 @@
 <?php namespace Tempest\Http;
 
 use Tempest\Tempest;
-use FastRoute\Dispatcher;
-use FastRoute\RouteCollector;
+use FastRoute\{Dispatcher, RouteCollector};
 
 /**
  * The application router.
@@ -53,10 +52,10 @@ final class Router {
 	 * Use a provided middleware action for every request. Middleware defined here will be executed before any
 	 * middleware attached to routes or route groups.
 	 *
-	 * @param Action $middleware The middleware action to use.
+	 * @param Action[] ...$middleware The middleware actions to use.
 	 */
-	public function middleware(Action $middleware) {
-		$this->_middleware[] = $middleware;
+	public function middleware(Action ...$middleware) {
+		$this->_middleware = array_merge($this->_middleware, $middleware);
 	}
 
 	/**
@@ -160,7 +159,7 @@ final class Router {
 			if ($info[0] === Dispatcher::FOUND) {
 				// $info[2] contains named data.
 				// Successful route match.
-				foreach ($info[2] as $named => $value) $this->request->setNamed($named, $value);
+				foreach ($info[2] as $named => $value) $this->_request->setNamed($named, $value);
 
 				/** @var Route $route */
 				$route = $info[1];

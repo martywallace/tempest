@@ -1,7 +1,5 @@
 <?php namespace Tempest\Http;
 
-use Tempest\Utils\ArrayUtil;
-
 /**
  * An instance representative of a route or group of routes.
  *
@@ -40,12 +38,12 @@ abstract class RouteLike {
 	/**
 	 * Attach middleware to this route.
 	 *
-	 * @param Action|Action[] $middleware One or more middleware actions.
+	 * @param Action[] ...$middleware One or more middleware actions.
 	 *
 	 * @return $this
 	 */
-	public function middleware($middleware) {
-		$this->_middleware = array_merge($this->_middleware, ArrayUtil::forceArray($middleware));
+	public function middleware(...$middleware) {
+		$this->_middleware = array_merge($this->_middleware, $middleware);
 
 		return $this;
 	}

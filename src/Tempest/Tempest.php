@@ -2,15 +2,9 @@
 
 use Exception;
 use Tempest\Http\Status;
-use Tempest\Services\FilesystemService;
-use Tempest\Services\TwigService;
-use Tempest\Services\SessionService;
-use Tempest\Services\MemoizeService;
-use Tempest\Http\Router;
-use Tempest\Http\Request;
-use Tempest\Http\Response;
-use Tempest\Utils\JSONUtil;
-use Tempest\Utils\ObjectUtil;
+use Tempest\Services\{FilesystemService, TwigService, SessionService, MemoizeService};
+use Tempest\Http\{Router, Request, Response};
+use Tempest\Utils\{JSONUtil, ObjectUtil};
 
 /**
  * Tempest's core, extended by your application class.
@@ -158,7 +152,6 @@ abstract class Tempest {
 		}
 
 		if ($prop === 'root') return rtrim($this->_root, '/');
-		if ($prop === 'router') return $this->_router;
 		if ($prop === 'host') return $_SERVER['SERVER_NAME'];
 		if ($prop === 'port') return intval($_SERVER['SERVER_PORT']);
 		if ($prop === 'timezone') return $this->config('timezone', @date_default_timezone_get());

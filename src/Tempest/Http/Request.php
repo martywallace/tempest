@@ -130,51 +130,6 @@ final class Request {
 	}
 
 	/**
-	 * Returns an {@link UploadedFileModel} representing a file that was sent in the request.
-	 *
-	 * @param string $name The name associated with the uploaded file.
-	 *
-	 * @return UploadedFileModel|null An UploadedFileModel if a file was uploaded, else null.
-	 *
-	 * @throws Exception If there was an issue uploading the file because it was too large, the tmp folder is not
-	 * writable or some other error outlined in {@link http://php.net/manual/en/features.file-upload.errors.php}.
-	 */
-	public function file($name) {
-		return Tempest::get()->memoization->cache(static::class, '_file_' . $name, function() use ($name) {
-			$file = isset($_FILES[$name]) ? $_FILES[$name] : null;
-
-			if (!empty($file)) {
-				if ($file['error'] === UPLOAD_ERR_OK) {
-					// Successful upload.
-					$file = new UploadedFileModel($file);
-				} else if($file['error'] === UPLOAD_ERR_NO_FILE) {
-					// Just return null for a value that wasn't provided (keep it consistent with data() and named()).
-					return null;
-				} else {
-					// Throw exceptions for the other stuff.
-					switch ($file['error']) {
-						case UPLOAD_ERR_INI_SIZE:
-						case UPLOAD_ERR_FORM_SIZE:
-							throw new Exception('The filesize of the uploaded file was too large.');
-							break;
-
-						case UPLOAD_ERR_PARTIAL:
-							throw new Exception('The file was only partially uploaded.');
-							break;
-
-						case UPLOAD_ERR_NO_TMP_DIR:
-						case UPLOAD_ERR_CANT_WRITE:
-							throw new Exception('The file could not be uploaded.');
-							break;
-					}
-				}
-			}
-
-			return $file;
-		});
-	}
-
-	/**
 	 * Returns a header from the request.
 	 *
 	 * @param string $name The header name.
