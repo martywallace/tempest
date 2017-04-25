@@ -17,9 +17,7 @@ class ContentType extends Enum {
 	const TEXT_PLAIN = 'text/plain';
 
 	/**
-	 * Determine whether an input content-type string matches another. Both values are
-	 * {@link StringUtil::slugify slugified} to allow more forgiving results. Any additional information (e.g. charset)
-	 * is removed from both strings before comparison as well.
+	 * Determine whether an input content-type string matches another.
 	 *
 	 * @param string $input The input content-type.
 	 * @param string $compare The content-type to compare the input against.

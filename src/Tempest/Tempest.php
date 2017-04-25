@@ -262,7 +262,7 @@ abstract class Tempest {
 				$router = new Router();
 
 				if (!empty($this->_http)) {
-					if (is_callable($this->_http)) ($this->_http)($router);
+					if (is_callable($this->_http)) $router->add($this->_http);
 					else throw new Exception('The HTTP handler must be a function.');
 				}
 

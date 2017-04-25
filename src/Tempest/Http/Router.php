@@ -21,6 +21,9 @@ final class Router {
 	/** @var Response */
 	private $_response;
 
+	/** @var Action[] */
+	private $_middleware = [];
+
 	/** @var RouteGroup */
 	private $_routes;
 
@@ -47,12 +50,23 @@ final class Router {
 	/**
 	 * Adds a group of routes to listen for in the application.
 	 *
-	 * @param RouteLike[] $routes One or more {@link Route routes} or {@link RouteGroup route groups}.
+	 * @param callable $provider A function used to provide the routes. The function will be provided the {@link Router}
+	 * instance as the first argument.
 	 *
 	 * @return RouteGroup
 	 */
-	public function add(array $routes) {
-		return $this->_routes->add($routes);
+	public function add(callable $provider) {
+		return $this->_routes->add($provider($this));
+	}
+
+	/**
+	 * Use a provided middleware action for every request. Middleware defined here will be executed before any
+	 * middleware attached to routes or route groups.
+	 *
+	 * @param Action $middleware The middleware action to use.
+	 */
+	public function middleware(Action $middleware) {
+		$this->_middleware[] = $middleware;
 	}
 
 	/**
@@ -163,7 +177,7 @@ final class Router {
 				$output = null;
 
 				/** @var Action[] $actions */
-				$actions = array_merge($route->getMiddleware(), [$route->action]);
+				$actions = array_merge($this->_middleware, $route->getMiddleware(), [$route->action]);
 
 				for ($i = 0; $i < count($actions); $i++) {
 					if ($i < count($actions) - 1) $actions[$i]->bind($this->_request, $this->_response, [$actions[$i + 1], 'execute']);

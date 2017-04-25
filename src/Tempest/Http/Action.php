@@ -54,8 +54,10 @@ class Action implements JsonSerializable {
 	 * @return mixed
 	 */
 	public function execute() {
-		$instance = Tempest::get()->memoization->cache(static::class, $this->_class, new $this->_class());
-		return call_user_func_array([$instance, $this->_method], func_num_args() === 0 ? $this->_args : func_get_args());
+		return call_user_func_array([
+			Tempest::get()->memoization->cache(static::class, $this->_class, new $this->_class()),
+			$this->_method
+		], func_num_args() === 0 ? $this->_args : func_get_args());
 	}
 
 	public function jsonSerialize() {

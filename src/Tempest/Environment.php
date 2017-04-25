@@ -24,7 +24,7 @@ class Environment {
 	 */
 	public static function load($root) {
 		if (empty(self::$_env)) {
-			if (is_file($root . '.env')) {
+			if (is_file(rtrim($root, '/') . '/.env')) {
 				self::$_env = new DotEnv($root);
 				self::$_env->load();
 
