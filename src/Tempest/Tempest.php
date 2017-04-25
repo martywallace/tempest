@@ -1,6 +1,4 @@
-<?php
-
-namespace Tempest;
+<?php namespace Tempest;
 
 use Exception;
 use Tempest\Http\Status;
@@ -9,6 +7,7 @@ use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
 use Tempest\Services\MemoizeService;
 use Tempest\Http\Router;
+use Tempest\Http\Request;
 use Tempest\Http\Response;
 use Tempest\Utils\JSONUtil;
 use Tempest\Utils\ObjectUtil;
@@ -26,6 +25,9 @@ use Tempest\Utils\ObjectUtil;
  * @property-read string $host The value provided by the server name property on the web server.
  * @property-read string $port The port on which the application is running.
  * @property-read bool $secure Attempts to determine whether the application is running over SSL.
+ *
+ * @property-read Request $request The request made to the application.
+ * @property-read Response $response The response that will be provided by the application.
  *
  * @property-read TwigService $twig The inbuilt Twig service, used to render templates.
  * @property-read FilesystemService $filesystem The inbuilt service dealing with the filesystem.
@@ -69,6 +71,12 @@ abstract class Tempest {
 	/** @var callable */
 	private $_http;
 
+	/** @var Request */
+	private $_request;
+
+	/** @var Response */
+	private $_response;
+
 	/** @var array */
 	private $_config = [];
 
@@ -108,6 +116,8 @@ abstract class Tempest {
 		Environment::load($root);
 
 		$this->_root = $root;
+		$this->_request = new Request();
+		$this->_response = new Response();
 
 		if ($config !== null) {
 			if (is_array($config)) $this->_config = $config;
@@ -160,6 +170,9 @@ abstract class Tempest {
 					$this->port === 443;
 			});
 		}
+
+		if ($prop === 'request') return $this->_request;
+		if ($prop === 'response') return $this->_response;
 
 		if ($this->hasService($prop)) {
 			if (!array_key_exists($prop, $this->_setupServices)) {
@@ -259,7 +272,7 @@ abstract class Tempest {
 			$this->setup();
 
 			if ($this->enabled) {
-				$router = new Router();
+				$router = new Router($this->_request, $this->_response);
 
 				if (!empty($this->_http)) {
 					if (is_callable($this->_http)) $router->add($this->_http);

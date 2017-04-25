@@ -7,9 +7,6 @@ use FastRoute\RouteCollector;
 /**
  * The application router.
  *
- * @property-read Request $request The request made to the application.
- * @property-read Response $response The response to be sent to the client.
- *
  * @package Tempest\Http
  * @author Marty Wallace
  */
@@ -30,17 +27,10 @@ final class Router {
 	/** @var bool */
 	private $_dispatched = false;
 
-	public function __construct() {
-		$this->_request = new Request();
-		$this->_response = new Response();
+	public function __construct(Request $request, Response $response) {
+		$this->_request = $request;
+		$this->_response = $response;
 		$this->_routes = new RouteGroup();
-	}
-
-	public function __get($prop) {
-		if ($prop === 'request') return $this->_request;
-		if ($prop === 'response') return $this->_response;
-
-		return null;
 	}
 
 	public function __isset($prop) {
@@ -170,7 +160,7 @@ final class Router {
 			if ($info[0] === Dispatcher::FOUND) {
 				// $info[2] contains named data.
 				// Successful route match.
-				$this->_request->attachNamed($info[2]);
+				foreach ($info[2] as $named => $value) $this->request->setNamed($named, $value);
 
 				/** @var Route $route */
 				$route = $info[1];

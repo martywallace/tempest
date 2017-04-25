@@ -24,23 +24,10 @@ use Tempest\Models\UploadedFileModel;
 final class Request {
 
 	/** @var array */
-	private $_named = [];
+	private $_data = [];
 
-	/**
-	 * Attaches data provided by named route components. This method is used internally by the router when a route
-	 * providing named data was matched. It should not be called directly.
-	 *
-	 * @param array $named The named data as key => value pairs.
-	 *
-	 * @throws Exception If more than one attempt is made to attach named data.
-	 */
-	public function attachNamed(array $named) {
-		if (empty($this->named)) {
-			$this->_named = $named;
-		} else {
-			throw new Exception('Named data has already been attached to this Request.');
-		}
-	}
+	/** @var array */
+	private $_named = [];
 
 	public function __get($prop) {
 		if ($prop === 'method') {
@@ -95,6 +82,26 @@ final class Request {
 	}
 
 	/**
+	 * Attaches data provided by named route components.
+	 *
+	 * @param string $name The name of the named data for reference via {@link named()}.
+	 * @param mixed $value THe value to attach.
+	 */
+	public function setNamed($name, $value) {
+		$this->_named[$name] = $value;
+	}
+
+	/**
+	 * Attaches data.
+	 *
+	 * @param string $name The name of the named data for reference via {@link data()}.
+	 * @param mixed $value THe value to attach.
+	 */
+	public function setData($name, $value) {
+		$this->_data[$name] = $value;
+	}
+
+	/**
 	 * Get request data. This method only behaves correctly if the request content-type is
 	 * {@link ContentType::APPLICATION_X_WWW_FORM_URLENCODED} or {@link ContentType::APPLICATION_JSON}, or the request
 	 * method is POST.
@@ -105,32 +112,8 @@ final class Request {
 	 * @return mixed
 	 */
 	public function data($name = null, $fallback = null) {
-		$stack = Tempest::get()->memoization->cache(static::class, '_stack', function() {
-			if ($this->method === 'GET') {
-				return $_GET;
-			} else {
-				$data = [];
-
-				if (ContentType::matches($this->contentType, ContentType::APPLICATION_X_WWW_FORM_URLENCODED)) {
-					parse_str($this->body, $data);
-				} else if (ContentType::matches($this->contentType, ContentType::APPLICATION_JSON)) {
-					$data = JSONUtil::decode($this->body, true);
-				} else {
-					// PHP's $_POST knows what's up with various content-types so we'll have one more crack.
-					if ($this->method === 'POST') {
-						return $_POST;
-					} else {
-						throw new Exception('Cannot extract data from a "' . $this->method . '" request with the content-type "' . $this->contentType . '".');
-					}
-				}
-
-				return $data;
-			}
-		});
-
-		if ($name === null) return $stack;
-
-		return ObjectUtil::getDeepValue($stack, $name, $fallback);
+		return $name === null ? $this->_data
+			: (array_key_exists($name, $this->_data) ? $this->_data[$name] : $fallback);
 	}
 
 	/**
@@ -202,6 +185,15 @@ final class Request {
 	public function header($name, $fallback = null) {
 		$name = strtolower($name);
 		return ObjectUtil::getDeepValue($this->headers, $name, $fallback);
+	}
+
+	/**
+	 * Determine whether the request has files attached to it.
+	 *
+	 * @return bool
+	 */
+	public function hasFiles() {
+		return !empty($_FILES);
 	}
 
 }
