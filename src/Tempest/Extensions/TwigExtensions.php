@@ -14,8 +14,6 @@ use Twig_SimpleFilter;
  */
 class TwigExtensions extends Twig_Extension {
 
-	public function getName() { return 'TempestTwigExtensions'; }
-
 	public function getFilters() {
 		return [
 			new Twig_SimpleFilter('sha1', 'sha1'),

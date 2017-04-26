@@ -1,4 +1,4 @@
-{% set title = exception.message %}
+{% set title = '500 Internal Server Error.' %}
 
 {% extends '@tempest/_layouts/framework.html' %}
 
@@ -11,24 +11,30 @@
 		}
 
 		li + li {
-			margin-top: 12px;
+			margin-top: 20px;
 		}
 
 		small {
 			display: block;
 			padding-top: 5px;
-			color: #666;
+			color: #888;
+		}
+
+		.error {
+			color: #C00;
+			margin-bottom: 30px;
 		}
 	</style>
 {% endblock  %}
 
 {% block content %}
-	<ul>
-		<li><code>{{ exception.file }}</code><small>Line {{ exception.line }}.</small></li>
+	<p class="error"><strong>{{ exception.message }}</strong><br>{{ exception.file }} on line {{ exception.line }}.</p>
 
+	<ul>
 		{% for item in exception.trace %}
 			<li>
-				<code>{{ item.class }}::<strong>{{ item.function }}()</strong></code><small>Line {{ item.line }}.</small>
+				<code>{% if item.class %}{{ item.class }}::{% endif %}<strong>{{ item.function }}()</strong></code>
+				<small>{{ exception.file }} on line {{ item.line ?: '??' }}.</small>
 			</li>
 		{% endfor %}
 	</ul>

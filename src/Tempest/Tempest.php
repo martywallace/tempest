@@ -106,7 +106,7 @@ abstract class Tempest {
 	 * @throws Exception If the $http parameter is not a valid type.
 	 */
 	public function __construct($root, $config = null, $http = null) {
-		Environment::load($root);
+		Env::load($root);
 
 		$this->_root = $root;
 		$this->_request = new Request();
@@ -128,7 +128,7 @@ abstract class Tempest {
 	}
 
 	public function __get($prop) {
-		if ($prop === 'dev') return Environment::getBool('dev');
+		if ($prop === 'dev') return Env::getBool('dev');
 		if ($prop === 'enabled') return $this->config('enabled', true);
 
 		if ($prop === 'url') {
@@ -274,8 +274,8 @@ abstract class Tempest {
 				$router->dispatch();
 			} else {
 				// Site is not enabled.
-				$response = new Response(Status::SERVICE_UNAVAILABLE);
-				$response->send();
+				$this->response->status = Status::SERVICE_UNAVAILABLE;
+				$this->response->send();
 			}
 		} catch (Exception $exception) {
 			$this->onException($exception);
@@ -316,8 +316,9 @@ abstract class Tempest {
 	 * @param Exception $exception The exception that was thrown.
 	 */
 	protected function onException(Exception $exception) {
-		$response = new Response(Status::INTERNAL_SERVER_ERROR, static::get()->twig->render('@tempest/_errors/500.html', ['exception' => $exception]));
-		$response->send();
+		$this->response->status = Status::INTERNAL_SERVER_ERROR;
+		$this->response->body = $this->twig->render('@tempest/_errors/500.html', ['exception' => $exception]);
+		$this->response->send();
 	}
 
 	/**

@@ -40,10 +40,12 @@ class Action implements JsonSerializable {
 	/**
 	 * Binds arguments provided to this method to the arguments provided to the action when calling {@link execute()}.
 	 *
+	 * @param mixed[] ...$args Arguments to bind.
+	 *
 	 * @return $this
 	 */
-	public function bind() {
-		$this->_args = func_get_args();
+	public function bind(...$args) {
+		$this->_args = $args;
 		return $this;
 	}
 
@@ -51,13 +53,15 @@ class Action implements JsonSerializable {
 	 * Execute the action. Any arguments that were provided to {@link bind()} are forwarded to the action. If this
 	 * method is called with its own arguments, those arguments are used instead.
 	 *
+	 * @param mixed[] ...$args Arguments to bind.
+	 *
 	 * @return mixed
 	 */
-	public function execute() {
+	public function execute(...$args) {
 		return call_user_func_array([
 			Tempest::get()->memoization->cache(static::class, $this->_class, new $this->_class()),
 			$this->_method
-		], func_num_args() === 0 ? $this->_args : func_get_args());
+		], empty($args) ? $this->_args : $args);
 	}
 
 	public function jsonSerialize() {

@@ -9,7 +9,7 @@ use Dotenv\Dotenv;
  * @package Tempest
  * @author Marty Wallace
  */
-class Environment {
+class Env {
 
 	/** @var DotEnv */
 	private static $_env = null;

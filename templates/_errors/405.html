@@ -3,5 +3,5 @@
 {% extends '@tempest/_layouts/framework.html' %}
 
 {% block content %}
-	<p>This resource does not accept <code>{{ app.router.request.method|upper }}</code> requests.</p>
+	<p>This resource does not accept <strong>{{ app.request.method|upper }}</strong> requests.</p>
 {% endblock %}

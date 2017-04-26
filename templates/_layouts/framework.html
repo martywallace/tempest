@@ -5,8 +5,6 @@
 {% endblock %}
 
 {% block css %}
-	<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-
 	<style>
 		* {
 			margin: 0;
@@ -14,7 +12,7 @@
 		}
 
 		body {
-			font-family: 'Open Sans', sans-serif;
+			font-family: sans-serif;
 			font-size: 14px;
 			line-height: 1.4;
 		}
@@ -28,43 +26,28 @@
 			color: #444;
 		}
 
-		h2, main, footer {
-			max-width: 1000px;
-			margin: 0 auto;
-			padding: 0 30px;
+		header, main, footer {
+			padding: 30px;
 		}
 
 		header {
-			background: #DDD;
-			color: #FFF;
-			padding: 70px 30px;
+			color: #222;
+			border-bottom: 2px solid #222;
 		}
 
 		.theme-error {
-			background: #C50D26;
-		}
-
-		.theme-ok {
-			background: #529341;
+			color: #C00;
+			border-bottom: 2px solid #C00;
 		}
 
 		h2 {
-			font-weight: 100;
+			font-weight: normal;
 			font-size: 180%;
 		}
 
-		main {
-			padding-top: 60px;
-			padding-bottom: 60px;
-		}
-
 		footer {
+			padding-top: 0;
 			color: #AAA;
-		}
-
-		footer p {
-			padding: 20px 0;
-			border-top: 1px solid #E0E0E0;
 		}
 
 		a {
@@ -102,7 +85,7 @@
 
 	<footer>
 		{% block footer %}
-			<p><a href="{{ app.url }}">Back to homepage</a>.</p>
+			<p><a href="{{ app.url }}">&larr; home</a>.</p>
 		{% endblock %}
 	</footer>
 {% endblock %}
