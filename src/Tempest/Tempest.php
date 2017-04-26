@@ -128,7 +128,7 @@ abstract class Tempest {
 	}
 
 	public function __get($prop) {
-		if ($prop === 'dev') return Env::getBool('dev');
+		if ($prop === 'dev') return $this->config('dev', false);
 		if ($prop === 'enabled') return $this->config('enabled', true);
 
 		if ($prop === 'url') {
@@ -227,7 +227,7 @@ abstract class Tempest {
 			$data = ob_get_clean();
 		}
 
-		$response = new Response(Status::OK, static::get()->twig->render('@tempest/dump.html', [
+		$response = new Response(Status::OK, $this->twig->render('@tempest/dump.html', [
 			'data' => $data,
 			'format' => $format,
 			'class' => $class,

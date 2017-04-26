@@ -60,7 +60,7 @@ class Env {
 	 *
 	 * @return bool
 	 */
-	public static function getBool($prop, $fallback = false) {
+	public static function bool($prop, $fallback = false) {
 		$value = strtolower(self::get($prop, $fallback));
 
 		if ($value === 'false' || $value === 'null' || $value === '0') {

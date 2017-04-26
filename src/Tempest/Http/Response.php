@@ -1,6 +1,5 @@
 <?php namespace Tempest\Http;
 
-use JsonSerializable;
 use Tempest\Tempest;
 use Tempest\Utils\JSONUtil;
 
@@ -137,7 +136,7 @@ final class Response {
 	 * Send the response back to the client. This terminates all other application actions.
 	 */
 	public function send() {
-		if (is_array($this->_body) || $this->_body instanceof JsonSerializable) {
+		if (JSONUtil::isSerializable($this->_body)) {
 			// Convert the response to JSON.
 			$this->contentType = ['application/json', 'charset' => 'utf-8'];
 			$this->_body = JSONUtil::encode($this->_body);

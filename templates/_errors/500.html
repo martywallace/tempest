@@ -34,7 +34,7 @@
 		{% for item in exception.trace %}
 			<li>
 				<code>{% if item.class %}{{ item.class }}::{% endif %}<strong>{{ item.function }}()</strong></code>
-				<small>{{ exception.file }} on line {{ item.line ?: '??' }}.</small>
+				{% if item.line and item.file %}<small>{{ item.file }} on line {{ item.line ?: '??' }}.</small>{% endif %}
 			</li>
 		{% endfor %}
 	</ul>
