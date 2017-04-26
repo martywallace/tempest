@@ -7,8 +7,8 @@
 	"license": "MIT",
 	"authors": [{
 		"name": "Marty Wallace",
-		"email": "marty.wallace@live.com.au",
-		"homepage": "http://martywallace.com",
+		"email": "marty@martywallace.com",
+		"homepage": "https://martywallace.com",
 		"role": "Lead Developer"
 	}],
 	"autoload": {

@@ -1,8 +1,5 @@
 <?php namespace Tempest\Http;
 
-use Tempest\Utils\ArrayUtil;
-
-
 /**
  * A single route definition.
  *

@@ -23,9 +23,6 @@ final class Router {
 	/** @var RouteGroup */
 	private $_routes;
 
-	/** @var bool */
-	private $_dispatched = false;
-
 	public function __construct(Request $request, Response $response) {
 		$this->_request = $request;
 		$this->_response = $response;
@@ -147,76 +144,72 @@ final class Router {
 	 * @internal
 	 */
 	public function dispatch() {
-		if (!$this->_dispatched) {
-			$dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
-				foreach ($this->_routes->flatten() as $route) {
-					$collector->addRoute($route->method, $route->uri, $route);
-				}
-			});
+		$dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
+			foreach ($this->_routes->flatten() as $route) {
+				$collector->addRoute($route->method, $route->uri, $route);
+			}
+		});
 
-			$info = $dispatcher->dispatch($this->_request->method, $this->_request->uri);
+		$info = $dispatcher->dispatch($this->_request->method, $this->_request->uri);
 
-			if ($info[0] === Dispatcher::FOUND) {
-				// $info[2] contains named data.
-				// Successful route match.
-				foreach ($info[2] as $named => $value) $this->_request->setNamed($named, $value);
+		if ($info[0] === Dispatcher::FOUND) {
+			// $info[2] contains named data.
+			// Successful route match.
+			foreach ($info[2] as $named => $value) $this->_request->setNamed($named, $value);
 
-				/** @var Route $route */
-				$route = $info[1];
-				$output = null;
+			/** @var Route $route */
+			$route = $info[1];
+			$output = null;
 
-				/** @var Action[] $actions */
-				$actions = array_merge($this->_middleware, $route->getMiddleware(), [$route->action]);
+			/** @var Action[] $actions */
+			$actions = array_merge($this->_middleware, $route->getMiddleware(), [$route->action]);
 
-				for ($i = 0; $i < count($actions); $i++) {
-					if ($i < count($actions) - 1) $actions[$i]->bind($this->_request, $this->_response, [$actions[$i + 1], 'execute']);
-					else $actions[$i]->bind($this->_request, $this->_response);
-				}
-
-				$output = $actions[0]->execute();
-
-				if ($output !== null && $output !== false) {
-					// If the controller returns a non-null or non-false value, overwrite the response body with that value.
-					$this->_response->body = $output;
-				}
+			for ($i = 0; $i < count($actions); $i++) {
+				if ($i < count($actions) - 1) $actions[$i]->bind($this->_request, $this->_response, [$actions[$i + 1], 'execute']);
+				else $actions[$i]->bind($this->_request, $this->_response);
 			}
 
-			if ($info[0] === Dispatcher::NOT_FOUND) {
-				$useTemplate = false;
+			$output = $actions[0]->execute();
 
-				if (!empty($this->_request->uri)) {
-					// Attempt to load HTML file with the same name.
-					// Hitting the root looks for index.html.
-					$template = ($this->_request->uri === '/' ? 'index' : $this->_request->uri) . '.html';
-
-					if ($this->_request->method === 'GET' && Tempest::get()->twig->loader->exists($template)) {
-						$useTemplate = true;
-
-						foreach (explode('/', $template) as $part) {
-							// Don't use templates if it or any ancestor directory begins with an underscore.
-							if (strpos($part, '_') === 0) {
-								$useTemplate = false;
-								break;
-							}
-						}
-
-						if ($useTemplate) $this->_response->body = Tempest::get()->twig->render($template);
-					}
-				}
-
-				if (!$useTemplate) {
-					$this->_response->status = Status::NOT_FOUND;
-				}
+			if ($output !== null && $output !== false) {
+				// If the controller returns a non-null or non-false value, overwrite the response body with that value.
+				$this->_response->body = $output;
 			}
-
-			if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {
-				$this->_response->status = Status::METHOD_NOT_ALLOWED;
-			}
-
-			$this->_response->send();
 		}
 
-		$this->_dispatched = true;
+		if ($info[0] === Dispatcher::NOT_FOUND) {
+			$useTemplate = false;
+
+			if (!empty($this->_request->uri)) {
+				// Attempt to load HTML file with the same name.
+				// Hitting the root looks for index.html.
+				$template = ($this->_request->uri === '/' ? 'index' : $this->_request->uri) . '.html';
+
+				if ($this->_request->method === 'GET' && Tempest::get()->twig->loader->exists($template)) {
+					$useTemplate = true;
+
+					foreach (explode('/', $template) as $part) {
+						// Don't use templates if it or any ancestor directory begins with an underscore.
+						if (strpos($part, '_') === 0) {
+							$useTemplate = false;
+							break;
+						}
+					}
+
+					if ($useTemplate) $this->_response->body = Tempest::get()->twig->render($template);
+				}
+			}
+
+			if (!$useTemplate) {
+				$this->_response->status = Status::NOT_FOUND;
+			}
+		}
+
+		if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) {
+			$this->_response->status = Status::METHOD_NOT_ALLOWED;
+		}
+
+		$this->_response->send();
 	}
 
 }

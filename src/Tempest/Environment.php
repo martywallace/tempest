@@ -3,9 +3,8 @@
 use Exception;
 use Dotenv\Dotenv;
 
-
 /**
- * A thin layer providing enchanced access to environment variables.
+ * A thin layer providing enhanced access to environment variables.
  *
  * @package Tempest
  * @author Marty Wallace

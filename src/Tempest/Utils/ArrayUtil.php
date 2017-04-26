@@ -1,6 +1,5 @@
 <?php namespace Tempest\Utils;
 
-
 /**
  * Utilities for working with arrays or performing actions related to arrays.
  *

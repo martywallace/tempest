@@ -2,7 +2,6 @@
 
 use JsonSerializable;
 
-
 /**
  * A model represents a grouping of related data into a single instance.
  *

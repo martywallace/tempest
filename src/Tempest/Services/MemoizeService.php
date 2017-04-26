@@ -3,7 +3,6 @@
 use Tempest\Tempest;
 use Tempest\Utils\JSONUtil;
 
-
 /**
  * A service that provides memoization to the application, used to store and provide the result of expensive method
  * calls, especially database queries.

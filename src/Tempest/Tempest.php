@@ -1,9 +1,8 @@
 <?php namespace Tempest;
 
 use Exception;
-use Tempest\Http\Status;
+use Tempest\Http\{Router, Request, Response, Status};
 use Tempest\Services\{FilesystemService, TwigService, SessionService, MemoizeService};
-use Tempest\Http\{Router, Request, Response};
 use Tempest\Utils\{JSONUtil, ObjectUtil};
 
 /**

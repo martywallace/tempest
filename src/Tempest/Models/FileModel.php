@@ -3,7 +3,6 @@
 use Exception;
 use Tempest\Tempest;
 
-
 /**
  * A model representing a file within the application.
  *

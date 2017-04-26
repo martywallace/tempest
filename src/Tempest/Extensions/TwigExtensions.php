@@ -1,8 +1,7 @@
 <?php namespace Tempest\Extensions;
 
 use Tempest\Tempest;
-use Tempest\Utils\StringUtil;
-use Tempest\Utils\ObjectUtil;
+use Tempest\Utils\{StringUtil, ObjectUtil};
 use Twig_Extension;
 use Twig_SimpleFunction;
 use Twig_SimpleFilter;

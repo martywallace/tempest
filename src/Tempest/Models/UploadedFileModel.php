@@ -2,7 +2,6 @@
 
 use Tempest\Tempest;
 
-
 /**
  * A file contained within a request to the application (an uploaded file).
  *

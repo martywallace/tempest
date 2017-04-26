@@ -1,11 +1,7 @@
 <?php namespace Tempest\Http;
 
-use Exception;
 use Tempest\Tempest;
-use Tempest\Utils\JSONUtil;
 use Tempest\Utils\ObjectUtil;
-use Tempest\Models\UploadedFileModel;
-
 
 /**
  * A request made to the application.

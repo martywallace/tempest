@@ -4,7 +4,6 @@ use Exception;
 use Tempest\Tempest;
 use Tempest\Models\FileModel;
 
-
 /**
  * Deals with the filesystem relative to the application path.
  *

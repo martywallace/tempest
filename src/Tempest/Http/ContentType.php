@@ -1,7 +1,6 @@
 <?php namespace Tempest\Http;
 
-use Tempest\Utils\Enum;
-use Tempest\Utils\StringUtil;
+use Tempest\Utils\{Enum, StringUtil};
 
 /**
  * Stores common content-types.
