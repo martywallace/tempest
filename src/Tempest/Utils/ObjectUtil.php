@@ -31,9 +31,14 @@ class ObjectUtil {
 				$target = $instance;
 
 				foreach ($path as $prop) {
-					if (is_array($target) && array_key_exists($prop, $target)) $target = $target[$prop];
+					if (is_array($target) && array_key_exists($prop, $target)) {
+						if (is_callable($target[$prop])) $target = $target[$prop]();
+						else $target = $target[$prop];
+					}
+
 					else if (is_object($target) && property_exists($target, $prop)) $target = $target->{$prop};
 					else if (is_object($target) && method_exists($target, $prop)) $target = $target->{$prop}();
+
 					else return $fallback;
 				}
 
@@ -61,7 +66,7 @@ class ObjectUtil {
 
 			foreach ($values as $value) {
 				if (is_array($value) && array_key_exists($property, $value)) $result[] = $value[$property];
-				if (is_object($value) && property_exists($value, $property)) $result[] = $value->{$property};
+				else if (is_object($value) && property_exists($value, $property)) $result[] = $value->{$property};
 			}
 
 			return $result;
