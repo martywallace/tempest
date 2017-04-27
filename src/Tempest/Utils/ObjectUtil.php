@@ -60,7 +60,7 @@ class ObjectUtil {
 	 *
 	 * @throws Exception If the provided value is not an array.
 	 */
-	public function pluck(array $values, $property) {
+	public static function pluck(array $values, $property) {
 		if (is_array($values)) {
 			$result = array();
 

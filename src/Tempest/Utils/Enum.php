@@ -1,5 +1,6 @@
 <?php namespace Tempest\Utils;
 
+use Exception;
 use ReflectionClass;
 
 /**
@@ -13,6 +14,34 @@ abstract class Enum {
 
 	/** @var string[] */
 	private static $_reflections = array();
+
+	/**
+	 * Get the value of a constant using the name of the key associated with it.
+	 *
+	 * @param string $key The key to get the value for.
+	 *
+	 * @return mixed
+	 *
+	 * @throws Exception If the key does not exist.
+	 */
+	public static function getValue($key) {
+		if (static::has($key)) {
+			return static::getAll()[$key];
+		} else {
+			throw new Exception('Enum "' . static::class . '" does not contain "' . $key . '".');
+		}
+	}
+
+	/**
+	 * Determine whether this enum defined a key.
+	 *
+	 * @param string $key The name of the key.
+	 *
+	 * @return bool
+	 */
+	public static function has($key) {
+		return array_key_exists($key, static::getAll());
+	}
 
 	/**
 	 * Get all the constants defined by this enum.

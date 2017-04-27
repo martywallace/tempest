@@ -69,4 +69,22 @@ class UtilsTest extends TestCase {
 		$this->assertEquals('fallback', ObjectUtil::getDeepValue($tree, 'c.f.nonexistentKey', 'fallback'));
 	}
 
+	public function testPluck() {
+		$values = [
+			['name' => 'Marty'],
+			['name' => 'Daniel'],
+			['name' => 'Carlie']
+		];
+
+		$plucked = ObjectUtil::pluck($values, 'name');
+
+		$this->assertEquals(['Marty', 'Daniel', 'Carlie'], $plucked);
+	}
+
+	public function testEnum() {
+		$this->assertEquals(['RED' => '#F00', 'BLUE' => '#00F', 'GREEN' => '#0F0'], Colors::getAll());
+		$this->assertEquals(['SQUARE' => 'square', 'RECTANGLE' => 'rectangle', 'TRIANGLE' => 'triangle'], Shapes::getAll());
+		$this->assertEquals('square', Shapes::getValue('SQUARE'));
+	}
+
 }
