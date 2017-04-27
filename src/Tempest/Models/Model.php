@@ -8,4 +8,9 @@ use JsonSerializable;
  * @package Tempest\Models
  * @author Marty Wallace
  */
-abstract class Model implements JsonSerializable { }
+abstract class Model implements JsonSerializable {
+
+	//
+	abstract protected function fields();
+
+}

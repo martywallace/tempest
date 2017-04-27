@@ -64,8 +64,7 @@ final class Response {
 	}
 
 	public function __isset($prop) {
-		return property_exists($this, $prop) ||
-			$this->{$prop} !== null;
+		return property_exists($this, $prop) || $this->{$prop} !== null;
 	}
 
 	/**

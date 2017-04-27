@@ -12,11 +12,12 @@ class RequestHandler {
 	 * Get an action statically.
 	 *
 	 * @param string $name The name of the action.
+	 * @param array $meta Meta information to attach to the action.
 	 *
 	 * @return Action
 	 */
-	public static function action($name) {
-		return new Action(static::class, $name);
+	public static function action($name, array $meta = []) {
+		return new Action(static::class, $name, $meta);
 	}
 
 }
