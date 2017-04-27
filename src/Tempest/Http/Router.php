@@ -144,6 +144,9 @@ final class Router {
 	 * @internal
 	 */
 	public function dispatch() {
+		// Default middleware.
+		$this->middleware(BodyMiddleware::action('parse'));
+
 		$dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
 			foreach ($this->_routes->flatten() as $route) {
 				$collector->addRoute($route->method, $route->uri, $route);
