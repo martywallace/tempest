@@ -212,4 +212,22 @@ final class Router {
 		$this->_response->send();
 	}
 
+	/**
+	 * Render documentation for the routes defined.
+	 */
+	public function document() {
+		$docs = array_map(function(Route $route) {
+			return [
+				'method' => $route->method,
+				'uri' => $route->uri,
+				'controller' => $route->action->class . '::' . $route->action->method,
+				'middleware' => array_map(function(Action $action) {
+					return $action->class . '::' . $action->method;
+				}, $route->getMiddleware())
+			];
+		}, $this->_routes->flatten());
+
+		Tempest::get()->dump($docs);
+	}
+
 }

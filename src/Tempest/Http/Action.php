@@ -7,6 +7,9 @@ use Tempest\Tempest;
 /**
  * A controller or middleware action.
  *
+ * @property-read string $class The class associated with this action.
+ * @property-read string $method The method attached to the class that will be called.
+ *
  * @package Tempest\Http
  * @author Marty Wallace
  */
