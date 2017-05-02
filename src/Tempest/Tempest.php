@@ -2,7 +2,9 @@
 
 use Exception;
 use Tempest\Http\{Router, Request, Response, Status};
-use Tempest\Services\{FilesystemService, TwigService, SessionService, MemoizeService};
+use Tempest\Services\{
+	FilesystemService, Service, TwigService, SessionService, MemoizeService
+};
 use Tempest\Utils\{JSONUtil, ObjectUtil};
 
 /**
@@ -76,8 +78,8 @@ abstract class Tempest {
 	/** @var string[] */
 	private $_services = [];
 
-	/** @var string[] */
-	private $_setupServices = [];
+	/** @var mixed[] */
+	private $_bootedServices = [];
 
 	/**
 	 * A static reference to Tempest.
@@ -167,12 +169,8 @@ abstract class Tempest {
 		if ($prop === 'response') return $this->_response;
 
 		if ($this->hasService($prop)) {
-			if (!array_key_exists($prop, $this->_setupServices)) {
-				// First time being accessed, setup the service.
-				$this->_setupServices[$prop] = new $this->_services[$prop]();
-			}
-
-			return $this->_setupServices[$prop];
+			if (!$this->hasBootedService($prop)) $this->bootService($prop);
+			return $this->_bootedServices[$prop];
 		}
 
 		return null;
@@ -296,6 +294,32 @@ abstract class Tempest {
 		} else {
 			throw new Exception('A service named "' . $name . '" already exists.');
 		}
+	}
+
+	/**
+	 * Force boot a service.
+	 *
+	 * @param string $name The service to boot.
+	 *
+	 * @throws Exception If the service has already been booted.
+	 */
+	public function bootService($name) {
+		if (!$this->hasBootedService($name)) {
+			$this->_bootedServices[$name] = new $this->_services[$name]();
+		} else {
+			throw new Exception('Service "' . $name . '" has already been booted.');
+		}
+	}
+
+	/**
+	 * Determine whether a service has been booted.
+	 *
+	 * @param string $name The service name.
+	 *
+	 * @return bool
+	 */
+	public function hasBootedService($name) {
+		return array_key_exists($name, $this->_bootedServices);
 	}
 
 	/**
