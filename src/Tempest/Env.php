@@ -26,8 +26,6 @@ class Env {
 			if (is_file(rtrim($root, '/') . '/.env')) {
 				self::$_env = new DotEnv($root);
 				self::$_env->load();
-
-				self::$_env->required('dev')->allowedValues(['true', 'false']);
 			} else {
 				// No .env variables declared.
 				// ...
