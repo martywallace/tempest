@@ -4,7 +4,7 @@ use Exception;
 use ReflectionClass;
 
 /**
- * The enum class adds very basic enumeration functionality to classes who using constants to emulate real enums as seen
+ * The enum class adds very basic enumeration functionality to classes who use constants to emulate real enums as seen
  * in languages like C#.
  *
  * @package Tempest\Utils
