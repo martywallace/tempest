@@ -1,8 +1,15 @@
 # Tempest.
 
-[![Build Status](https://travis-ci.org/MartyWallace/Tempest.svg?branch=master)](https://travis-ci.org/MartyWallace/Tempest)
+[[Build Status](https://travis-ci.org/MartyWallace/Tempest.svg?branch=master)](https://travis-ci.org/MartyWallace/Tempest)
 
-A minimal PHP framework by [Marty Wallace](http://martywallace.com). Tempest provides a clean project foundation through the concept of application services, as well as routing and templating inbuilt.
+A robust PHP framework with a strong focus on IDE support through correct PHPDoc usage and maintenance. Other core concepts include:
+
+* Straightforward bootstrapping with zero default project structure, allowing you to use the framework however you prefer.
+* Environment based configuration.
+* A simple, elegant system for provisioning and calling application services, where the bulk of your application code will live.
+* Familiar HTTP request + response routing and lifecycle.
+
+Tempest has been used in dozens of production applications, small and large, since as early as 2014; going through many iterations of improvements since its inception.
 
 ## Installation.
 
@@ -12,6 +19,6 @@ Tempest can be [found on Packagist](https://packagist.org/packages/martywallace/
 
 ## Resources.
 
-* [Guide](https://martywallace.com/projects/tempest/guide).
-* [Tutorial](https://martywallace.com/projects/tempest/tutorial).
+* [Guide](https://martywallace.com/projects/tempest/guide) - for version 3.x.
+* [Tutorial](https://martywallace.com/projects/tempest/tutorial) - for version 3.x.
 * [Example Project Template](https://github.com/MartyWallace/tempest-template).

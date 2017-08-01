@@ -1,6 +1,6 @@
 {
 	"name": "martywallace/tempest",
-	"version": "4.1.1",
+	"version": "5.0.0-alpha",
 	"description": "A tiny PHP framework.",
 	"homepage": "https://github.com/MartyWallace/Tempest",
 	"type": "library",
