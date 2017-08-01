@@ -16,6 +16,11 @@
 			"Tempest\\" : "src/Tempest/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tempest\\Tests\\": "tests/"
+		}
+	},
 	"require": {
 		"php": ">=7.0",
 		"nikic/fast-route": "1.2.*",
