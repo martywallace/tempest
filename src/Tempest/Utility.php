@@ -46,4 +46,18 @@ class Utility {
 		return $fallback;
 	}
 
+	/**
+	 * Convert a string into kebab format e.g. "The quick brown fox" becomes "the-quick-brown-fox".
+	 *
+	 * @param string $value The input value.
+	 *
+	 * @return string
+	 */
+	public static function kebab($value) {
+		$base = preg_replace('/[^A-Za-z\s\-]+/', '', $value);
+		$base = preg_replace('/[\s\-]+/', '-', $base);
+
+		return trim(trim(strtolower($base)), '-');
+	}
+
 }
