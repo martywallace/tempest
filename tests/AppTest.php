@@ -23,8 +23,24 @@ class AppTest extends TestCase {
 		App::boot(__DIR__);
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testCannotBootWithDotConfig() {
+		$this->expectException(Exception::class);
+
+		App::boot(__DIR__, [
+			'some.thing' => 1
+		]);
+	}
+
 	public function testBootApp() {
-		$app = App::boot(__DIR__);
+		$app = App::boot(__DIR__, [
+			'a' => 10,
+			'b' => [
+				'c' => 20
+			]
+		]);
 
 		$this->assertInstanceOf(App::class, $app);
 		$this->assertInstanceOf(App::class, App::get());
@@ -36,7 +52,17 @@ class AppTest extends TestCase {
 	 * @depends testBootApp
 	 */
 	public function testGeneratesValidRoot(App $app) {
-		$this->assertEquals(realpath(__DIR__ . '/../'), $app->root);
+		$this->assertEquals(__DIR__, $app->root);
+	}
+
+	/**
+	 * @depends testBootApp
+	 */
+	public function testCanGetAppConfig(App $app) {
+		$this->assertEquals(10, $app->config('a'));
+		$this->assertEquals(20, $app->config('b.c'));
+		$this->assertEquals(null, $app->config('c'));
+		$this->assertEquals('someFallbackValue', $app->config('b.d', 'someFallbackValue'));
 	}
 
 }
