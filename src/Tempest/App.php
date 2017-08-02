@@ -54,10 +54,11 @@ class App {
 	private $_root;
 
 	/**
-	 * @internal
 	 * @see static::boot()
+	 *
+	 * @param string $root
 	 */
-	public function __construct($root) {
+	private function __construct($root) {
 		$this->_root = rtrim(realpath($root . '/../'), '/');
 	}
 
