@@ -5,4 +5,8 @@
  *
  * @author Marty Wallace
  */
-interface Service { }
+interface Service {
+
+	//
+
+}

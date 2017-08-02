@@ -10,6 +10,7 @@ use Tempest\Http\Http;
  *
  * @property-read string $root The application root directory - the result of moving on directory up from the value
  * provided to {@link App::boot()}. Always without a trailing slash.
+ * @property-read bool $dev Whether or not the application is in development mode.
  * @property-read Console $console The application console, where console commands can be defined and executed.
  * @property-read Http $http The application HTTP layer, where an incoming HTTP request can be caught and a relevant
  * response generated.
@@ -61,6 +62,12 @@ abstract class App {
 	/** @var array */
 	private $_config;
 
+	/** @var string[] */
+	private $_services = [];
+
+	/** @var Service[] */
+	private $_serviceInstances = [];
+
 	/** @var Console */
 	private $_console;
 
@@ -85,12 +92,18 @@ abstract class App {
 				throw new Exception('Configuration fields cannot contain the "." character, as this is used for nested property querying.');
 			}
 		});
+
+		$this->_services = array_merge([], $this->services());
 	}
 
 	public function __get($prop) {
 		if ($prop === 'root') return $this->_root;
 		if ($prop === 'console') return $this->_console;
 		if ($prop === 'http') return $this->_http;
+		if ($prop === 'dev') return $this->config('dev', false);
+
+		// Search for a service.
+		if ($this->hasService($prop)) return $this->getService($prop);
 
 		return null;
 	}
@@ -118,5 +131,84 @@ abstract class App {
 	 * @return string[]
 	 */
 	abstract protected function services();
+
+	/**
+	 * Add a service to the application.
+	 *
+	 * @param string $name The name used to reference the service within the application.
+	 * @param string $service The class name of the service to add.
+	 *
+	 * @throws Exception If a service with the same name already exists.
+	 */
+	protected function addService($name, $service) {
+		if ($this->hasService($name)) {
+			throw new Exception('Service "' . $service . '" has already been added to the application.');
+		}
+
+		$this->_services[$name] = $service;
+	}
+
+	/**
+	 * Force boot a service, instantiating it for future usage.
+	 *
+	 * @param string|string[] $names A name or array of names of services to boot.
+	 *
+	 * @throws Exception If an input service has already been booted.
+	 */
+	protected function bootServices($names) {
+		if (!is_array($names)) $names = [$names];
+
+		foreach ($names as $name) {
+			if ($this->hasBootedService($name)) throw new Exception('Service "' . $name . '" has already been booted.');
+
+			$instance = new $this->_services[$name]();
+			$this->_serviceInstances[$name] = $instance;
+		}
+	}
+
+	/**
+	 * Determine whether the application has a service with the specified name.
+	 *
+	 * @param string $name The service name.
+	 *
+	 * @return bool
+	 */
+	public function hasService($name) {
+		return array_key_exists($name, $this->_services);
+	}
+
+	/**
+	 * Determine whether the application has booted a service with the specified name.
+	 *
+	 * @param string $name The service name.
+	 *
+	 * @return bool
+	 */
+	public function hasBootedService($name) {
+		return array_key_exists($name, $this->_serviceInstances);
+	}
+
+	/**
+	 * Get a service. If the service has not been booted, it will be booted first.
+	 *
+	 * @param string $name The service name.
+	 *
+	 * @return Service
+	 *
+	 * @throws Exception If the service does not exist.
+	 */
+	public function getService($name) {
+		if (!$this->hasService($name)) throw new Exception('Service "' . $name . '" does not exist.');
+		if (!$this->hasBootedService($name)) $this->bootServices($name);
+
+		return $this->_serviceInstances[$name];
+	}
+
+	/**
+	 * Run the application.
+	 */
+	public function run() {
+		//
+	}
 
 }

@@ -66,4 +66,43 @@ class AppTest extends TestCase {
 		$this->assertArrayHasKey('a', $app->config());
 	}
 
+	/**
+	 * @depends testBootApp
+	 */
+	public function testHasExampleService(App $app) {
+		$this->assertTrue($app->hasService('example'));
+	}
+
+	/**
+	 * @depends testBootApp
+	 */
+	public function testExampleServiceNotYetBooted(App $app) {
+		$this->assertFalse($app->hasBootedService('example'));
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testCanBootAndCallExampleService() {
+		$app = App::boot('');
+
+		$value = $app->example->test();
+
+		$this->assertEquals(5, $value);
+		$this->assertEquals(5, $app->getService('example')->test());
+		$this->assertEquals(5, App::get()->example->test());
+		$this->assertEquals(5, App::get()->getService('example')->test());
+		$this->assertTrue($app->hasBootedService('example'));
+	}
+
+	/**
+	 * @depends testBootApp
+	 */
+	public function testCannotGetNonexistentService(App $app) {
+		$this->expectException(Exception::class);
+		$this->expectExceptionMessage('Service "nope" does not exist.');
+
+		$app->getService('nope');
+	}
+
 }

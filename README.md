@@ -8,7 +8,7 @@ A robust PHP framework with a strong focus on IDE support through correct PHPDoc
 
 * Straightforward bootstrapping with zero default project structure, allowing you to use the framework however you prefer.
 * Environment based configuration.
-* A simple, elegant system for provisioning and calling application services, where the bulk of your application code will live.
+* A simple, elegant system for provisioning and calling application services, where the bulk of your application code will be written and called from.
 * Familiar HTTP request + response routing and lifecycle.
 
 Tempest has been used in dozens of production applications, small and large, since as early as 2014; going through many iterations of improvements since its inception.

@@ -13,6 +13,7 @@ class UtilityTest extends TestCase {
 		$object->l = [
 			'm' => 'n'
 		];
+
 		$tree = [
 			'a' => 'b',
 			'c' => [
