@@ -1,6 +1,8 @@
 <?php namespace Tempest;
 
 use Exception;
+use Tempest\Console\Console;
+use Tempest\Http\Http;
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -8,6 +10,9 @@ use Exception;
  *
  * @property-read string $root The application root directory - the result of moving on directory up from the value
  * provided to {@link App::boot()}. Always without a trailing slash.
+ * @property-read Console $console The application console, where console commands can be defined and executed.
+ * @property-read Http $http The application HTTP layer, where an incoming HTTP request can be caught and a relevant
+ * response generated.
  *
  * @author Marty Wallace
  */
@@ -17,7 +22,7 @@ abstract class App {
 	protected static $_instance;
 
 	/**
-	 * Create an application instance.
+	 * Create and boot up an application instance.
 	 *
 	 * @param string $root The application root directory, usually one level above the webroot.
 	 * @param array $config Application configuration.
@@ -56,6 +61,12 @@ abstract class App {
 	/** @var array */
 	private $_config;
 
+	/** @var Console */
+	private $_console;
+
+	/** @var Http */
+	private $_http;
+
 	/**
 	 * @see static::boot()
 	 *
@@ -66,6 +77,9 @@ abstract class App {
 		$this->_root = rtrim($root, '/');
 		$this->_config = $config;
 
+		$this->_console = new Console();
+		$this->_http = new Http();
+
 		array_walk_recursive($config, function($value, $key) {
 			if (strpos($key, '.') !== false) {
 				throw new Exception('Configuration fields cannot contain the "." character, as this is used for nested property querying.');
@@ -75,6 +89,8 @@ abstract class App {
 
 	public function __get($prop) {
 		if ($prop === 'root') return $this->_root;
+		if ($prop === 'console') return $this->_console;
+		if ($prop === 'http') return $this->_http;
 
 		return null;
 	}
@@ -91,19 +107,16 @@ abstract class App {
 	 *
 	 * @return mixed
 	 */
-	public function config($query, $fallback = null) {
+	public function config($query = null, $fallback = null) {
+		if ($query === null) return $this->_config;
 		return Utility::dig($this->_config, $query, $fallback);
 	}
 
 	/**
-	 * Run the application and provide output to the parent process.
+	 * Declare all application services to be bound.
 	 *
-	 * @param null $actor
-	 *
-	 * @return string
+	 * @return string[]
 	 */
-	public function run($actor = null) {
-		return 'Hello world!';
-	}
+	abstract protected function services();
 
 }

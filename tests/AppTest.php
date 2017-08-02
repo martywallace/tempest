@@ -63,6 +63,7 @@ class AppTest extends TestCase {
 		$this->assertEquals(20, $app->config('b.c'));
 		$this->assertEquals(null, $app->config('c'));
 		$this->assertEquals('someFallbackValue', $app->config('b.d', 'someFallbackValue'));
+		$this->assertArrayHasKey('a', $app->config());
 	}
 
 }

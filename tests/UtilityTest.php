@@ -8,6 +8,7 @@ class UtilityTest extends TestCase {
 
 	public function testDig() {
 		$object = new stdClass();
+
 		$object->j = 'k';
 		$object->l = [
 			'm' => 'n'
@@ -27,6 +28,7 @@ class UtilityTest extends TestCase {
 				}
 			]
 		];
+
 		$this->assertEquals('e', Utility::dig($tree, 'c.d'));
 		$this->assertEquals('b', Utility::dig($tree, 'a'));
 		$this->assertEquals('n', Utility::dig($tree, 'c.f.i.l.m'));
