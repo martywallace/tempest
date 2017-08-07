@@ -1,8 +1,7 @@
 <?php namespace Tempest;
 
 use Exception;
-use Tempest\Console\Console;
-use Tempest\Http\Http;
+use Tempest\Services\Database;
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -12,7 +11,7 @@ use Tempest\Http\Http;
  * provided to {@link App::boot()}. Always without a trailing slash.
  * @property-read bool $dev Whether or not the application is in development mode.
  * @property-read Console $console The application console, where console commands can be defined and executed.
- * @property-read Http $http The application HTTP layer, where an incoming HTTP request can be caught and a relevant
+ * @property-read HttpKernel $http The application HTTP layer, where an incoming HTTP request can be caught and a relevant
  * response generated.
  *
  * @author Marty Wallace
@@ -26,13 +25,14 @@ abstract class App {
 	 * Create and boot up an application instance.
 	 *
 	 * @param string $root The application root directory, usually one level above the webroot.
-	 * @param array $config Application configuration.
+	 * @param array|string $config Application configuration. Can either be provided as a raw configuration array, or as
+	 * a string pointing to a configuration file relative to the provided root.
 	 *
 	 * @return static
 	 *
 	 * @throws Exception If the application has already been booted.
 	 */
-	public static function boot($root, array $config = []) {
+	public static function boot($root, $config = null) {
 		if (!empty(static::$_instance)) {
 			throw new Exception('The application has already been booted.');
 		}
@@ -68,38 +68,32 @@ abstract class App {
 	/** @var Service[] */
 	private $_serviceInstances = [];
 
-	/** @var Console */
-	private $_console;
-
-	/** @var Http */
-	private $_http;
-
 	/**
 	 * @see static::boot()
 	 *
 	 * @param string $root
-	 * @param array $config
+	 * @param array|string $config
 	 */
-	private function __construct($root, array $config) {
-		$this->_root = rtrim($root, '/');
-		$this->_config = $config;
+	private function __construct($root, $config) {
+		$this->_root = rtrim($root, '/\\');
 
-		$this->_console = new Console();
-		$this->_http = new Http();
+		if (is_array($config)) $this->_config = $config;
+		else if (is_string($config) && !empty($config)) $this->_config = require($this->_root . DIRECTORY_SEPARATOR . $config);
+		else $this->_config = [];
 
-		array_walk_recursive($config, function($value, $key) {
+		array_walk_recursive($this->_config, function($value, $key) {
 			if (strpos($key, '.') !== false) {
 				throw new Exception('Configuration fields cannot contain the "." character, as this is used for nested property querying.');
 			}
 		});
 
-		$this->_services = array_merge([], $this->services());
+		$this->_services = array_merge([
+			'db' => Database::class
+		], $this->services());
 	}
 
 	public function __get($prop) {
 		if ($prop === 'root') return $this->_root;
-		if ($prop === 'console') return $this->_console;
-		if ($prop === 'http') return $this->_http;
 		if ($prop === 'dev') return $this->config('dev', false);
 
 		// Search for a service.
@@ -202,13 +196,6 @@ abstract class App {
 		if (!$this->hasBootedService($name)) $this->bootServices($name);
 
 		return $this->_serviceInstances[$name];
-	}
-
-	/**
-	 * Run the application.
-	 */
-	public function run() {
-		//
 	}
 
 }
