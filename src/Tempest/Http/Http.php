@@ -1,7 +1,7 @@
 <?php namespace Tempest\Http;
 
 use Exception;
-use Tempest\Kernel;
+use Tempest\{App, Kernel};
 
 /**
  * The HTTP kernel deals with interpreting a HTTP request and generating a {@link Response response}.
@@ -30,7 +30,7 @@ class Http extends Kernel {
 				// Function provided directly.
 				$this->_routes = $routes($this);
 			} else {
-				$external = require $this->app->root . DIRECTORY_SEPARATOR . $routes;
+				$external = require App::get()->root . DIRECTORY_SEPARATOR . $routes;
 
 				if (!is_callable($external)) {
 					throw new Exception('External route files must return a callable that returns an array of routes to handle.');
@@ -43,6 +43,84 @@ class Http extends Kernel {
 		}
 
 		return new Response();
+	}
+
+	/**
+	 * Create a new {@link Route route}.
+	 *
+	 * @param string|string[] $method The HTTP method(s) to associate this route with.
+	 * @param string $uri The URI that will trigger this route.
+	 *
+	 * @return Route
+	 */
+	public function route($method, $uri) {
+		return new Route(strtoupper($method), $uri);
+	}
+
+	/**
+	 * Create a new {@link Route route} with its method set to GET.
+	 *
+	 * @param string $uri The URI that will trigger this route.
+	 *
+	 * @return Route
+	 */
+	public function get($uri) {
+		return $this->route('GET', $uri);
+	}
+
+	/**
+	 * Create a new {@link Route route} with its method set to POST.
+	 *
+	 * @param string $uri The URI that will trigger this route.
+	 *
+	 * @return Route
+	 */
+	public function post($uri) {
+		return $this->route('POST', $uri);
+	}
+
+	/**
+	 * Create a new {@link Route route} with its method set to PUT.
+	 *
+	 * @param string $uri The URI that will trigger this route.
+	 *
+	 * @return Route
+	 */
+	public function put($uri) {
+		return $this->route('PUT', $uri);
+	}
+
+	/**
+	 * Create a new {@link Route route} with its method set to PATCH.
+	 *
+	 * @param string $uri The URI that will trigger this route.
+	 *
+	 * @return Route
+	 */
+	public function patch($uri) {
+		return $this->route('PATCH', $uri);
+	}
+
+	/**
+	 * Create a new {@link Route route} with its method set to DELETE.
+	 *
+	 * @param string $uri The URI that will trigger this route.
+	 *
+	 * @return Route
+	 */
+	public function delete($uri) {
+		return $this->route('DELETE', $uri);
+	}
+
+	/**
+	 * Create a new {@link Route route} with its method set to HEAD.
+	 *
+	 * @param string $uri The URI that will trigger this route.
+	 *
+	 * @return Route
+	 */
+	public function head($uri) {
+		return $this->route('HEAD', $uri);
 	}
 
 	/**

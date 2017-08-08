@@ -1,7 +1,7 @@
 <?php namespace Tempest;
 
 use Exception;
-use Tempest\Services\Database;
+use Tempest\Http\{Http, Request, Response};
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -196,6 +196,26 @@ abstract class App {
 		if (!$this->hasBootedService($name)) $this->bootServices($name);
 
 		return $this->_serviceInstances[$name];
+	}
+
+	/**
+	 * Handle an incoming HTTP request.
+	 *
+	 * @param Request $request A HTTP request made to the application.
+	 * @param callable|string $routes Known routes to match the request against. Can either be a function accepting a
+	 * {@link Http HTTP instance} or a string pointing to a PHP file that returns a function accepting a HTTP instance.
+	 *
+	 * @return Response
+	 */
+	public function http(Request $request, $routes = null) {
+		return Http::make($this)->handle($request, $routes);
+	}
+
+	/**
+	 * Terminate the application.
+	 */
+	public function terminate() {
+		exit;
 	}
 
 }

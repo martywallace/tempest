@@ -8,27 +8,17 @@
  */
 abstract class Kernel {
 
-	/** @var App */
-	protected $app;
-
 	/**
 	 * Produce a new kernel instance.
 	 *
-	 * @param App $app The application associated with this Kernel.
-	 *
 	 * @return static
 	 */
-	public static function make(App $app) {
-		return new static($app);
+	public static function make() {
+		return new static();
 	}
 
-	/**
-	 * Kernel constructor.
-	 *
-	 * @param App $app
-	 */
-	private function __construct(App $app) {
-		$this->app = $app;
+	private function __construct() {
+		//
 	}
 
 }
