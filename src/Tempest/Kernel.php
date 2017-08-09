@@ -17,7 +17,7 @@ abstract class Kernel {
 		return new static();
 	}
 
-	private function __construct() {
+	protected function __construct() {
 		//
 	}
 

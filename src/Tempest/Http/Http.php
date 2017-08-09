@@ -2,6 +2,7 @@
 
 use Exception;
 use Tempest\{App, Kernel};
+use FastRoute\{RouteCollector, Dispatcher};
 
 /**
  * The HTTP kernel deals with interpreting a HTTP request and generating a {@link Response response}.
@@ -10,8 +11,12 @@ use Tempest\{App, Kernel};
  */
 class Http extends Kernel {
 
-	/** @var Route[] */
-	private $_routes = [];
+	/** @var Group */
+	private $_routes;
+
+	protected function __construct() {
+		$this->_routes = new Group();
+	}
 
 	/**
 	 * Handle an incoming {@link Request HTTP request} and generate a {@link Response response} for sending.
@@ -25,10 +30,11 @@ class Http extends Kernel {
 	 * @throws Exception
 	 */
 	public function handle(Request $request, $routes = null) {
+		// First determine what routes are defined (if any) and define them.
 		if (!empty($routes)) {
 			if (is_callable($routes)) {
 				// Function provided directly.
-				$this->_routes = $routes($this);
+				$this->_routes->add($routes($this));
 			} else {
 				$external = require App::get()->root . DIRECTORY_SEPARATOR . $routes;
 
@@ -36,13 +42,22 @@ class Http extends Kernel {
 					throw new Exception('External route files must return a callable that returns an array of routes to handle.');
 				}
 
-				$this->_routes = $external($this);
+				$this->_routes->add($external($this));
 			}
-
-			$this->_routes = $this->_flatten($this->_routes);
 		}
 
-		return new Response();
+		// Attempt to match a route.
+		$info = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
+			foreach ($this->_routes->flatten() as $route) {
+				$collector->addRoute($route->method, $route->uri, $route);
+			}
+		})->dispatch($request->method, $request->uri);
+
+		if ($info[0] === Dispatcher::FOUND) return $this->found($request, $info[1], $info[2]);
+		else if ($info[0] === Dispatcher::NOT_FOUND) return $this->notFound($request);
+		else if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) return $this->methodNotAllowed($request, $info[1]);
+
+		return null;
 	}
 
 	/**
@@ -124,14 +139,39 @@ class Http extends Kernel {
 	}
 
 	/**
-	 * Flatten a tree of routes.
+	 * Handle a successfully matched route.
 	 *
-	 * @param Route[] $routes The routes to flatten.
+	 * @param Request $request The request being handled.
+	 * @param Route $route The route that was matched.
+	 * @param mixed[] $named Named arguments provided in the request, defined by the route.
 	 *
-	 * @return Route[]
+	 * @return Response
 	 */
-	private function _flatten(array $routes) {
-		return $routes;
+	protected function found(Request $request, Route $route, array $named) {
+		return new Response();
+	}
+
+	/**
+	 * Handle no route match.
+	 *
+	 * @param Request $request The request being handled.
+	 *
+	 * @return Response
+	 */
+	protected function notFound(Request $request) {
+		return new Response();
+	}
+
+	/**
+	 * Handle a matched route with an unsupported method.
+	 *
+	 * @param Request $request The request being handled.
+	 * @param string[] $allowed The allowed methods.
+	 *
+	 * @return Response
+	 */
+	protected function methodNotAllowed(Request $request, array $allowed) {
+		return new Response();
 	}
 
 }
