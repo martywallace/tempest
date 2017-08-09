@@ -165,7 +165,24 @@ class Http extends Kernel {
 		}
 
 		if ($route->getMode() === Route::MODE_CONTROLLER) {
-			echo 'controller';
+			$controller = $route->getController();
+
+			if (!class_exists($controller[0])) {
+				throw new Exception('Controller class "' . $controller[0] . '" does not exist.');
+			}
+
+			$instance = new $controller[0]();
+
+			if (!method_exists($instance, $controller[1])) {
+				throw new Exception('Controller "' . $controller[0] . '" does not define a method "' . $controller[1] . '".');
+			}
+
+			$response = Response::make();
+			$body = $instance->{$controller[1]}($request, $response);
+
+			if ($body !== null) $response->body($body);
+
+			return $response;
 		}
 
 		return Response::make();

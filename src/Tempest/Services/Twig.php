@@ -6,6 +6,11 @@ use Twig_Environment;
 use Twig_Loader_Filesystem;
 use Twig_Extension_Debug;
 
+/**
+ * The Twig service exposes all of Twig's functionality.
+ *
+ * @author Marty Wallace
+ */
 class Twig extends Twig_Environment implements Service {
 
 	public function __construct() {
