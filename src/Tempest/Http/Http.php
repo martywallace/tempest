@@ -146,13 +146,26 @@ class Http extends Kernel {
 	 * @param mixed[] $named Named arguments provided in the request, defined by the route.
 	 *
 	 * @return Response
+	 *
+	 * @throws Exception If the matched route does not perform any valid action.
 	 */
 	protected function found(Request $request, Route $route, array $named) {
 		foreach ($named as $property => $value) {
+			// Attached all named route data.
 			$request->attachNamed($property, $value);
 		}
 
-		print_r($request->named());
+		if ($route->getMode() === Route::MODE_UNDETERMINED) {
+			throw new Exception('Route "' . $route->uri . '" does not perform a valid action');
+		}
+
+		if ($route->getMode() === Route::MODE_TEMPLATE) {
+			echo 'template';
+		}
+
+		if ($route->getMode() === Route::MODE_CONTROLLER) {
+			echo 'controller';
+		}
 
 		return Response::make();
 	}

@@ -12,6 +12,10 @@ use Exception;
  */
 class Route {
 
+	const MODE_UNDETERMINED = 0;
+	const MODE_TEMPLATE = 1;
+	const MODE_CONTROLLER = 2;
+
 	/** @var string|string[] */
 	private $_method;
 
@@ -40,6 +44,24 @@ class Route {
 		if ($prop === 'uri') return $this->_uri;
 
 		return null;
+	}
+
+	/**
+	 * Get the route mode (e.g. whether this route renders a template, calls a controller, etc).
+	 *
+	 * @internal
+	 *
+	 * @see Route::MODE_UNDETERMINED
+	 * @see Route::MODE_TEMPLATE
+	 * @see Route::MODE_CONTROLLER
+	 *
+	 * @return int
+	 */
+	public function getMode() {
+		if (!empty($this->_template)) return self::MODE_TEMPLATE;
+		else if (!empty($this->_controller)) return self::MODE_CONTROLLER;
+
+		return self::MODE_UNDETERMINED;
 	}
 
 	/**
