@@ -5,7 +5,7 @@ use Tempest\{App, Kernel};
 use FastRoute\{RouteCollector, Dispatcher};
 
 /**
- * The HTTP kernel deals with interpreting a HTTP request and generating a {@link Response response}.
+ * The HTTP kernel deals with interpreting a HTTP {@link Request request} and generating a {@link Response response}.
  *
  * @author Marty Wallace
  */
@@ -160,7 +160,8 @@ class Http extends Kernel {
 		}
 
 		if ($route->getMode() === Route::MODE_TEMPLATE) {
-			echo 'template';
+			return Response::make()
+				->body(App::get()->twig->render($route->getTemplate()));
 		}
 
 		if ($route->getMode() === Route::MODE_CONTROLLER) {
@@ -178,7 +179,9 @@ class Http extends Kernel {
 	 * @return Response
 	 */
 	protected function notFound(Request $request) {
-		return Response::make();
+		return Response::make()
+			->status(Status::NOT_FOUND)
+			->body(App::get()->twig->render('404.html'));
 	}
 
 	/**

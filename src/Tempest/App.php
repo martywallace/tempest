@@ -2,7 +2,7 @@
 
 use Exception;
 use Tempest\Http\{Http, Request, Response};
-use Tempest\Services\{Database};
+use Tempest\Services\{Database, Twig};
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -11,6 +11,9 @@ use Tempest\Services\{Database};
  * @property-read string $root The application root directory - the result of moving on directory up from the value
  * provided to {@link App::boot()}. Always without a trailing slash.
  * @property-read bool $dev Whether or not the application is in development mode.
+ *
+ * @property-read Database $db The inbuilt database service.
+ * @property-read Twig $twig The inbuilt Twig service, used to render Twig templates.
  *
  * @author Marty Wallace
  */
@@ -86,7 +89,8 @@ abstract class App {
 		});
 
 		$this->_services = array_merge([
-			'db' => Database::class
+			'db' => Database::class,
+			'twig' => Twig::class
 		], $this->services());
 	}
 

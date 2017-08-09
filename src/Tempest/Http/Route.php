@@ -65,6 +65,28 @@ class Route {
 	}
 
 	/**
+	 * Get the template attached to this route.
+	 *
+	 * @internal
+	 *
+	 * @return string
+	 */
+	public function getTemplate() {
+		return $this->_template;
+	}
+
+	/**
+	 * Get the controller attached to this route.
+	 *
+	 * @internal
+	 *
+	 * @return string[]
+	 */
+	public function getController() {
+		return $this->_controller;
+	}
+
+	/**
 	 * Attach a template to render when this route is matched.
 	 *
 	 * @param string $name The name of the template to render.

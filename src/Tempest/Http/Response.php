@@ -9,6 +9,12 @@ use Tempest\App;
  */
 class Response extends Message {
 
+	/** @var string */
+	private $_body = '';
+
+	/** @var int */
+	private $_status = Status::OK;
+
 	/**
 	 * @return static
 	 */
@@ -17,9 +23,37 @@ class Response extends Message {
 	}
 
 	/**
+	 * Sets the response body.
+	 *
+	 * @param string $value The response body.
+	 *
+	 * @return $this
+	 */
+	public function body($value) {
+		$this->_body = $value;
+		return $this;
+	}
+
+	/**
+	 * Sets the response status.
+	 *
+	 * @param int $value The response status.
+	 *
+	 * @return $this
+	 */
+	public function status($value) {
+		$this->_status = $value;
+		return $this;
+	}
+
+	/**
 	 * Send the response and {@link App::terminate() terminate} the application.
 	 */
 	public function send() {
+		http_response_code($this->_status);
+
+		echo $this->_body;
+
 		App::get()->terminate();
 	}
 
