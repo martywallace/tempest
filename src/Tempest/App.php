@@ -2,6 +2,7 @@
 
 use Exception;
 use Tempest\Http\{Http, Request, Response};
+use Tempest\Services\{Database};
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -10,9 +11,6 @@ use Tempest\Http\{Http, Request, Response};
  * @property-read string $root The application root directory - the result of moving on directory up from the value
  * provided to {@link App::boot()}. Always without a trailing slash.
  * @property-read bool $dev Whether or not the application is in development mode.
- * @property-read Console $console The application console, where console commands can be defined and executed.
- * @property-read HttpKernel $http The application HTTP layer, where an incoming HTTP request can be caught and a relevant
- * response generated.
  *
  * @author Marty Wallace
  */
@@ -208,7 +206,7 @@ abstract class App {
 	 * @return Response
 	 */
 	public function http(Request $request, $routes = null) {
-		return Http::make($this)->handle($request, $routes);
+		return Http::make()->dispatch($request, $routes);
 	}
 
 	/**

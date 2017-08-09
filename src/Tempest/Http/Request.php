@@ -1,5 +1,8 @@
 <?php namespace Tempest\Http;
 
+use Exception;
+use Tempest\Utility;
+
 /**
  * A request made to the HTTP kernel.
  *
@@ -38,6 +41,9 @@ class Request extends Message {
 	/** @var string */
 	private $_body;
 
+	/** @var mixed[] */
+	private $_named = [];
+
 	/**
 	 * Request constructor.
 	 *
@@ -60,6 +66,43 @@ class Request extends Message {
 		if ($prop === 'body') return $this->_body;
 
 		return null;
+	}
+
+	/**
+	 * Attaches {@link Request::named() named} data to this request.
+	 *
+	 * @param string $property The property to create.
+	 * @param mixed $value The value to attach.
+	 *
+	 * @throws Exception If the property already exists.
+	 */
+	public function attachNamed($property, $value) {
+		if ($this->hasNamed($property)) throw new Exception('Named data "' . $property . '" has already been attached.');
+		$this->_named[$property] = $value;
+	}
+
+	/**
+	 * Determine whether named data exists.
+	 *
+	 * @param string $property The named property to check for.
+	 *
+	 * @return bool
+	 */
+	public function hasNamed($property) {
+		return array_key_exists($property, $this->_named);
+	}
+
+	/**
+	 * Retrieve named data.
+	 *
+	 * @param string $property The property to retrieve. If not provided, the entire set of named data is returned.
+	 * @param mixed $fallback A fallback value to provide if the property did not exist.
+	 *
+	 * @return mixed
+	 */
+	public function named($property = null, $fallback = null) {
+		if (empty($property)) return $this->_named;
+		return Utility::dig($this->_named, $property, $fallback);
 	}
 
 }

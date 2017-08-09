@@ -29,7 +29,7 @@ class Http extends Kernel {
 	 *
 	 * @throws Exception
 	 */
-	public function handle(Request $request, $routes = null) {
+	public function dispatch(Request $request, $routes = null) {
 		// First determine what routes are defined (if any) and define them.
 		if (!empty($routes)) {
 			if (is_callable($routes)) {
@@ -148,7 +148,13 @@ class Http extends Kernel {
 	 * @return Response
 	 */
 	protected function found(Request $request, Route $route, array $named) {
-		return new Response();
+		foreach ($named as $property => $value) {
+			$request->attachNamed($property, $value);
+		}
+
+		print_r($request->named());
+
+		return Response::make();
 	}
 
 	/**
@@ -159,7 +165,7 @@ class Http extends Kernel {
 	 * @return Response
 	 */
 	protected function notFound(Request $request) {
-		return new Response();
+		return Response::make();
 	}
 
 	/**
@@ -171,7 +177,7 @@ class Http extends Kernel {
 	 * @return Response
 	 */
 	protected function methodNotAllowed(Request $request, array $allowed) {
-		return new Response();
+		return Response::make();
 	}
 
 }
