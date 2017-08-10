@@ -7,6 +7,10 @@ use Tempest\App as BaseApp;
  */
 class App extends BaseApp {
 
+	protected function setup() {
+		//
+	}
+
 	protected function services() {
 		return [
 			'example' => ExampleService::class
