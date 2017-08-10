@@ -1,6 +1,8 @@
 <?php namespace Tempest;
 
 use Exception;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Tempest\Events\ExceptionEvent;
 use Tempest\Http\{Http, Request, Response};
 use Tempest\Services\{Database, Twig};
 
@@ -17,7 +19,7 @@ use Tempest\Services\{Database, Twig};
  *
  * @author Marty Wallace
  */
-abstract class App {
+abstract class App extends EventDispatcher {
 
 	/** @var static */
 	protected static $_instance;
@@ -45,7 +47,7 @@ abstract class App {
 	/**
 	 * Statically get the application instance. {@link App::boot()} must be called before this.
 	 *
-	 * @return App
+	 * @return static
 	 *
 	 * @throws Exception If the application was not previously {@link App::boot() booted}.
 	 */
@@ -92,6 +94,8 @@ abstract class App {
 			'db' => Database::class,
 			'twig' => Twig::class
 		], $this->services());
+
+		$this->setup();
 	}
 
 	public function __get($prop) {
@@ -127,6 +131,13 @@ abstract class App {
 	 * @return string[]
 	 */
 	abstract protected function services();
+
+	/**
+	 * Called after all services are bound to the application.
+	 *
+	 * @return mixed
+	 */
+	abstract protected function setup();
 
 	/**
 	 * Add a service to the application.
@@ -210,7 +221,13 @@ abstract class App {
 	 * @return Response
 	 */
 	public function http(Request $request, $routes = null) {
-		return Http::make()->dispatch($request, $routes);
+		$kernel = new Http();
+
+		$kernel->addListener(ExceptionEvent::NAME, function(ExceptionEvent $event) {
+			$this->dispatch(ExceptionEvent::NAME, $event);
+		});
+
+		return $kernel->handle($request, $routes);
 	}
 
 	/**

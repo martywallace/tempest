@@ -1,7 +1,7 @@
 <?php namespace Tempest\Http;
 
 use Exception;
-use Tempest\{App, Kernel};
+use Tempest\{App, Events\ExceptionEvent, Kernel};
 use FastRoute\{RouteCollector, Dispatcher};
 
 /**
@@ -14,7 +14,7 @@ class Http extends Kernel {
 	/** @var Group */
 	private $_routes;
 
-	protected function __construct() {
+	public function __construct() {
 		$this->_routes = new Group();
 	}
 
@@ -29,35 +29,41 @@ class Http extends Kernel {
 	 *
 	 * @throws Exception
 	 */
-	public function dispatch(Request $request, $routes = null) {
-		// First determine what routes are defined (if any) and define them.
-		if (!empty($routes)) {
-			if (is_callable($routes)) {
-				// Function provided directly.
-				$this->_routes->add($routes($this));
-			} else {
-				$external = require App::get()->root . DIRECTORY_SEPARATOR . $routes;
+	public function handle(Request $request, $routes = null) {
+		try {
+			// First determine what routes are defined (if any) and define them.
+			if (!empty($routes)) {
+				if (is_callable($routes)) {
+					// Function provided directly.
+					$this->_routes->add($routes($this));
+				} else {
+					$external = require App::get()->root . DIRECTORY_SEPARATOR . $routes;
 
-				if (!is_callable($external)) {
-					throw new Exception('External route files must return a callable that returns an array of routes to handle.');
+					if (!is_callable($external)) {
+						throw new Exception('External route files must return a callable that returns an array of routes to handle.');
+					}
+
+					$this->_routes->add($external($this));
 				}
-
-				$this->_routes->add($external($this));
 			}
+
+			// Attempt to match a route.
+			$info = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
+				foreach ($this->_routes->flatten() as $route) {
+					$collector->addRoute($route->method, $route->uri, $route);
+				}
+			})->dispatch($request->method, $request->uri);
+
+			if ($info[0] === Dispatcher::FOUND) return $this->found($request, $info[1], $info[2]);
+			else if ($info[0] === Dispatcher::NOT_FOUND) return $this->notFound($request);
+			else if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) return $this->methodNotAllowed($request, $info[1]);
+
+			return null;
+		} catch (Exception $exception) {
+			$this->dispatch(ExceptionEvent::NAME, new ExceptionEvent($exception));
+
+			return $this->exception($exception);
 		}
-
-		// Attempt to match a route.
-		$info = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
-			foreach ($this->_routes->flatten() as $route) {
-				$collector->addRoute($route->method, $route->uri, $route);
-			}
-		})->dispatch($request->method, $request->uri);
-
-		if ($info[0] === Dispatcher::FOUND) return $this->found($request, $info[1], $info[2]);
-		else if ($info[0] === Dispatcher::NOT_FOUND) return $this->notFound($request);
-		else if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) return $this->methodNotAllowed($request, $info[1]);
-
-		return null;
 	}
 
 	/**
@@ -211,6 +217,19 @@ class Http extends Kernel {
 	 */
 	protected function methodNotAllowed(Request $request, array $allowed) {
 		return Response::make();
+	}
+
+	/**
+	 * Handle an exception occurring during the request handling.
+	 *
+	 * @param Exception $exception The exception.
+	 *
+	 * @return Response
+	 */
+	protected function exception(Exception $exception) {
+		return Response::make()
+			->status(Status::INTERNAL_SERVER_ERROR)
+			->body(App::get()->twig->render('500.html', ['exception' => $exception]));
 	}
 
 }

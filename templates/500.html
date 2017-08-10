@@ -1,0 +1,9 @@
+{% set title = 'Server Error' %}
+
+{% extends 'base.html' %}
+
+{% block box %}
+  <h1>Server Error</h1>
+  <p>{{ exception.getMessage() }}</p>
+  <p><a class="button" href="/">Home</a></p>
+{% endblock %}
