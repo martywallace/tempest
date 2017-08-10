@@ -12,7 +12,7 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class ExceptionEvent extends Event {
 
-	const NAME = 'exception';
+	const EXCEPTION = 'exception';
 
 	/** @var Exception */
 	private $_exception;

@@ -60,8 +60,7 @@ class Http extends Kernel {
 
 			return null;
 		} catch (Exception $exception) {
-			$this->dispatch(ExceptionEvent::NAME, new ExceptionEvent($exception));
-
+			$this->dispatch(ExceptionEvent::EXCEPTION, new ExceptionEvent($exception));
 			return $this->exception($exception);
 		}
 	}

@@ -2,7 +2,7 @@
 
 use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Tempest\Events\ExceptionEvent;
+use Tempest\Events\{AppEvent, ExceptionEvent, ServiceEvent};
 use Tempest\Http\{Http, Request, Response};
 use Tempest\Services\{Database, Twig};
 
@@ -40,7 +40,12 @@ abstract class App extends EventDispatcher {
 			throw new Exception('The application has already been booted.');
 		}
 
-		static::$_instance = new static($root, $config);
+		static::$_instance = new static();
+
+		// We use an alternate private method call instead of the constructor so that calls to App::get() don't throw an
+		// exception (as static::$_instance would be null until after the constructor resolved).
+		static::$_instance->_setup($root, $config);
+
 		return static::$_instance;
 	}
 
@@ -71,13 +76,13 @@ abstract class App extends EventDispatcher {
 	/** @var Service[] */
 	private $_serviceInstances = [];
 
+	private function __construct() { }
+
 	/**
-	 * @see static::boot()
-	 *
 	 * @param string $root
 	 * @param array|string $config
 	 */
-	private function __construct($root, $config) {
+	private function _setup($root, $config) {
 		$this->_root = rtrim($root, '/\\');
 
 		if (is_array($config)) $this->_config = $config;
@@ -95,6 +100,7 @@ abstract class App extends EventDispatcher {
 			'twig' => Twig::class
 		], $this->services());
 
+		$this->dispatch(AppEvent::SETUP);
 		$this->setup();
 	}
 
@@ -169,6 +175,8 @@ abstract class App extends EventDispatcher {
 			if ($this->hasBootedService($name)) throw new Exception('Service "' . $name . '" has already been booted.');
 
 			$instance = new $this->_services[$name]();
+
+			$this->dispatch(ServiceEvent::BOOTED, new ServiceEvent($name, $instance));
 			$this->_serviceInstances[$name] = $instance;
 		}
 	}
@@ -223,8 +231,8 @@ abstract class App extends EventDispatcher {
 	public function http(Request $request, $routes = null) {
 		$kernel = new Http();
 
-		$kernel->addListener(ExceptionEvent::NAME, function(ExceptionEvent $event) {
-			$this->dispatch(ExceptionEvent::NAME, $event);
+		$kernel->addListener(ExceptionEvent::EXCEPTION, function(ExceptionEvent $event) {
+			$this->dispatch(ExceptionEvent::EXCEPTION, $event);
 		});
 
 		return $kernel->handle($request, $routes);
@@ -234,6 +242,7 @@ abstract class App extends EventDispatcher {
 	 * Terminate the application.
 	 */
 	public function terminate() {
+		$this->dispatch(AppEvent::TERMINATE);
 		exit;
 	}
 
