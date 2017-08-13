@@ -7,14 +7,17 @@ use FastRoute\{RouteCollector, Dispatcher};
 /**
  * The HTTP kernel deals with interpreting a HTTP {@link Request request} and generating a {@link Response response}.
  *
- * @property-read Group $routes The loaded routes to be handled.
+ * @property-read Route[] $routes The loaded routes to be handled.
  *
  * @author Marty Wallace
  */
 class Http extends Kernel {
 
-	/** @var Group */
+	/** @var Route[] */
 	private $_routes;
+
+	/** @var string[][] */
+	private $_middleware = [];
 
 	/**
 	 * Http constructor.
@@ -25,12 +28,12 @@ class Http extends Kernel {
 	 * @throws Exception
 	 */
 	public function __construct($routes) {
-		$this->_routes = new Group();
+		$root = new Group();
 
 		if (!empty($routes)) {
 			if (is_callable($routes)) {
 				// Function provided directly.
-				$this->_routes->add($routes($this));
+				$root->add($routes($this));
 			} else {
 				$external = require App::get()->root . DIRECTORY_SEPARATOR . $routes;
 
@@ -38,13 +41,15 @@ class Http extends Kernel {
 					throw new Exception('External route files must return a callable that returns an array of routes to handle.');
 				}
 
-				$this->_routes->add($external($this));
+				$root->add($external($this));
 			}
 		}
+
+		$this->_routes = $root->flatten();
 	}
 
 	public function __get($prop) {
-		if ($prop === 'routes') return $this->_routes->flatten();
+		if ($prop === 'routes') return $this->_routes;
 
 		return null;
 	}
@@ -60,7 +65,7 @@ class Http extends Kernel {
 		try {
 			// Attempt to match a route.
 			$info = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
-				foreach ($this->_routes->flatten() as $route) {
+				foreach ($this->_routes as $route) {
 					$collector->addRoute($route->method, $route->uri, $route);
 				}
 			})->dispatch($request->method, $request->uri);
@@ -74,6 +79,20 @@ class Http extends Kernel {
 			$this->dispatch(ExceptionEvent::EXCEPTION, new ExceptionEvent($exception));
 			return $this->exception($exception);
 		}
+	}
+
+	/**
+	 * Attach middleware to be called before any request.
+	 *
+	 * @param string $class The middleware class.
+	 * @param string $method The method within the middleware class to trigger.
+	 *
+	 * @return $this
+	 */
+	public function middleware($class, $method) {
+		$this->_middleware[] = [$class, $method];
+
+		return $this;
 	}
 
 	/**

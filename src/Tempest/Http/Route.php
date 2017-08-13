@@ -10,7 +10,7 @@ use Exception;
  *
  * @author Marty Wallace
  */
-class Route extends Uri {
+class Route extends Resource {
 
 	const MODE_UNDETERMINED = 0;
 	const MODE_TEMPLATE = 1;

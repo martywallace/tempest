@@ -7,7 +7,7 @@
  *
  * @author Marty Wallace
  */
-class Group extends Uri {
+class Group extends Resource {
 
 	/** @var Route[]|Group[] */
 	private $_children = [];
@@ -50,6 +50,9 @@ class Group extends Uri {
 
 		foreach ($this->_children as $child) {
 			$child->prepend($this->uri);
+
+			// TODO: Carry across middleware.
+			// ...
 
 			if ($child instanceof Group) {
 				$routes = array_merge($routes, $child->flatten());
