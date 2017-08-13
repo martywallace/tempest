@@ -3,33 +3,30 @@
 /**
  * A group of routes.
  *
- * @property-read string $uri The URI from which all descendant routes are made relative to.
  * @property-read Route[]|Group[] $children The children routes and groups.
  *
  * @author Marty Wallace
  */
-class Group {
+class Group extends Uri {
 
 	/** @var Route[]|Group[] */
 	private $_children = [];
-
-	/** @var string */
-	private $_uri;
 
 	/**
 	 * Group constructor.
 	 *
 	 * @param string $uri
+	 * @param Route[]|Group[] $children
 	 */
-	public function __construct($uri = '/') {
-		$this->_uri = $uri;
+	public function __construct($uri = '/', array $children = []) {
+		parent::__construct($uri);
+		$this->_children = $children;
 	}
 
 	public function __get($prop) {
-		if ($prop === 'uri') return $this->_uri;
 		if ($prop === 'children') return $this->_children;
 
-		return null;
+		return parent::__get($prop);
 	}
 
 	/**
@@ -49,7 +46,19 @@ class Group {
 	 * @return Route[]
 	 */
 	public function flatten() {
-		return $this->_children; // TODO
+		$routes = [];
+
+		foreach ($this->_children as $child) {
+			$child->prepend($this->uri);
+
+			if ($child instanceof Group) {
+				$routes = array_merge($routes, $child->flatten());
+			} else {
+				$routes[] = $child;
+			}
+		}
+
+		return $routes;
 	}
 
 }

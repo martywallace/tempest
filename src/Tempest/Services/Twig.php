@@ -2,9 +2,11 @@
 
 use Tempest\App;
 use Tempest\Service;
+use Tempest\Utility;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 use Twig_Extension_Debug;
+use Twig_SimpleFilter;
 
 /**
  * The Twig service exposes all of Twig's functionality.
@@ -22,6 +24,9 @@ class Twig extends Twig_Environment implements Service {
 		}
 
 		$this->addGlobal('app', App::get());
+
+		$this->addFilter(new Twig_SimpleFilter('dig', [Utility::class, 'dig']));
+		$this->addFilter(new Twig_SimpleFilter('kebab', [Utility::class, 'kebab']));
 
 		if (App::get()->dev) {
 			$this->addExtension(new Twig_Extension_Debug());

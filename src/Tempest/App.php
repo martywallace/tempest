@@ -2,7 +2,9 @@
 
 use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Tempest\Events\{AppEvent, ExceptionEvent, ServiceEvent};
+use Tempest\Events\{
+	AppEvent, ExceptionEvent, HttpKernelEvent, ServiceEvent
+};
 use Tempest\Http\{Http, Request, Response};
 use Tempest\Services\{Database, Twig};
 
@@ -229,11 +231,13 @@ abstract class App extends EventDispatcher {
 	 * @return Response
 	 */
 	public function http(Request $request, $routes = null) {
-		$kernel = new Http();
+		$kernel = new Http($routes);
 
 		$kernel->addListener(ExceptionEvent::EXCEPTION, function(ExceptionEvent $event) {
 			$this->dispatch(ExceptionEvent::EXCEPTION, $event);
 		});
+
+		$this->dispatch(HttpKernelEvent::BOOTED, new HttpKernelEvent($kernel));
 
 		return $kernel->handle($request, $routes);
 	}

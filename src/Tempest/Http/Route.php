@@ -10,7 +10,7 @@ use Exception;
  *
  * @author Marty Wallace
  */
-class Route {
+class Route extends Uri {
 
 	const MODE_UNDETERMINED = 0;
 	const MODE_TEMPLATE = 1;
@@ -18,9 +18,6 @@ class Route {
 
 	/** @var string|string[] */
 	private $_method;
-
-	/** @var string */
-	private $_uri;
 
 	/** @var string */
 	private $_template;
@@ -35,15 +32,14 @@ class Route {
 	 * @param string $uri
 	 */
 	public function __construct($method, $uri) {
+		parent::__construct($uri);
 		$this->_method = $method;
-		$this->_uri = $uri;
 	}
 
 	public function __get($prop) {
 		if ($prop === 'method') return $this->_method;
-		if ($prop === 'uri') return $this->_uri;
 
-		return null;
+		return parent::__get($prop);
 	}
 
 	/**

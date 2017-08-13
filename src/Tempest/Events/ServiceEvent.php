@@ -14,7 +14,7 @@ use Tempest\Service;
  */
 class ServiceEvent extends Event {
 
-	const BOOTED = 'app.service.booted';
+	const BOOTED = 'service.booted';
 
 	/** @var string */
 	private $_serviceName;

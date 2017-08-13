@@ -7,6 +7,8 @@ use FastRoute\{RouteCollector, Dispatcher};
 /**
  * The HTTP kernel deals with interpreting a HTTP {@link Request request} and generating a {@link Response response}.
  *
+ * @property-read Group $routes The loaded routes to be handled.
+ *
  * @author Marty Wallace
  */
 class Http extends Kernel {
@@ -14,39 +16,48 @@ class Http extends Kernel {
 	/** @var Group */
 	private $_routes;
 
-	public function __construct() {
+	/**
+	 * Http constructor.
+	 *
+	 * @param callable|string $routes Known routes to match the request against. Can either be a function accepting this
+	 * HTTP instance or a string pointing to a PHP file that returns a function accepting this HTTP instance.
+	 *
+	 * @throws Exception
+	 */
+	public function __construct($routes) {
 		$this->_routes = new Group();
+
+		if (!empty($routes)) {
+			if (is_callable($routes)) {
+				// Function provided directly.
+				$this->_routes->add($routes($this));
+			} else {
+				$external = require App::get()->root . DIRECTORY_SEPARATOR . $routes;
+
+				if (!is_callable($external)) {
+					throw new Exception('External route files must return a callable that returns an array of routes to handle.');
+				}
+
+				$this->_routes->add($external($this));
+			}
+		}
+	}
+
+	public function __get($prop) {
+		if ($prop === 'routes') return $this->_routes->flatten();
+
+		return null;
 	}
 
 	/**
 	 * Handle an incoming {@link Request HTTP request} and generate a {@link Response response} for sending.
 	 *
 	 * @param Request $request The request to handle.
-	 * @param callable|string $routes Known routes to match the request against. Can either be a function accepting this
-	 * HTTP instance or a string pointing to a PHP file that returns a function accepting this HTTP instance.
 	 *
 	 * @return Response
-	 *
-	 * @throws Exception
 	 */
-	public function handle(Request $request, $routes = null) {
+	public function handle(Request $request) {
 		try {
-			// First determine what routes are defined (if any) and define them.
-			if (!empty($routes)) {
-				if (is_callable($routes)) {
-					// Function provided directly.
-					$this->_routes->add($routes($this));
-				} else {
-					$external = require App::get()->root . DIRECTORY_SEPARATOR . $routes;
-
-					if (!is_callable($external)) {
-						throw new Exception('External route files must return a callable that returns an array of routes to handle.');
-					}
-
-					$this->_routes->add($external($this));
-				}
-			}
-
 			// Attempt to match a route.
 			$info = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
 				foreach ($this->_routes->flatten() as $route) {
@@ -141,6 +152,18 @@ class Http extends Kernel {
 	 */
 	public function head($uri) {
 		return $this->route('HEAD', $uri);
+	}
+
+	/**
+	 * Create a new {@link Group group of routes} that will be {@link Group::flatten flattened down} recursively.
+	 *
+	 * @param string $uri The base URI that will be merged onto the head of each descendant route or group.
+	 * @param Route[]|Group[] $routes One or more child routes or groups.
+	 *
+	 * @return Group
+	 */
+	public function group($uri, array $routes) {
+		return new Group($uri, $routes);
 	}
 
 	/**
