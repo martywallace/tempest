@@ -239,7 +239,7 @@ abstract class App extends EventDispatcher {
 
 		$this->dispatch(HttpKernelEvent::BOOTED, new HttpKernelEvent($kernel));
 
-		return $kernel->handle($request, $routes);
+		return $kernel->handle($request);
 	}
 
 	/**

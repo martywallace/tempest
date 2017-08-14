@@ -49,10 +49,11 @@ class Group extends Resource {
 		$routes = [];
 
 		foreach ($this->_children as $child) {
-			$child->prepend($this->uri);
+			$child->prependUri($this->uri);
 
-			// TODO: Carry across middleware.
-			// ...
+			foreach ($this->getMiddleware() as $middleware) {
+				$child->prependMiddleware($middleware[0], $middleware[1]);
+			}
 
 			if ($child instanceof Group) {
 				$routes = array_merge($routes, $child->flatten());

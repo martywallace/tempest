@@ -206,30 +206,34 @@ class Http extends Kernel {
 			throw new Exception('Route "' . $route->uri . '" does not perform a valid action');
 		}
 
-		if ($route->getMode() === Route::MODE_TEMPLATE) {
-			return Response::make()
-				->body(App::get()->twig->render($route->getTemplate()));
-		}
-
-		if ($route->getMode() === Route::MODE_CONTROLLER) {
-			$controller = $route->getController();
-
-			if (!class_exists($controller[0])) {
-				throw new Exception('Controller class "' . $controller[0] . '" does not exist.');
-			}
-
-			$instance = new $controller[0]();
-
-			if (!method_exists($instance, $controller[1])) {
-				throw new Exception('Controller "' . $controller[0] . '" does not define a method "' . $controller[1] . '".');
-			}
-
+		if ($route->getMode() === Route::MODE_TEMPLATE || $route->getMode() === Route::MODE_CONTROLLER) {
+			// Templates and controllers make use of middleware.
 			$response = Response::make();
-			$body = $instance->{$controller[1]}($request, $response);
+			$middleware = array_merge($this->_middleware, $route->getMiddleware());
 
-			if ($body !== null) $response->body($body);
+			// Execute middleware in order.
 
-			return $response;
+			if ($route->getMode() === Route::MODE_TEMPLATE) {
+				return $response->body(App::get()->twig->render($route->getTemplate()));
+			}
+
+			if ($route->getMode() === Route::MODE_CONTROLLER) {
+				$controller = $route->getController();
+
+				if (!class_exists($controller[0])) {
+					throw new Exception('Controller class "' . $controller[0] . '" does not exist.');
+				}
+
+				$instance = new $controller[0]();
+
+				if (!method_exists($instance, $controller[1])) {
+					throw new Exception('Controller "' . $controller[0] . '" does not define a method "' . $controller[1] . '".');
+				}
+
+				$instance->{$controller[1]}($request, $response);
+
+				return $response;
+			}
 		}
 
 		return Response::make();

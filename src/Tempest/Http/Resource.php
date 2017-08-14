@@ -37,10 +37,20 @@ abstract class Resource {
 	 *
 	 * @return $this
 	 */
-	public function prepend($value) {
+	public function prependUri($value) {
 		$this->_uri = '/' . trim(trim($value, '/\\') . $this->_uri, '/\\');
 
 		return $this;
+	}
+
+	/**
+	 * Prepend middleware to this resource.
+	 *
+	 * @param string $class The name of the middleware class.
+	 * @param string $method The name of the method within the middleware class to trigger.
+	 */
+	public function prependMiddleware($class, $method) {
+		array_unshift($this->_middleware, [$class, $method]);
 	}
 
 	/**
