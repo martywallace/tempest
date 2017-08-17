@@ -51,8 +51,8 @@ class Group extends Resource {
 		foreach ($this->_children as $child) {
 			$child->prependUri($this->uri);
 
-			foreach ($this->getMiddleware() as $middleware) {
-				$child->prependMiddleware($middleware[0], $middleware[1]);
+			foreach ($this->getBefore() as $middleware) {
+				$child->prependBefore($middleware[0], $middleware[1]);
 			}
 
 			if ($child instanceof Group) {

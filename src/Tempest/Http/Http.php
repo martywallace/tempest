@@ -1,5 +1,6 @@
 <?php namespace Tempest\Http;
 
+use Closure;
 use Exception;
 use Tempest\{App, Events\ExceptionEvent, Kernel};
 use FastRoute\{RouteCollector, Dispatcher};
@@ -17,7 +18,10 @@ class Http extends Kernel {
 	private $_routes;
 
 	/** @var string[][] */
-	private $_middleware = [];
+	private $_before = [];
+
+	/** @var array[][] */
+	private $_after = [];
 
 	/**
 	 * Http constructor.
@@ -82,15 +86,29 @@ class Http extends Kernel {
 	}
 
 	/**
-	 * Attach middleware to be called before any request.
+	 * Attach middleware to be called before requests resolve to a controller.
 	 *
 	 * @param string $class The middleware class.
 	 * @param string $method The method within the middleware class to trigger.
 	 *
 	 * @return $this
 	 */
-	public function middleware($class, $method) {
-		$this->_middleware[] = [$class, $method];
+	public function before($class, $method) {
+		$this->_before[] = [$class, $method];
+
+		return $this;
+	}
+
+	/**
+	 * Attach middleware to be called after a request resolved to a controller.
+	 *
+	 * @param string $class The middleware class.
+	 * @param string $method The method within the middleware class to trigger.
+	 *
+	 * @return $this
+	 */
+	public function after($class, $method) {
+		$this->_after[] = [$class, $method];
 
 		return $this;
 	}
@@ -209,31 +227,34 @@ class Http extends Kernel {
 		if ($route->getMode() === Route::MODE_TEMPLATE || $route->getMode() === Route::MODE_CONTROLLER) {
 			// Templates and controllers make use of middleware.
 			$response = Response::make();
-			$middleware = array_merge($this->_middleware, $route->getMiddleware());
 
-			// Execute middleware in order.
-
-			if ($route->getMode() === Route::MODE_TEMPLATE) {
-				return $response->body(App::get()->twig->render($route->getTemplate()));
-			}
-
-			if ($route->getMode() === Route::MODE_CONTROLLER) {
-				$controller = $route->getController();
-
-				if (!class_exists($controller[0])) {
-					throw new Exception('Controller class "' . $controller[0] . '" does not exist.');
+			$resolution = function() use ($route, $request, $response) {
+				if ($route->getMode() === Route::MODE_TEMPLATE) {
+					$response->render($route->getTemplate());
 				}
 
-				$instance = new $controller[0]();
+				if ($route->getMode() === Route::MODE_CONTROLLER) {
+					$controller = $route->getController();
 
-				if (!method_exists($instance, $controller[1])) {
-					throw new Exception('Controller "' . $controller[0] . '" does not define a method "' . $controller[1] . '".');
+					$instance = new $controller[0]($request, $response);
+					$instance->{$controller[1]}();
+				}
+			};
+
+			$pipeline = array_map(function($detail) use ($request, $response, $resolution) {
+				if ($detail !== $resolution) {
+					return Closure::fromCallable([new $detail[0]($request, $response), $detail[1]]);
 				}
 
-				$instance->{$controller[1]}($request, $response);
+				return $detail;
+			}, array_merge($this->_before, $route->getBefore(), [$resolution]));
 
-				return $response;
-			}
+			// Bind all next closures and call the first.
+			$this->bindNext($pipeline)();
+
+			//$after = array_merge($route->getAfter(), $this->_after);
+
+			return $response;
 		}
 
 		return Response::make();
@@ -249,7 +270,7 @@ class Http extends Kernel {
 	protected function notFound(Request $request) {
 		return Response::make()
 			->status(Status::NOT_FOUND)
-			->body(App::get()->twig->render('404.html'));
+			->render('404.html');
 	}
 
 	/**
@@ -274,7 +295,28 @@ class Http extends Kernel {
 	protected function exception(Exception $exception) {
 		return Response::make()
 			->status(Status::INTERNAL_SERVER_ERROR)
-			->body(App::get()->twig->render('500.html', ['exception' => $exception]));
+			->render('500.html', ['exception' => $exception]);
+	}
+
+	/**
+	 * Recursively bind all input closures with a pointer to the next one in line, then return the first closure.
+	 *
+	 * @param Closure[] $pipeline THe closure pipeline.
+	 * @param int $index The pipeline index to work from.
+	 *
+	 * @return Closure
+	 */
+	protected function bindNext(array $pipeline, $index = 0) {
+		$closure = $pipeline[$index];
+
+		if ($index === count($pipeline) - 1) {
+			// The last item doesn't need to point to a subsequent closure.
+			return $closure;
+		} else {
+			return function() use ($closure, $pipeline, $index) {
+				$closure($this->bindNext($pipeline, $index + 1));
+			};
+		}
 	}
 
 }
