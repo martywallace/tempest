@@ -236,13 +236,32 @@ class Http extends Kernel {
 				if ($route->getMode() === Route::MODE_CONTROLLER) {
 					$controller = $route->getController();
 
+					if (!class_exists($controller[0])) {
+						throw new Exception('Controller class "' . $controller[0] . '" does not exist.');
+					}
+
 					$instance = new $controller[0]($request, $response);
+
+					if (!method_exists($instance, $controller[1])) {
+						throw new Exception('Controller class "' . $controller[0] . '" does not contain a method "' . $controller[1] . '".');
+					}
+
 					$instance->{$controller[1]}();
 				}
 			};
 
 			$pipeline = array_map(function($detail) use ($request, $response, $resolution) {
 				if ($detail !== $resolution) {
+					if (!class_exists($detail[0])) {
+						throw new Exception('Middleware class "' . $detail[0] . '" does not exist.');
+					}
+
+					$middleware = new $detail[0]($request, $response);
+
+					if (!method_exists($middleware, $detail[1])) {
+						throw new Exception('Middleware class "' . $detail[0] . '" does not contain a method "' . $detail[1] . '".');
+					}
+
 					return Closure::fromCallable([new $detail[0]($request, $response), $detail[1]]);
 				}
 
