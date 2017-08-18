@@ -237,9 +237,14 @@ abstract class App extends EventDispatcher {
 			$this->dispatch(ExceptionEvent::EXCEPTION, $event);
 		});
 
-		$this->dispatch(HttpKernelEvent::BOOTED, new HttpKernelEvent($kernel));
+		$this->dispatch(HttpKernelEvent::BOOTED, new HttpKernelEvent($kernel, $request));
 
-		return $kernel->handle($request);
+		// Handle the request and generate a response.
+		$response = $kernel->handle($request);
+
+		$this->dispatch(HttpKernelEvent::RESPONSE_READY, new HttpKernelEvent($kernel, $request, $response));
+
+		return $response;
 	}
 
 	/**

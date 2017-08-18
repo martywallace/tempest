@@ -78,8 +78,6 @@ class Http extends Kernel {
 			if ($info[0] === Dispatcher::FOUND) $this->found($request, $response, $info[1], $info[2]);
 			else if ($info[0] === Dispatcher::NOT_FOUND) $this->notFound($request, $response);
 			else if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) $this->methodNotAllowed($request, $response, $info[1]);
-
-			$this->dispatch(HttpKernelEvent::RESPONSE_READY, new HttpKernelEvent($this, $request, $response));
 		} catch (Exception $exception) {
 			$this->dispatch(ExceptionEvent::EXCEPTION, new ExceptionEvent($exception));
 			$this->exception($response, $exception);
