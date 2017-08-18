@@ -2,9 +2,9 @@
 
 use Closure;
 use Exception;
-use Tempest\{
-	App, Events\ExceptionEvent, Events\HttpKernelEvent, Kernel
-};
+use Tempest\{App, Kernel};
+use Tempest\Events\ExceptionEvent;
+use Tempest\Data\RenderableException;
 use FastRoute\{RouteCollector, Dispatcher};
 
 /**
@@ -288,7 +288,7 @@ class Http extends Kernel {
 	 */
 	protected function exception(Response $response, Exception $exception) {
 		$response->status(Status::INTERNAL_SERVER_ERROR)->render('500.html', [
-			'exception' => $exception
+			'exception' => new RenderableException($exception)
 		]);
 	}
 

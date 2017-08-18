@@ -1,9 +1,48 @@
-{% set title = 'Server Error' %}
+{% set title = 'Exception' %}
 
 {% extends '_tempest.html' %}
 
+{% block css %}
+  {{ parent() }}
+
+  <style>
+    .trace {
+      list-style: none;
+    }
+
+    .trace li + li {
+      border-top: 1px dotted #EEE;
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+  </style>
+{% endblock %}
+
 {% block box %}
-  <h1>Server Error</h1>
-  <p>{{ exception.getMessage() }}</p>
-  <p><a class="button" href="/">Home</a></p>
+  <h1>Exception</h1>
+
+  <section class="box red">
+    <p><strong>{{ exception.message }}</strong></p>
+    <p><small>{{ exception.file }} at line {{ exception.line }}</small></p>
+  </section>
+
+  <h2>Trace</h2>
+
+  <section class="box">
+    <ul class="trace">
+      {% for trace in exception.trace %}
+        <li>
+          {% if trace.class %}
+            <p><code>{{ trace.short }}::{{ trace.function }}()</code></p>
+          {% else %}
+            <p><code>{{ trace.function }}</code></p>
+          {% endif %}
+
+          {% if trace.file and trace.line %}
+            <p><small>{{ trace.file }} at line {{ trace.line }}</small></p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
 {% endblock %}

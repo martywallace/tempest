@@ -2,9 +2,7 @@
 
 use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Tempest\Events\{
-	AppEvent, ExceptionEvent, HttpKernelEvent, ServiceEvent
-};
+use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent, ServiceEvent};
 use Tempest\Http\{Http, Request, Response};
 use Tempest\Services\{Database, Twig};
 

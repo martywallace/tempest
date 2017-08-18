@@ -6,66 +6,80 @@
     
     <title>{{ title|default('System Message') }}</title>
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900|PT+Mono" rel="stylesheet">
 
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    {% block css %}
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
 
-      html, body {
-        height: 100%;
-      }
+        body {
+          font-family: 'Lato', sans-serif;
+          font-size: 14px;
+          padding: 40px 10px 10px;
+          text-align: center;
+          color: #444;
+          background: #EEE;
+        }
 
-      body {
-        background: #C94A43;
-        color: #FFF;
-        padding: 40px;
-        font-family: 'Open Sans', sans-serif;
-        font-size: 14px;
-        line-height: 1.4;
-      }
+        code {
+          font-family: 'PT Mono', monospace;
+        }
 
-      .box {
-        max-width: 600px;
-        margin: 0 auto;
-      }
+        h1 {
+          font-weight: 900;
+          color: #9D0042;
+        }
 
-      h1 {
-        padding-bottom: 10px;
-        border-bottom: 2px solid #AA2C25;
-      }
+        main {
+          max-width: 600px;
+          margin: 0 auto;
+        }
 
-      h1, p {
-        margin-bottom: 22px;
-      }
+        .box {
+          background: #FFF;
+          padding: 30px;
+          color: #222;
+          text-align: left;
+          border-radius: 4px;
+          margin: 40px 0;
+          overflow: auto;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
 
-      h1:last-child, p:last-child {
-        margin-bottom: 0;
-      }
+        .box.red {
+          background: #9D0042;
+          color: #FFF;
+        }
 
-      .button {
-        display: inline-block;
-        padding: 12px 30px;
-        color: #FFF;
-        text-decoration: none;
-        font-weight: bold;
-        background: none;
-        cursor: pointer;
-        border-radius: 20px;
-        border: 2px solid #FFF;
-      }
+        .box:last-child {
+          margin-bottom: 0;
+        }
 
-      .button:hover {
-        background: rgba(255, 255, 255, 0.1);
-      }
-    </style>
+        small {
+          display: block;
+          padding-top: 5px;
+          color: #AAA;
+        }
+
+        .box.red small {
+          color: #FF5A9F;
+        }
+
+        @media screen and (max-width: 500px) {
+          body {
+            
+          }
+        }
+      </style>
+    {% endblock %}
   </head>
   <body>
-    <section class="box">
+    <main>
       {% block box %}{% endblock %}
-    </section>
+    </main>
   </body>
 </html>
