@@ -3,10 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
     
     <title>{{ title|default('System Message') }}</title>
-
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,900|PT+Mono" rel="stylesheet">
 
     {% block css %}
       <style>
@@ -17,7 +16,7 @@
         }
 
         body {
-          font-family: 'Lato', sans-serif;
+          font-family: sans-serif;
           font-size: 14px;
           line-height: 1.6;
           padding: 40px 10px 10px;
@@ -27,7 +26,7 @@
         }
 
         code {
-          font-family: 'PT Mono', monospace;
+          font-family: 'Courier New', monospace;
         }
 
         h1 {

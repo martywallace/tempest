@@ -109,7 +109,11 @@ class Http extends Kernel {
 	 * @return Route
 	 */
 	public function route($method, $uri) {
-		return new Route(strtoupper($method), $uri);
+		if (!is_array($method)) $method = [$method];
+
+		$method = array_map(function($method) { return strtoupper($method); }, $method);
+
+		return new Route($method, $uri);
 	}
 
 	/**

@@ -5,7 +5,19 @@
 {% block box %}
   <h1>Method Not Allowed</h1>
 
-  <section class="box">
-    <p>This resource does not accept {{ method }} requests.</p>
-  </section>
+  {% if app.dev %}
+    <section class="box red">
+      <p>This resource does not accept <code>{{ method }}</code> requests.</p>
+    </section>
+
+    <h2>Accepted</h2>
+    
+    <section class="box">
+      <p><code>{{ allowed|join(', ') }}</code></p>
+    </section>
+  {% else %}
+    <section class="box">
+      <p>Your request was rejected.</p>
+    </section>
+  {% endif %}
 {% endblock %}

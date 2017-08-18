@@ -34,7 +34,7 @@
         {% for trace in exception.trace %}
           <li>
             {% if trace.class %}
-              <p><code>{{ trace.short }}::{{ trace.function }}()</code></p>
+              <p><code title="{{ trace.class }}::{{ trace.function }}()">{{ trace.short }}::{{ trace.function }}()</code></p>
             {% else %}
               <p><code>{{ trace.function }}</code></p>
             {% endif %}
