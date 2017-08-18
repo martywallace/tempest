@@ -1,0 +1,9 @@
+{% set title = 'Method Not Allowed' %}
+
+{% extends 'base.html' %}
+
+{% block box %}
+  <h1>Method Not Allowed</h1>
+  <p>This resource does not accept {{ method }} requests.</p>
+  <p><a class="button" href="/">Home</a></p>
+{% endblock %}

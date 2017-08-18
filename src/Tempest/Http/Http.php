@@ -2,7 +2,9 @@
 
 use Closure;
 use Exception;
-use Tempest\{App, Events\ExceptionEvent, Kernel};
+use Tempest\{
+	App, Events\ExceptionEvent, Events\HttpKernelEvent, Kernel
+};
 use FastRoute\{RouteCollector, Dispatcher};
 
 /**
@@ -18,10 +20,7 @@ class Http extends Kernel {
 	private $_routes;
 
 	/** @var string[][] */
-	private $_before = [];
-
-	/** @var array[][] */
-	private $_after = [];
+	private $_middleware = [];
 
 	/**
 	 * Http constructor.
@@ -66,6 +65,8 @@ class Http extends Kernel {
 	 * @return Response
 	 */
 	public function handle(Request $request) {
+		$response = new Response();
+
 		try {
 			// Attempt to match a route.
 			$info = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
@@ -74,41 +75,29 @@ class Http extends Kernel {
 				}
 			})->dispatch($request->method, $request->uri);
 
-			if ($info[0] === Dispatcher::FOUND) return $this->found($request, $info[1], $info[2]);
-			else if ($info[0] === Dispatcher::NOT_FOUND) return $this->notFound($request);
-			else if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) return $this->methodNotAllowed($request, $info[1]);
+			if ($info[0] === Dispatcher::FOUND) $this->found($request, $response, $info[1], $info[2]);
+			else if ($info[0] === Dispatcher::NOT_FOUND) $this->notFound($request, $response);
+			else if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) $this->methodNotAllowed($request, $response, $info[1]);
 
-			return null;
+			$this->dispatch(HttpKernelEvent::RESPONSE_READY, new HttpKernelEvent($this, $request, $response));
 		} catch (Exception $exception) {
 			$this->dispatch(ExceptionEvent::EXCEPTION, new ExceptionEvent($exception));
-			return $this->exception($exception);
+			$this->exception($response, $exception);
 		}
+
+		return $response;
 	}
 
 	/**
-	 * Attach middleware to be called before requests resolve to a controller.
+	 * Attach middleware to be called before requests resolve to a controller or template.
 	 *
 	 * @param string $class The middleware class.
 	 * @param string $method The method within the middleware class to trigger.
 	 *
 	 * @return $this
 	 */
-	public function before($class, $method) {
-		$this->_before[] = [$class, $method];
-
-		return $this;
-	}
-
-	/**
-	 * Attach middleware to be called after a request resolved to a controller.
-	 *
-	 * @param string $class The middleware class.
-	 * @param string $method The method within the middleware class to trigger.
-	 *
-	 * @return $this
-	 */
-	public function after($class, $method) {
-		$this->_after[] = [$class, $method];
+	public function middleware($class, $method) {
+		$this->_middleware[] = [$class, $method];
 
 		return $this;
 	}
@@ -207,14 +196,13 @@ class Http extends Kernel {
 	 * Handle a successfully matched route.
 	 *
 	 * @param Request $request The request being handled.
+	 * @param Response $response The response to be sent.
 	 * @param Route $route The route that was matched.
 	 * @param mixed[] $named Named arguments provided in the request, defined by the route.
 	 *
-	 * @return Response
-	 *
 	 * @throws Exception If the matched route does not perform any valid action.
 	 */
-	protected function found(Request $request, Route $route, array $named) {
+	protected function found(Request $request, Response $response, Route $route, array $named) {
 		foreach ($named as $property => $value) {
 			// Attached all named route data.
 			$request->attachNamed($property, $value);
@@ -225,9 +213,6 @@ class Http extends Kernel {
 		}
 
 		if ($route->getMode() === Route::MODE_TEMPLATE || $route->getMode() === Route::MODE_CONTROLLER) {
-			// Templates and controllers make use of middleware.
-			$response = Response::make();
-
 			$resolution = function() use ($route, $request, $response) {
 				if ($route->getMode() === Route::MODE_TEMPLATE) {
 					$response->render($route->getTemplate());
@@ -266,55 +251,47 @@ class Http extends Kernel {
 				}
 
 				return $detail;
-			}, array_merge($this->_before, $route->getBefore(), [$resolution]));
+			}, array_merge($this->_middleware, $route->getMiddleware(), [$resolution]));
 
 			// Bind all next closures and call the first.
 			$this->bindNext($pipeline)();
-
-			//$after = array_merge($route->getAfter(), $this->_after);
-
-			return $response;
 		}
-
-		return Response::make();
 	}
 
 	/**
 	 * Handle no route match.
 	 *
 	 * @param Request $request The request being handled.
-	 *
-	 * @return Response
+	 * @param Response $response The response to be sent.
 	 */
-	protected function notFound(Request $request) {
-		return Response::make()
-			->status(Status::NOT_FOUND)
-			->render('404.html');
+	protected function notFound(Request $request, Response $response) {
+		$response->status(Status::NOT_FOUND)->render('404.html');
 	}
 
 	/**
 	 * Handle a matched route with an unsupported method.
 	 *
 	 * @param Request $request The request being handled.
+	 * @param Response $response The response to be sent.
 	 * @param string[] $allowed The allowed methods.
-	 *
-	 * @return Response
 	 */
-	protected function methodNotAllowed(Request $request, array $allowed) {
-		return Response::make();
+	protected function methodNotAllowed(Request $request, Response $response, array $allowed) {
+		$response->status(Status::METHOD_NOT_ALLOWED)->render('405.html', [
+			'method' => $request->method,
+			'allowed' => $allowed
+		]);
 	}
 
 	/**
 	 * Handle an exception occurring during the request handling.
 	 *
+	 * @param Response $response The response to be sent.
 	 * @param Exception $exception The exception.
-	 *
-	 * @return Response
 	 */
-	protected function exception(Exception $exception) {
-		return Response::make()
-			->status(Status::INTERNAL_SERVER_ERROR)
-			->render('500.html', ['exception' => $exception]);
+	protected function exception(Response $response, Exception $exception) {
+		$response->status(Status::INTERNAL_SERVER_ERROR)->render('500.html', [
+			'exception' => $exception
+		]);
 	}
 
 	/**

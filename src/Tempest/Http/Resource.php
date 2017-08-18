@@ -13,10 +13,7 @@ abstract class Resource {
 	private $_uri = '';
 
 	/** @var string[][] */
-	private $_before = [];
-
-	/** @var string[][] */
-	private $_after = [];
+	private $_middleware = [];
 
 	/**
 	 * Uri constructor.
@@ -52,8 +49,8 @@ abstract class Resource {
 	 * @param string $class The name of the middleware class.
 	 * @param string $method The name of the method within the middleware class to trigger.
 	 */
-	public function prependBefore($class, $method) {
-		array_unshift($this->_before, [$class, $method]);
+	public function prependMiddleware($class, $method) {
+		array_unshift($this->_middleware, [$class, $method]);
 	}
 
 	/**
@@ -64,22 +61,8 @@ abstract class Resource {
 	 *
 	 * @return $this
 	 */
-	public function before($class, $method) {
-		$this->_before[] = [$class, $method];
-
-		return $this;
-	}
-
-	/**
-	 * Attach after middleware to this resources.
-	 *
-	 * @param string $class The name of the middleware class.
-	 * @param string $method The name of the method within the middleware class to trigger.
-	 *
-	 * @return $this
-	 */
-	public function after($class, $method) {
-		$this->_after[] = [$class, $method];
+	public function middleware($class, $method) {
+		$this->_middleware[] = [$class, $method];
 
 		return $this;
 	}
@@ -89,17 +72,8 @@ abstract class Resource {
 	 *
 	 * @return string[][]
 	 */
-	public function getBefore() {
-		return $this->_before;
-	}
-
-	/**
-	 * Get all registered after middleware.
-	 *
-	 * @return string[][]
-	 */
-	public function getAfter() {
-		return $this->_after;
+	public function getMiddleware() {
+		return $this->_middleware;
 	}
 
 }
