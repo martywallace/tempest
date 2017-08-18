@@ -1,5 +1,6 @@
 <?php namespace Tempest;
 
+use Dotenv\Dotenv;
 use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent, ServiceEvent};
@@ -36,6 +37,11 @@ abstract class App extends EventDispatcher {
 	 * @throws Exception If the application has already been booted.
 	 */
 	public static function boot($root, $config = null) {
+		if (file_exists($root . DIRECTORY_SEPARATOR . '.env')) {
+			$env = new Dotenv($root);
+			$env->load();
+		}
+
 		if (!empty(static::$_instance)) {
 			throw new Exception('The application has already been booted.');
 		}
