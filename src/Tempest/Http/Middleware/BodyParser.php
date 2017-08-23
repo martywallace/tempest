@@ -1,7 +1,8 @@
-<?php namespace Tempest\Http;
+<?php namespace Tempest\Http\Middleware;
 
 use Exception;
 use Closure;
+use Tempest\Http\{Handler, Header, ContentType};
 
 /**
  * Inbuilt body parser for populating data contained in request bodies.
@@ -20,7 +21,7 @@ class BodyParser extends Handler {
 	public function parse(Closure $next) {
 		$data = [];
 
-		if ($this->request->header(Header::CONTENT_TYPE) === 'application/json') {
+		if ($this->request->header(Header::CONTENT_TYPE) === ContentType::APPLICATION_JSON) {
 			$data = json_decode($this->request->body);
 
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -28,7 +29,7 @@ class BodyParser extends Handler {
 			}
 		}
 
-		if ($this->request->header(Header::CONTENT_TYPE) === 'application/x-www-form-urlencoded') {
+		if ($this->request->header(Header::CONTENT_TYPE) === ContentType::APPLICATION_X_WWW_FORM_URLENCODED) {
 			parse_str($this->request->body, $data);
 		}
 
@@ -36,6 +37,10 @@ class BodyParser extends Handler {
 			$this->request->attachData($property, $value);
 		}
 
+		$next();
+	}
+
+	public function sanitize(Closure $next) {
 		$next();
 	}
 

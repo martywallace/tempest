@@ -1,6 +1,5 @@
 <?php namespace Tempest\Http;
 
-use Exception;
 use Tempest\Utility;
 
 /**
@@ -12,7 +11,7 @@ use Tempest\Utility;
  *
  * @author Marty Wallace
  */
-class Request extends Message {
+class Request {
 
 	/**
 	 * Capture an incoming HTTP request and generate a new {@link Request request} from it.
@@ -64,7 +63,7 @@ class Request extends Message {
 
 		if (!empty($headers)) {
 			foreach ($headers as $key => $value) {
-				$this->_headers[strtolower($key)] = $value;
+				$this->_headers[Utility::kebab($key, true)] = $value;
 			}
 		}
 
@@ -85,11 +84,8 @@ class Request extends Message {
 	 *
 	 * @param string $property The property to create.
 	 * @param mixed $value The value to attach.
-	 *
-	 * @throws Exception If the property already exists.
 	 */
 	public function attachNamed($property, $value) {
-		if ($this->hasNamed($property)) throw new Exception('Named data "' . $property . '" has already been attached.');
 		$this->_named[$property] = $value;
 	}
 
@@ -122,11 +118,8 @@ class Request extends Message {
 	 *
 	 * @param string $property The property to create.
 	 * @param mixed $value The value to attach.
-	 *
-	 * @throws Exception If the property already exists.
 	 */
 	public function attachData($property, $value) {
-		if ($this->hasData($property)) throw new Exception('Data "' . $property . '" has already been attached.');
 		$this->_data[$property] = $value;
 	}
 
@@ -186,7 +179,7 @@ class Request extends Message {
 	 * @return bool
 	 */
 	public function hasHeader($header) {
-		return array_key_exists(strtolower($header), $this->_headers);
+		return array_key_exists(Utility::kebab($header, true), $this->_headers);
 	}
 
 	/**
@@ -199,7 +192,7 @@ class Request extends Message {
 	 */
 	public function header($header = null, $fallback = null) {
 		if (empty($header)) return $this->_headers;
-		return Utility::dig($this->_headers, strtolower($header), $fallback);
+		return Utility::dig($this->_headers, Utility::kebab($header, true), $fallback);
 	}
 
 }

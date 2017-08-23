@@ -50,14 +50,22 @@ class Utility {
 	 * Convert a string into kebab format e.g. "The quick brown fox" becomes "the-quick-brown-fox".
 	 *
 	 * @param string $value The input value.
+	 * @param bool $upper Whether or no to uppercase the first letter of each segment e.g. "The-Quick-Brown-Fox".
 	 *
 	 * @return string
 	 */
-	public static function kebab($value) {
+	public static function kebab($value, $upper = false) {
 		$base = preg_replace('/[^A-Za-z\s\-]+/', '', $value);
 		$base = preg_replace('/[\s\-]+/', '-', $base);
+		$base = strtolower($base);
 
-		return trim(trim(strtolower($base)), '-');
+		if ($upper) {
+			$base = implode('-', array_map(function ($part) {
+				return ucfirst($part);
+			}, explode('-', $base)));
+		}
+
+		return trim(trim($base, '-'));
 	}
 
 }
