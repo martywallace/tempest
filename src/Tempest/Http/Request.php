@@ -8,7 +8,6 @@ use Tempest\Utility;
  *
  * @property-read string $method The request method.
  * @property-read string $uri The request URI.
- * @property-read array $headers The request headers.
  * @property-read string $body The request body.
  *
  * @author Marty Wallace
@@ -24,7 +23,7 @@ class Request extends Message {
 		return new static(
 			$_SERVER['REQUEST_METHOD'],
 			$_SERVER['REQUEST_URI'],
-			[],
+			getallheaders(),
 			file_get_contents('php://input')
 		);
 	}
@@ -39,7 +38,7 @@ class Request extends Message {
 	private $_query;
 
 	/** @var array */
-	private $_headers;
+	private $_headers = [];
 
 	/** @var string */
 	private $_body;
@@ -61,8 +60,13 @@ class Request extends Message {
 	public function __construct($method, $uri, array $headers = [], $body = '') {
 		$this->_method = strtoupper($method);
 		$this->_uri = parse_url($uri, PHP_URL_PATH);
-		$this->_headers = $headers;
 		$this->_body = $body;
+
+		if (!empty($headers)) {
+			foreach ($headers as $key => $value) {
+				$this->_headers[strtolower($key)] = $value;
+			}
+		}
 
 		// Populate querystring array.
 		parse_str(parse_url($uri, PHP_URL_QUERY), $this->_query);
@@ -71,7 +75,6 @@ class Request extends Message {
 	public function __get($prop) {
 		if ($prop === 'method') return $this->_method;
 		if ($prop === 'uri') return $this->_uri;
-		if ($prop === 'headers') return $this->_headers;
 		if ($prop === 'body') return $this->_body;
 
 		return null;
@@ -173,6 +176,30 @@ class Request extends Message {
 	public function query($property = null, $fallback = null) {
 		if (empty($property)) return $this->_query;
 		return Utility::dig($this->_query, $property, $fallback);
+	}
+
+	/**
+	 * Determine whether a request header exists.
+	 *
+	 * @param string $header The request header to check for. Case-insensitive.
+	 *
+	 * @return bool
+	 */
+	public function hasHeader($header) {
+		return array_key_exists(strtolower($header), $this->_headers);
+	}
+
+	/**
+	 * Returns a request header.
+	 *
+	 * @param string $header The request header to retrieve. If not provided, returns the entire set of headers.
+	 * @param mixed $fallback The fallback value to provide if the header does not exist.
+	 *
+	 * @return string
+	 */
+	public function header($header = null, $fallback = null) {
+		if (empty($header)) return $this->_headers;
+		return Utility::dig($this->_headers, strtolower($header), $fallback);
 	}
 
 }
