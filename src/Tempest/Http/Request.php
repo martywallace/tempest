@@ -36,6 +36,9 @@ class Request extends Message {
 	private $_uri;
 
 	/** @var array */
+	private $_query;
+
+	/** @var array */
 	private $_headers;
 
 	/** @var string */
@@ -44,19 +47,25 @@ class Request extends Message {
 	/** @var mixed[] */
 	private $_named = [];
 
+	/** @var mixed[] */
+	private $_data = [];
+
 	/**
 	 * Request constructor.
 	 *
-	 * @param string $method
-	 * @param string $uri
-	 * @param array $headers
-	 * @param string $body
+	 * @param string $method The request method e.g. GET, POST.
+	 * @param string $uri The request URI, including optional querystring.
+	 * @param array $headers The request headers.
+	 * @param string $body The request body.
 	 */
 	public function __construct($method, $uri, array $headers = [], $body = '') {
 		$this->_method = strtoupper($method);
-		$this->_uri = $uri;
+		$this->_uri = parse_url($uri, PHP_URL_PATH);
 		$this->_headers = $headers;
 		$this->_body = $body;
+
+		// Populate querystring array.
+		parse_str(parse_url($uri, PHP_URL_QUERY), $this->_query);
 	}
 
 	public function __get($prop) {
@@ -103,6 +112,67 @@ class Request extends Message {
 	public function named($property = null, $fallback = null) {
 		if (empty($property)) return $this->_named;
 		return Utility::dig($this->_named, $property, $fallback);
+	}
+
+	/**
+	 * Attaches {@link Request::data() data} to this request.
+	 *
+	 * @param string $property The property to create.
+	 * @param mixed $value The value to attach.
+	 *
+	 * @throws Exception If the property already exists.
+	 */
+	public function attachData($property, $value) {
+		if ($this->hasData($property)) throw new Exception('Data "' . $property . '" has already been attached.');
+		$this->_data[$property] = $value;
+	}
+
+	/**
+	 * Determine whether data exists.
+	 *
+	 * @param string $property The property to check for.
+	 *
+	 * @return bool
+	 */
+	public function hasData($property) {
+		return array_key_exists($property, $this->_data);
+	}
+
+	/**
+	 * Retrieve data.
+	 *
+	 * @param string $property The property to retrieve. If not provided, the entire set of data is returned.
+	 * @param mixed $fallback A fallback value to provide if the property did not exist.
+	 *
+	 * @return mixed
+	 */
+	public function data($property = null, $fallback = null) {
+		if (empty($property)) return $this->_data;
+		return Utility::dig($this->_data, $property, $fallback);
+	}
+
+	/**
+	 * Determine whether a field exists in the request querystring.
+	 *
+	 * @param string $property The property to check for.
+	 *
+	 * @return bool
+	 */
+	public function hasQuery($property) {
+		return array_key_exists($property, $this->_query);
+	}
+
+	/**
+	 * Retrieve querystring data.
+	 *
+	 * @param string $property The property to retrieve. If not provided, the entire query set is returned.
+	 * @param mixed $fallback A fallback value to provide if the querystring does not contain the property.
+	 *
+	 * @return mixed
+	 */
+	public function query($property = null, $fallback = null) {
+		if (empty($property)) return $this->_query;
+		return Utility::dig($this->_query, $property, $fallback);
 	}
 
 }
