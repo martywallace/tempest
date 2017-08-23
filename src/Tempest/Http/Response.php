@@ -154,6 +154,33 @@ class Response {
 	}
 
 	/**
+	 * Returns the current response body.
+	 *
+	 * @return string
+	 */
+	public function getBody() {
+		return $this->_body;
+	}
+
+	/**
+	 * Returns the current response status.
+	 *
+	 * @return int
+	 */
+	public function getStatus() {
+		return $this->_status;
+	}
+
+	/**
+	 * Returns the current response headers.
+	 *
+	 * @return array
+	 */
+	public function getHeaders() {
+		return $this->_headers;
+	}
+
+	/**
 	 * Send the response and {@link App::terminate() terminate} the application.
 	 *
 	 * @throws Exception If output has already been sent, voiding the ability to set response headers.
