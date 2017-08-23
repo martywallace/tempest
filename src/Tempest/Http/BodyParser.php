@@ -20,7 +20,7 @@ class BodyParser extends Handler {
 	public function parse(Closure $next) {
 		$data = [];
 
-		if ($this->request->header('content-type') === 'application/json') {
+		if ($this->request->header(Header::CONTENT_TYPE) === 'application/json') {
 			$data = json_decode($this->request->body);
 
 			if (json_last_error() !== JSON_ERROR_NONE) {
@@ -28,7 +28,7 @@ class BodyParser extends Handler {
 			}
 		}
 
-		if ($this->request->header('content-type') === 'application/x-www-form-urlencoded') {
+		if ($this->request->header(Header::CONTENT_TYPE) === 'application/x-www-form-urlencoded') {
 			parse_str($this->request->body, $data);
 		}
 
