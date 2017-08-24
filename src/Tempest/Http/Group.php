@@ -3,8 +3,6 @@
 /**
  * A group of routes.
  *
- * @property-read Route[]|Group[] $children The children routes and groups.
- *
  * @author Marty Wallace
  */
 class Group extends Resource {
@@ -23,10 +21,13 @@ class Group extends Resource {
 		$this->_children = $children;
 	}
 
-	public function __get($prop) {
-		if ($prop === 'children') return $this->_children;
-
-		return parent::__get($prop);
+	/**
+	 * Get all child routes and groups.
+	 *
+	 * @return Group[]|Route[]
+	 */
+	public function getChildren() {
+		return $this->_children;
 	}
 
 	/**
@@ -49,7 +50,7 @@ class Group extends Resource {
 		$routes = [];
 
 		foreach ($this->_children as $child) {
-			$child->prependUri($this->uri);
+			$child->prependUri($this->getUri());
 
 			foreach ($this->getMiddleware() as $middleware) {
 				$child->prependMiddleware($middleware[0], $middleware[1]);

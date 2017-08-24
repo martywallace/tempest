@@ -9,7 +9,7 @@ use Tempest\Utility;
  *
  * @author Marty Wallace
  */
-class Response {
+class Response implements Message {
 
 	/** @var string */
 	private $_body = '';
@@ -174,7 +174,7 @@ class Response {
 	/**
 	 * Returns the current response headers.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getHeaders() {
 		return $this->_headers;

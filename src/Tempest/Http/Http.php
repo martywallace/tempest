@@ -19,7 +19,7 @@ class Http extends Kernel {
 	/** @var Route[] */
 	private $_routes;
 
-	/** @var string[][] */
+	/** @var mixed[][] */
 	private $_middleware = [];
 
 	/**
@@ -71,12 +71,12 @@ class Http extends Kernel {
 			// Attempt to match a route.
 			$info = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
 				foreach ($this->_routes as $route) {
-					$collector->addRoute($route->method, $route->uri, $route);
+					$collector->addRoute($route->getMethod(), $route->getUri(), $route);
 				}
-			})->dispatch($request->method, $request->uri);
+			})->dispatch($request->getMethod(), $request->getUri());
 
 			if ($info[0] === Dispatcher::FOUND) $this->found($request, $response, $info[1], $info[2]);
-			else if ($info[0] === Dispatcher::NOT_FOUND) $this->notFound($request, $response);
+			else if ($info[0] === Dispatcher::NOT_FOUND) $this->notFound($response);
 			else if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) $this->methodNotAllowed($request, $response, $info[1]);
 		} catch (Exception $exception) {
 			$this->dispatch(ExceptionEvent::EXCEPTION, new ExceptionEvent($exception));
@@ -87,16 +87,14 @@ class Http extends Kernel {
 	}
 
 	/**
-	 * Attach middleware to be called before requests resolve to a controller or template.
+	 * Attach one or more middleware to be called before requests resolve to a controller or template.
 	 *
-	 * @param string $class The middleware class.
-	 * @param string $method The method within the middleware class to trigger.
+	 * @param array[] ...$actions The middleware actions.
 	 *
 	 * @return $this
 	 */
-	public function middleware($class, $method) {
-		$this->_middleware[] = [$class, $method];
-
+	public function middleware(...$actions) {
+		$this->_middleware = array_merge($this->_middleware, $actions);
 		return $this;
 	}
 
@@ -211,7 +209,7 @@ class Http extends Kernel {
 		}
 
 		if ($route->getMode() === Route::MODE_UNDETERMINED) {
-			throw new Exception('Route "' . $route->uri . '" does not perform a valid action');
+			throw new Exception('Route "' . $route->getUri() . '" does not perform a valid action');
 		}
 
 		if ($route->getMode() === Route::MODE_TEMPLATE || $route->getMode() === Route::MODE_CONTROLLER) {
@@ -227,7 +225,7 @@ class Http extends Kernel {
 						throw new Exception('Controller class "' . $controller[0] . '" does not exist.');
 					}
 
-					$instance = new $controller[0]($request, $response);
+					$instance = new $controller[0]($request, $response, $controller[2]);
 
 					if (!method_exists($instance, $controller[1])) {
 						throw new Exception('Controller class "' . $controller[0] . '" does not contain a method "' . $controller[1] . '".');
@@ -237,13 +235,19 @@ class Http extends Kernel {
 				}
 			};
 
+			$pipeline = array_merge(
+				$this->_middleware,
+				$route->getMiddleware(),
+				[$resolution]
+			);
+
 			$pipeline = array_map(function($detail) use ($request, $response, $resolution) {
 				if ($detail !== $resolution) {
 					if (!class_exists($detail[0])) {
 						throw new Exception('Middleware class "' . $detail[0] . '" does not exist.');
 					}
 
-					$middleware = new $detail[0]($request, $response);
+					$middleware = new $detail[0]($request, $response, $detail[2]);
 
 					if (!method_exists($middleware, $detail[1])) {
 						throw new Exception('Middleware class "' . $detail[0] . '" does not contain a method "' . $detail[1] . '".');
@@ -253,21 +257,22 @@ class Http extends Kernel {
 				}
 
 				return $detail;
-			}, array_merge($this->_middleware, $route->getMiddleware(), [$resolution]));
+			}, $pipeline);
 
 			// Bind all next closures and call the first.
-			$this->bindNext($pipeline)();
+			$pipeline = $this->bindNext($pipeline);
+			$pipeline();
 		}
 	}
 
 	/**
 	 * Handle no route match.
 	 *
-	 * @param Request $request The request being handled.
 	 * @param Response $response The response to be sent.
 	 */
-	protected function notFound(Request $request, Response $response) {
-		$response->status(Status::NOT_FOUND)->render('404.html');
+	protected function notFound(Response $response) {
+		$response->status(Status::NOT_FOUND)
+			->render('404.html');
 	}
 
 	/**
@@ -278,10 +283,9 @@ class Http extends Kernel {
 	 * @param string[] $allowed The allowed methods.
 	 */
 	protected function methodNotAllowed(Request $request, Response $response, array $allowed) {
-		$response->status(Status::METHOD_NOT_ALLOWED)->render('405.html', [
-			'method' => $request->method,
-			'allowed' => $allowed
-		]);
+		$response->status(Status::METHOD_NOT_ALLOWED)
+			->header(Header::ALLOW, implode(', ', $allowed))
+			->render('405.html', ['method' => $request->getMethod(), 'allowed' => $allowed]);
 	}
 
 	/**
@@ -291,9 +295,8 @@ class Http extends Kernel {
 	 * @param Exception $exception The exception.
 	 */
 	protected function exception(Response $response, Exception $exception) {
-		$response->status(Status::INTERNAL_SERVER_ERROR)->render('500.html', [
-			'exception' => new RenderableException($exception)
-		]);
+		$response->status(Status::INTERNAL_SERVER_ERROR)
+			->render('500.html', ['exception' => new RenderableException($exception)]);
 	}
 
 	/**

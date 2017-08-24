@@ -5,9 +5,6 @@ use Exception;
 /**
  * A route to be handled by the HTTP kernel.
  *
- * @property-read string|string[] $method The HTTP method associated with this route.
- * @property-read string $uri The URI this route handles.
- *
  * @author Marty Wallace
  */
 class Route extends Resource {
@@ -22,7 +19,7 @@ class Route extends Resource {
 	/** @var string */
 	private $_template;
 
-	/** @var string[] */
+	/** @var mixed[] */
 	private $_controller;
 
 	/**
@@ -36,10 +33,13 @@ class Route extends Resource {
 		$this->_method = $method;
 	}
 
-	public function __get($prop) {
-		if ($prop === 'method') return $this->_method;
-
-		return parent::__get($prop);
+	/**
+	 * Get the HTTP methods that triggers this route.
+	 *
+	 * @return string|string[]
+	 */
+	public function getMethod() {
+		return $this->_method;
 	}
 
 	/**
@@ -104,19 +104,18 @@ class Route extends Resource {
 	/**
 	 * Attach a controller method to call when this route is matched.
 	 *
-	 * @param string $class The name of the controller class.
-	 * @param string $method The name of the controller method within the class.
+	 * @param array $action The action to perform provided by your controller class.
 	 *
 	 * @return $this
 	 *
 	 * @throws Exception I the route already handles a controller.
 	 * @throws Exception If the route already handles a template.
 	 */
-	public function controller($class, $method = 'index') {
+	public function controller(array $action) {
 		if (!empty($this->_controller)) throw new Exception('This route already triggers a controller.');
 		if (!empty($this->_template)) throw new Exception('A route cannot trigger both a template and a controller.');
 
-		$this->_controller = [$class, $method];
+		$this->_controller = $action;
 
 		return $this;
 	}

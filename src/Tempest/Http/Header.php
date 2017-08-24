@@ -23,7 +23,7 @@ class Header {
 	const ACCESS_CONTROL_REQUEST_HEADERS = 'Access-Control-Request-Headers';
 	const ACCESS_CONTROL_REQUEST_METHOD = 'Access-Control-Request-Method';
 	const AGE = 'Age';
-	const Allow = 'Allow';
+	const ALLOW = 'Allow';
 	const AUTHORIZATION = 'Authorization';
 	const CACHE_CONTROL = 'Cache-Control';
 	const CONNECTION = 'Connection';

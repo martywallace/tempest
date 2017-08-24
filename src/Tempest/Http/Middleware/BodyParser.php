@@ -22,7 +22,7 @@ class BodyParser extends Handler {
 		$data = [];
 
 		if ($this->request->header(Header::CONTENT_TYPE) === ContentType::APPLICATION_JSON) {
-			$data = json_decode($this->request->body);
+			$data = json_decode($this->request->getBody());
 
 			if (json_last_error() !== JSON_ERROR_NONE) {
 				throw new Exception('The request contained invalid JSON: ' . json_last_error_msg());
@@ -30,7 +30,7 @@ class BodyParser extends Handler {
 		}
 
 		if ($this->request->header(Header::CONTENT_TYPE) === ContentType::APPLICATION_X_WWW_FORM_URLENCODED) {
-			parse_str($this->request->body, $data);
+			parse_str($this->request->getBody(), $data);
 		}
 
 		foreach ($data as $property => $value) {

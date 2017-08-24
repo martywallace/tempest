@@ -3,8 +3,6 @@
 /**
  * A HTTP resource.
  *
- * @property-read string $uri The URI this resource deals with.
- *
  * @author Marty Wallace
  */
 abstract class Resource {
@@ -12,7 +10,7 @@ abstract class Resource {
 	/** @var string */
 	private $_uri = '';
 
-	/** @var string[][] */
+	/** @var mixed[][] */
 	private $_middleware = [];
 
 	/**
@@ -24,53 +22,52 @@ abstract class Resource {
 		$this->_uri = $uri;
 	}
 
-	public function __get($prop) {
-		if ($prop === 'uri') return $this->_uri;
-
-		return null;
+	/**
+	 * The URI that this resource handles.
+	 *
+	 * @return string
+	 */
+	public function getUri() {
+		return $this->_uri;
 	}
 
 	/**
 	 * Prepend a value to the URI.
 	 *
-	 * @param string $value THe value to prepend.
+	 * @param string $value The value to prepend.
 	 *
 	 * @return $this
 	 */
 	public function prependUri($value) {
 		$this->_uri = '/' . trim(trim($value, '/\\') . $this->_uri, '/\\');
-
 		return $this;
 	}
 
 	/**
-	 * Prepend before middleware to this resource.
+	 * Prepend middleware to this resource.
 	 *
-	 * @param string $class The name of the middleware class.
-	 * @param string $method The name of the method within the middleware class to trigger.
+	 * @param array $action The middleware action to prepend.
 	 */
-	public function prependMiddleware($class, $method) {
-		array_unshift($this->_middleware, [$class, $method]);
+	public function prependMiddleware($action) {
+		array_unshift($this->_middleware, $action);
 	}
 
 	/**
-	 * Attach before middleware to this resources.
+	 * Attach one or more middleware to this resources.
 	 *
-	 * @param string $class The name of the middleware class.
-	 * @param string $method The name of the method within the middleware class to trigger.
+	 * @param array[] ...$actions The middleware actions.
 	 *
 	 * @return $this
 	 */
-	public function middleware($class, $method) {
-		$this->_middleware[] = [$class, $method];
-
+	public function middleware(...$actions) {
+		$this->_middleware = array_merge($this->_middleware, $actions);
 		return $this;
 	}
 
 	/**
-	 * Get all registered before middleware.
+	 * Get all registered middleware.
 	 *
-	 * @return string[][]
+	 * @return mixed[][]
 	 */
 	public function getMiddleware() {
 		return $this->_middleware;

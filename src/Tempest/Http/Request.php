@@ -5,13 +5,9 @@ use Tempest\Utility;
 /**
  * A request made to the HTTP kernel.
  *
- * @property-read string $method The request method.
- * @property-read string $uri The request URI.
- * @property-read string $body The request body.
- *
  * @author Marty Wallace
  */
-class Request {
+class Request implements Message {
 
 	/**
 	 * Capture an incoming HTTP request and generate a new {@link Request request} from it.
@@ -71,12 +67,40 @@ class Request {
 		parse_str(parse_url($uri, PHP_URL_QUERY), $this->_query);
 	}
 
-	public function __get($prop) {
-		if ($prop === 'method') return $this->_method;
-		if ($prop === 'uri') return $this->_uri;
-		if ($prop === 'body') return $this->_body;
+	/**
+	 * Returns the request body.
+	 *
+	 * @return string
+	 */
+	public function getBody() {
+		return $this->_body;
+	}
 
-		return null;
+	/**
+	 * Returns the request headers.
+	 *
+	 * @return string
+	 */
+	public function getHeaders() {
+		return $this->_headers;
+	}
+
+	/**
+	 * Get the HTTP request method.
+	 *
+	 * @return string
+	 */
+	public function getMethod() {
+		return $this->_method;
+	}
+
+	/**
+	 * Get the request URI.
+	 *
+	 * @return string
+	 */
+	public function getUri() {
+		return $this->_uri;
 	}
 
 	/**
@@ -185,13 +209,14 @@ class Request {
 	/**
 	 * Returns a request header.
 	 *
-	 * @param string $header The request header to retrieve. If not provided, returns the entire set of headers.
+	 * @param string $header The request header to retrieve. If not provided, returns the {@link getHeaders() entire}
+	 * set of headers.
 	 * @param mixed $fallback The fallback value to provide if the header does not exist.
 	 *
 	 * @return string
 	 */
 	public function header($header = null, $fallback = null) {
-		if (empty($header)) return $this->_headers;
+		if (empty($header)) return $this->getHeaders();
 		return Utility::dig($this->_headers, Utility::kebab($header, true), $fallback);
 	}
 
