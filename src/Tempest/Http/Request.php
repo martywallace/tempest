@@ -19,7 +19,8 @@ class Request implements Message {
 			$_SERVER['REQUEST_METHOD'],
 			$_SERVER['REQUEST_URI'],
 			getallheaders(),
-			file_get_contents('php://input')
+			file_get_contents('php://input'),
+			$_COOKIE
 		);
 	}
 
@@ -44,6 +45,9 @@ class Request implements Message {
 	/** @var mixed[] */
 	private $_data = [];
 
+	/** @var mixed[] */
+	private $_cookies = [];
+
 	/**
 	 * Request constructor.
 	 *
@@ -51,11 +55,13 @@ class Request implements Message {
 	 * @param string $uri The request URI, including optional querystring.
 	 * @param array $headers The request headers.
 	 * @param string $body The request body.
+	 * @param array $cookies Cookies attached to the request.
 	 */
-	public function __construct($method, $uri, array $headers = [], $body = '') {
+	public function __construct($method, $uri, array $headers = [], $body = '', array $cookies = []) {
 		$this->_method = strtoupper($method);
 		$this->_uri = parse_url($uri, PHP_URL_PATH);
 		$this->_body = $body;
+		$this->_cookies = $cookies;
 
 		if (!empty($headers)) {
 			foreach ($headers as $key => $value) {
@@ -218,6 +224,19 @@ class Request implements Message {
 	public function header($header = null, $fallback = null) {
 		if (empty($header)) return $this->getHeaders();
 		return Utility::dig($this->_headers, Utility::kebab($header, true), $fallback);
+	}
+
+	/**
+	 * Get a cookie from the request.
+	 *
+	 * @param string $cookie The name of the cookie. If not provided, returns all cookies.
+	 * @param mixed $fallback A fallback value to provide if the cookie does not exist.
+	 *
+	 * @return mixed
+	 */
+	public function cookie($cookie = null, $fallback = null) {
+		if (empty($cookie)) return $this->_cookies;
+		return Utility::dig($this->_cookies, $cookie, $fallback);
 	}
 
 }

@@ -5,7 +5,7 @@ use Exception;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent, ServiceEvent};
 use Tempest\Http\{Http, Request, Response};
-use Tempest\Services\{Database, Twig};
+use Tempest\Services\{Database, Twig, Session};
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -17,6 +17,7 @@ use Tempest\Services\{Database, Twig};
  *
  * @property-read Database $db The inbuilt database service.
  * @property-read Twig $twig The inbuilt Twig service, used to render Twig templates.
+ * @property-read Session $session The inbuilt session handling service.
  *
  * @author Marty Wallace
  */
@@ -103,7 +104,8 @@ abstract class App extends EventDispatcher {
 
 		$this->_services = array_merge([
 			'db' => Database::class,
-			'twig' => Twig::class
+			'twig' => Twig::class,
+			'session' => Session::class
 		], $this->services());
 
 		$this->dispatch(AppEvent::SETUP);

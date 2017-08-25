@@ -10,8 +10,6 @@ use FastRoute\{RouteCollector, Dispatcher};
 /**
  * The HTTP kernel deals with interpreting a HTTP {@link Request request} and generating a {@link Response response}.
  *
- * @property-read Route[] $routes The loaded routes to be handled.
- *
  * @author Marty Wallace
  */
 class Http extends Kernel {
@@ -51,12 +49,6 @@ class Http extends Kernel {
 		$this->_routes = $root->flatten();
 	}
 
-	public function __get($prop) {
-		if ($prop === 'routes') return $this->_routes;
-
-		return null;
-	}
-
 	/**
 	 * Handle an incoming {@link Request HTTP request} and generate a {@link Response response} for sending.
 	 *
@@ -65,7 +57,7 @@ class Http extends Kernel {
 	 * @return Response
 	 */
 	public function handle(Request $request) {
-		$response = new Response();
+		$response = Response::make();
 
 		try {
 			// Attempt to match a route.

@@ -9,21 +9,23 @@ use Tempest\Http\Header;
  *
  * @author Marty Wallace
  */
-class Protection extends Handler {
+class Security extends Handler {
 
 	/**
 	 * Adds some basic response headers that slightly improve application security.
 	 *
 	 * @param Closure $next
 	 */
-	public function protect(Closure $next) {
+	public function headers(Closure $next) {
 		$this->expect([
 			'nosniff' => true,
-			'denyFrames' => true
+			'denyFrames' => true,
+			'xssProtection' => true
 		]);
 
 		if ($this->option('nosniff')) $this->response->header(Header::X_CONTENT_TYPE_OPTIONS, 'nosniff');
-		if ($this->option('denyFrames')) $this->response->header(Header::X_FRAME_OPTIONS, 'deny');
+		if ($this->option('denyFrames')) $this->response->header(Header::X_FRAME_OPTIONS, 'sameorigin');
+		if ($this->option('xssProtection')) $this->response->header(Header::X_XSS_PROTECTION, '1; mode=block');
 
 		$next();
 	}

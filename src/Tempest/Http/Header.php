@@ -89,6 +89,7 @@ class Header {
 	const X_POWERED_BY = 'X-Powered-By';
 	const X_REQUEST_ID = 'X-Request-ID';
 	const X_REQUESTED_WITH = 'X-Requested-With';
+	const X_ROBOTS_TAG = 'X-Robots-Tag';
 	const X_UA_COMPATIBLE = 'X-UA-Compatible';
 	const X_XSS_PROTECTION = 'X-XSS-Protection';
 
