@@ -35,6 +35,12 @@ class FileSessionHandler implements SessionHandlerInterface {
 	}
 
 	public function gc($lifetime) {
+		foreach (scandir($this->_storage) as $file) {
+			if (filemtime($file) + $lifetime < time() && file_exists($file)) {
+				unlink($file);
+			}
+		}
+
 		return true;
 	}
 

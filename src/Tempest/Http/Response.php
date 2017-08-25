@@ -10,6 +10,9 @@ use Tempest\{App, Utility};
  */
 class Response implements Message {
 
+	const COOKIE_CREATE = 'CreateCookie';
+	const COOKIE_DELETE = 'DeleteCookie';
+
 	/** @var string */
 	private $_body = '';
 
@@ -194,7 +197,19 @@ class Response implements Message {
 	 * @return $this
 	 */
 	public function cookie($name, $value, $lifetime = 3600) {
-		$this->_cookies[$name] = [$value, $lifetime];
+		$this->_cookies[$name] = [self::COOKIE_CREATE, $value, $lifetime];
+		return $this;
+	}
+
+	/**
+	 * Deletes a previously set cookie.
+	 *
+	 * @param string $name The name of the cookie to delete.
+	 *
+	 * @return $this
+	 */
+	public function deleteCookie($name) {
+		$this->_cookies[$name] = [self::COOKIE_DELETE];
 		return $this;
 	}
 
@@ -212,7 +227,10 @@ class Response implements Message {
 		}
 
 		foreach ($this->_cookies as $name => $details) {
-			setcookie($name, $details[0], time() + $details[1], '/', null, null, true);
+			$action = array_shift($details);
+
+			if ($action === self::COOKIE_CREATE) setcookie($name, $details[0], time() + $details[1], '/', null, null, true);
+			if ($action === self::COOKIE_DELETE) setcookie($name, null, time(), '/');
 		}
 
 		echo $this->_body;
