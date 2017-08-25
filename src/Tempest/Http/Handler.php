@@ -1,6 +1,7 @@
 <?php namespace Tempest\Http;
 
 use Exception;
+use Tempest\Utility;
 
 /**
  * A route handler - either in the form of middleware or a controller.
@@ -57,13 +58,25 @@ abstract class Handler {
 	public function __get($prop) {
 		if ($prop === 'request') return $this->_request;
 		if ($prop === 'response') return $this->_response;
-		if ($prop === 'options') return $this->_options;
 
 		return null;
 	}
 
 	public function __isset($prop) {
 		return $this->{$prop} !== null;
+	}
+
+	/**
+	 * Get an option provided to this handler.
+	 *
+	 * @param string $option The option to get. Returns the entire set of options if not provided.
+	 * @param mixed $fallback A fallback value to provide if the option does not exist.
+	 *
+	 * @return mixed
+	 */
+	public function option($option = null, $fallback = null) {
+		if (empty($option)) return $this->_options;
+		return Utility::dig($this->_options, $option, $fallback);
 	}
 
 }

@@ -219,19 +219,19 @@ class Http extends Kernel {
 				}
 
 				if ($route->getMode() === Route::MODE_CONTROLLER) {
-					$controller = $route->getController();
+					$action = $route->getController();
 
-					if (!class_exists($controller[0])) {
-						throw new Exception('Controller class "' . $controller[0] . '" does not exist.');
+					if (!class_exists($action[0])) {
+						throw new Exception('Controller class "' . $action[0] . '" does not exist.');
 					}
 
-					$instance = new $controller[0]($request, $response, $controller[2]);
+					$controller = new $action[0]($request, $response, $action[2]);
 
-					if (!method_exists($instance, $controller[1])) {
-						throw new Exception('Controller class "' . $controller[0] . '" does not contain a method "' . $controller[1] . '".');
+					if (!method_exists($controller, $action[1])) {
+						throw new Exception('Controller class "' . $action[0] . '" does not contain a method "' . $action[1] . '".');
 					}
 
-					$instance->{$controller[1]}();
+					$controller->{$action[1]}();
 				}
 			};
 
@@ -241,22 +241,22 @@ class Http extends Kernel {
 				[$resolution]
 			);
 
-			$pipeline = array_map(function($detail) use ($request, $response, $resolution) {
-				if ($detail !== $resolution) {
-					if (!class_exists($detail[0])) {
-						throw new Exception('Middleware class "' . $detail[0] . '" does not exist.');
+			$pipeline = array_map(function($action) use ($request, $response, $resolution) {
+				if ($action !== $resolution) {
+					if (!class_exists($action[0])) {
+						throw new Exception('Middleware class "' . $action[0] . '" does not exist.');
 					}
 
-					$middleware = new $detail[0]($request, $response, $detail[2]);
+					$middleware = new $action[0]($request, $response, $action[2]);
 
-					if (!method_exists($middleware, $detail[1])) {
-						throw new Exception('Middleware class "' . $detail[0] . '" does not contain a method "' . $detail[1] . '".');
+					if (!method_exists($middleware, $action[1])) {
+						throw new Exception('Middleware class "' . $action[0] . '" does not contain a method "' . $action[1] . '".');
 					}
 
-					return Closure::fromCallable([new $detail[0]($request, $response), $detail[1]]);
+					return Closure::fromCallable([$middleware, $action[1]]);
 				}
 
-				return $detail;
+				return $action;
 			}, $pipeline);
 
 			// Bind all next closures and call the first.

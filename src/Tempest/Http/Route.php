@@ -76,7 +76,7 @@ class Route extends Resource {
 	 *
 	 * @internal
 	 *
-	 * @return string[]
+	 * @return mixed[]
 	 */
 	public function getController() {
 		return $this->_controller;
