@@ -79,4 +79,14 @@ abstract class Handler {
 		return Utility::dig($this->_options, $option, $fallback);
 	}
 
+	/**
+	 * Declare expected options. Any provided options that match the expected options will override their default
+	 * values.
+	 *
+	 * @param array $expected The expected options and their default values.
+	 */
+	public function expect(array $expected) {
+		$this->_options = array_merge($expected, $this->_options);
+	}
+
 }

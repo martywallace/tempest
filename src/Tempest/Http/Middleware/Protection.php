@@ -17,8 +17,13 @@ class Protection extends Handler {
 	 * @param Closure $next
 	 */
 	public function protect(Closure $next) {
-		$this->response->header(Header::X_CONTENT_TYPE_OPTIONS, 'nosniff');
-		$this->response->header(Header::X_FRAME_OPTIONS, 'deny');
+		$this->expect([
+			'nosniff' => true,
+			'denyFrames' => true
+		]);
+
+		if ($this->option('nosniff')) $this->response->header(Header::X_CONTENT_TYPE_OPTIONS, 'nosniff');
+		if ($this->option('denyFrames')) $this->response->header(Header::X_FRAME_OPTIONS, 'deny');
 
 		$next();
 	}
