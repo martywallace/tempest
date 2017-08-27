@@ -59,6 +59,10 @@ class Http extends Kernel {
 	public function handle(Request $request) {
 		$response = Response::make();
 
+		// Bind the request and response to Twig.
+		App::get()->twig->addGlobal('request', $request);
+		App::get()->twig->addGlobal('response', $response);
+
 		try {
 			// Attempt to match a route.
 			$info = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
