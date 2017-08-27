@@ -17,10 +17,7 @@ class Request implements Message {
 	public static function capture() {
 		$extras = [
 			'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null,
-			'userAgent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null,
-			'referrer' => isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null,
 			'https' => isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']),
-			'host' => isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null
 		];
 
 		return new static(
@@ -121,33 +118,6 @@ class Request implements Message {
 	 */
 	public function getIP() {
 		return $this->extra('ip');
-	}
-
-	/**
-	 * Get the user-agent that the request originated from.
-	 *
-	 * @return string
-	 */
-	public function getUserAgent() {
-		return $this->extra('userAgent');
-	}
-
-	/**
-	 * Get the referrer of the current request, if any.
-	 *
-	 * @return string
-	 */
-	public function getReferrer() {
-		return $this->extra('referrer');
-	}
-
-	/**
-	 * Get the hostname that the request came through.
-	 *
-	 * @return string
-	 */
-	public function getHost() {
-		return $this->extra('host');
 	}
 
 	/**
