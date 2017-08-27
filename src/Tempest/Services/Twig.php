@@ -1,5 +1,6 @@
 <?php namespace Tempest\Services;
 
+use Carbon\Carbon;
 use Tempest\App;
 use Tempest\Service;
 use Tempest\Utility;
@@ -7,6 +8,7 @@ use Twig_Environment;
 use Twig_Loader_Filesystem;
 use Twig_Extension_Debug;
 use Twig_SimpleFilter;
+use Twig_SimpleFunction;
 
 /**
  * The Twig service exposes all of Twig's functionality.
@@ -27,6 +29,8 @@ class Twig extends Twig_Environment implements Service {
 
 		$this->addFilter(new Twig_SimpleFilter('dig', [Utility::class, 'dig']));
 		$this->addFilter(new Twig_SimpleFilter('kebab', [Utility::class, 'kebab']));
+		$this->addFunction(new Twig_SimpleFunction('carbon', [Carbon::class, 'parse']));
+		$this->addFunction(new Twig_SimpleFunction('now', [Carbon::class, 'now']));
 
 		if (App::get()->dev) {
 			$this->addExtension(new Twig_Extension_Debug());
