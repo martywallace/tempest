@@ -1,8 +1,7 @@
 <?php namespace Tempest\Http\Middleware;
 
 use Closure;
-use Tempest\Http\Handler;
-use Tempest\Http\Header;
+use Tempest\Http\{Handler, Header};
 
 /**
  * Basic protective middleware.

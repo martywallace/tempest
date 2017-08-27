@@ -15,12 +15,17 @@ class Request implements Message {
 	 * @return static
 	 */
 	public static function capture() {
+		$extras = [
+			'ip' => $_SERVER['REMOTE_ADDR']
+		];
+
 		return new static(
 			$_SERVER['REQUEST_METHOD'],
 			$_SERVER['REQUEST_URI'],
 			getallheaders(),
 			file_get_contents('php://input'),
-			$_COOKIE
+			$_COOKIE,
+			$extras
 		);
 	}
 
@@ -48,6 +53,9 @@ class Request implements Message {
 	/** @var mixed[] */
 	private $_cookies = [];
 
+	/** @var array */
+	private $_extra = [];
+
 	/**
 	 * Request constructor.
 	 *
@@ -56,12 +64,14 @@ class Request implements Message {
 	 * @param array $headers The request headers.
 	 * @param string $body The request body.
 	 * @param array $cookies Cookies attached to the request.
+	 * @param array $extra Additional request information like IP address.
 	 */
-	public function __construct($method, $uri, array $headers = [], $body = '', array $cookies = []) {
+	public function __construct($method, $uri, array $headers = [], $body = '', array $cookies = [], array $extra = []) {
 		$this->_method = strtoupper($method);
 		$this->_uri = parse_url($uri, PHP_URL_PATH);
 		$this->_body = $body;
 		$this->_cookies = $cookies;
+		$this->_extra = $extra;
 
 		if (!empty($headers)) {
 			foreach ($headers as $key => $value) {
@@ -98,6 +108,15 @@ class Request implements Message {
 	 */
 	public function getMethod() {
 		return $this->_method;
+	}
+
+	/**
+	 * Get the IP address that the request originated from.
+	 *
+	 * @return mixed
+	 */
+	public function getIP() {
+		return $this->extra('ip');
 	}
 
 	/**
@@ -237,6 +256,18 @@ class Request implements Message {
 	public function cookie($cookie = null, $fallback = null) {
 		if (empty($cookie)) return $this->_cookies;
 		return Utility::dig($this->_cookies, $cookie, $fallback);
+	}
+
+	/**
+	 * Retrieve data from the request extras.
+	 *
+	 * @param string $prop The property to retrieve.
+	 * @param mixed $fallback A fallback value to use if the property does not exist.
+	 *
+	 * @return mixed
+	 */
+	protected function extra($prop, $fallback = null) {
+		return Utility::dig($this->_extra, $prop, $fallback);
 	}
 
 }
