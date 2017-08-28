@@ -22,9 +22,9 @@ class Security extends Handler {
 			'xssProtection' => true
 		]);
 
-		if ($this->option('nosniff')) $this->response->header(Header::X_CONTENT_TYPE_OPTIONS, 'nosniff');
-		if ($this->option('denyFrames')) $this->response->header(Header::X_FRAME_OPTIONS, 'sameorigin');
-		if ($this->option('xssProtection')) $this->response->header(Header::X_XSS_PROTECTION, '1; mode=block');
+		if ($this->option('nosniff')) $this->response->setHeader(Header::X_CONTENT_TYPE_OPTIONS, 'nosniff');
+		if ($this->option('denyFrames')) $this->response->setHeader(Header::X_FRAME_OPTIONS, 'sameorigin');
+		if ($this->option('xssProtection')) $this->response->setHeader(Header::X_XSS_PROTECTION, '1; mode=block');
 
 		$next();
 	}

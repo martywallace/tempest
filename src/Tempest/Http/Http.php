@@ -267,7 +267,7 @@ class Http extends Kernel {
 	 * @param Response $response The response to be sent.
 	 */
 	protected function notFound(Response $response) {
-		$response->status(Status::NOT_FOUND)
+		$response->setStatus(Status::NOT_FOUND)
 			->render('404.html');
 	}
 
@@ -279,7 +279,7 @@ class Http extends Kernel {
 	 * @param string[] $allowed The allowed methods.
 	 */
 	protected function methodNotAllowed(Request $request, Response $response, array $allowed) {
-		$response->status(Status::METHOD_NOT_ALLOWED)
+		$response->setStatus(Status::METHOD_NOT_ALLOWED)
 			->header(Header::ALLOW, implode(', ', $allowed))
 			->render('405.html', ['method' => $request->getMethod(), 'allowed' => $allowed]);
 	}
@@ -291,7 +291,7 @@ class Http extends Kernel {
 	 * @param Exception $exception The exception.
 	 */
 	protected function exception(Response $response, Exception $exception) {
-		$response->status(Status::INTERNAL_SERVER_ERROR)
+		$response->setStatus(Status::INTERNAL_SERVER_ERROR)
 			->render('500.html', ['exception' => new RenderableException($exception)]);
 	}
 

@@ -5,7 +5,11 @@ use Tempest\Http\Handler;
 class ExampleController extends Handler {
 
 	public function index() {
-		$this->response->body('Test');
+		$this->response->text('Test');
+	}
+
+	public function json() {
+		$this->response->json(['test' => 10]);
 	}
 
 }

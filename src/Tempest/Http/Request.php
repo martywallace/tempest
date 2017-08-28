@@ -7,7 +7,7 @@ use Tempest\Utility;
  *
  * @author Marty Wallace
  */
-class Request implements Message {
+class Request extends Message {
 
 	/**
 	 * Capture an incoming HTTP request and generate a new {@link Request request} from it.
@@ -39,12 +39,6 @@ class Request implements Message {
 	/** @var array */
 	private $_query;
 
-	/** @var array */
-	private $_headers = [];
-
-	/** @var string */
-	private $_body;
-
 	/** @var mixed[] */
 	private $_named = [];
 
@@ -68,38 +62,16 @@ class Request implements Message {
 	 * @param array $extra Additional request information like IP address.
 	 */
 	public function __construct($method, $uri, array $headers = [], $body = '', array $cookies = [], array $extra = []) {
+		$this->setHeaders($headers);
+		$this->setBody($body);
+
 		$this->_method = strtoupper($method);
 		$this->_uri = parse_url($uri, PHP_URL_PATH);
-		$this->_body = $body;
 		$this->_cookies = $cookies;
 		$this->_extra = $extra;
 
-		if (!empty($headers)) {
-			foreach ($headers as $key => $value) {
-				$this->_headers[Utility::kebab($key, true)] = $value;
-			}
-		}
-
 		// Populate querystring array.
 		parse_str(parse_url($uri, PHP_URL_QUERY), $this->_query);
-	}
-
-	/**
-	 * Returns the request body.
-	 *
-	 * @return string
-	 */
-	public function getBody() {
-		return $this->_body;
-	}
-
-	/**
-	 * Returns the request headers.
-	 *
-	 * @return string
-	 */
-	public function getHeaders() {
-		return $this->_headers;
 	}
 
 	/**
@@ -228,31 +200,6 @@ class Request implements Message {
 	public function query($property = null, $fallback = null) {
 		if (empty($property)) return $this->_query;
 		return Utility::dig($this->_query, $property, $fallback);
-	}
-
-	/**
-	 * Determine whether a request header exists.
-	 *
-	 * @param string $header The request header to check for. Case-insensitive.
-	 *
-	 * @return bool
-	 */
-	public function hasHeader($header) {
-		return array_key_exists(Utility::kebab($header, true), $this->_headers);
-	}
-
-	/**
-	 * Returns a request header.
-	 *
-	 * @param string $header The request header to retrieve. If not provided, returns the {@link getHeaders() entire}
-	 * set of headers.
-	 * @param mixed $fallback The fallback value to provide if the header does not exist.
-	 *
-	 * @return string
-	 */
-	public function header($header = null, $fallback = null) {
-		if (empty($header)) return $this->getHeaders();
-		return Utility::dig($this->_headers, Utility::kebab($header, true), $fallback);
 	}
 
 	/**

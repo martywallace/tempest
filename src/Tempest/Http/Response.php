@@ -8,19 +8,13 @@ use Tempest\{App, Utility};
  *
  * @author Marty Wallace
  */
-class Response implements Message {
+class Response extends Message {
 
 	const COOKIE_CREATE = 'CreateCookie';
 	const COOKIE_DELETE = 'DeleteCookie';
 
-	/** @var string */
-	private $_body = '';
-
 	/** @var int */
 	private $_status = Status::OK;
-
-	/** @var array */
-	private $_headers = [];
 
 	/** @var array */
 	private $_cookies = [];
@@ -33,19 +27,7 @@ class Response implements Message {
 	}
 
 	private function __construct() {
-		$this->header(Header::CONTENT_TYPE, ContentType::TEXT_PLAIN);
-	}
-
-	/**
-	 * Sets the response body.
-	 *
-	 * @param string $value The response body.
-	 *
-	 * @return $this
-	 */
-	public function body($value) {
-		$this->_body = $value;
-		return $this;
+		$this->setHeader(Header::CONTENT_TYPE, ContentType::TEXT_PLAIN);
 	}
 
 	/**
@@ -55,21 +37,8 @@ class Response implements Message {
 	 *
 	 * @return $this
 	 */
-	public function status($value) {
+	public function setStatus($value) {
 		$this->_status = $value;
-		return $this;
-	}
-
-	/**
-	 * Create or overwrite a response header.
-	 *
-	 * @param string $header The header name.
-	 * @param string $value THe header value.
-	 *
-	 * @return $this
-	 */
-	public function header($header, $value) {
-		$this->_headers[Utility::kebab($header, true)] = $value;
 		return $this;
 	}
 
@@ -80,8 +49,20 @@ class Response implements Message {
 	 *
 	 * @return $this
 	 */
-	public function type($value) {
-		return $this->header(Header::CONTENT_TYPE, $value);
+	public function setType($value) {
+		return $this->setHeader(Header::CONTENT_TYPE, $value);
+	}
+
+	/**
+	 * Convenience method to send plain-text.
+	 *
+	 * @param string $value The text to send.
+	 *
+	 * @return $this
+	 */
+	public function text($value) {
+		return $this->setType(ContentType::TEXT_PLAIN)
+			->setBody($value);
 	}
 
 	/**
@@ -93,7 +74,8 @@ class Response implements Message {
 	 * @return $this
 	 */
 	public function render($template, array $context = []) {
-		return $this->type(ContentType::TEXT_HTML)->body(App::get()->twig->render($template, $context));
+		return $this->setType(ContentType::TEXT_HTML)
+			->setBody(App::get()->twig->render($template, $context));
 	}
 
 	/**
@@ -104,7 +86,8 @@ class Response implements Message {
 	 * @return $this
 	 */
 	public function json($data) {
-		return $this->type(ContentType::APPLICATION_JSON)->body(json_encode($data));
+		return $this->setType(ContentType::APPLICATION_JSON)
+			->setBody(json_encode($data));
 	}
 
 	/**
@@ -117,8 +100,8 @@ class Response implements Message {
 	 * @return $this
 	 */
 	public function redirect($location, $permanent = false) {
-		return $this->status($permanent ? Status::PERMANENT_REDIRECT : Status::TEMPORARY_REDIRECT)
-			->header(Header::LOCATION, $location);
+		return $this->setStatus($permanent ? Status::PERMANENT_REDIRECT : Status::TEMPORARY_REDIRECT)
+			->setHeader(Header::LOCATION, $location);
 	}
 
 	/**
@@ -130,7 +113,7 @@ class Response implements Message {
 	 * @return $this
 	 */
 	public function flash($location, $seconds = 5) {
-		return $this->header(Header::REFRESH, $seconds . '; url=' . $location);
+		return $this->setHeader(Header::REFRESH, $seconds . '; url=' . $location);
 	}
 
 	/**
@@ -141,7 +124,7 @@ class Response implements Message {
 	 * @return $this
 	 */
 	public function download($filename) {
-		return $this->header(Header::CONTENT_DISPOSITION, 'attachment; filename="' . $filename . '"');
+		return $this->setHeader(Header::CONTENT_DISPOSITION, 'attachment; filename="' . $filename . '"');
 	}
 
 	/**
@@ -153,20 +136,8 @@ class Response implements Message {
 	 * @return $this
 	 */
 	public function file($path) {
-		if (file_exists($path)) {
-			return $this->body(file_get_contents($path))->type(mime_content_type($path));
-		} else {
-			return $this->status(Status::NOT_FOUND);
-		}
-	}
-
-	/**
-	 * Returns the current response body.
-	 *
-	 * @return string
-	 */
-	public function getBody() {
-		return $this->_body;
+		if (file_exists($path)) return $this->setBody(file_get_contents($path))->setType(mime_content_type($path));
+		else return $this->setStatus(Status::NOT_FOUND);
 	}
 
 	/**
@@ -179,12 +150,12 @@ class Response implements Message {
 	}
 
 	/**
-	 * Returns the current response headers.
+	 * Gets the Content-Type header.
 	 *
-	 * @return string[]
+	 * @return string
 	 */
-	public function getHeaders() {
-		return $this->_headers;
+	public function getType() {
+		return $this->getHeader(Header::CONTENT_TYPE);
 	}
 
 	/**
@@ -196,7 +167,7 @@ class Response implements Message {
 	 *
 	 * @return $this
 	 */
-	public function cookie($name, $value, $lifetime = 3600) {
+	public function addCookie($name, $value, $lifetime = 3600) {
 		$this->_cookies[$name] = [self::COOKIE_CREATE, $value, $lifetime];
 		return $this;
 	}
@@ -222,7 +193,7 @@ class Response implements Message {
 		header_remove(Header::X_POWERED_BY);
 		http_response_code($this->_status);
 
-		foreach ($this->_headers as $header => $value) {
+		foreach ($this->getHeaders() as $header => $value) {
 			header($header . ': ' . $value);
 		}
 
@@ -233,7 +204,7 @@ class Response implements Message {
 			if ($action === self::COOKIE_DELETE) setcookie($name, null, time(), '/');
 		}
 
-		echo $this->_body;
+		echo $this->getBody();
 
 		App::get()->terminate();
 	}
