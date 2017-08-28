@@ -1,5 +1,6 @@
 <?php namespace Tempest\Tests;
 
+use Closure;
 use Tempest\Http\ContentType;
 use Tempest\Http\Http;
 use Tempest\Http\Request;
@@ -28,14 +29,31 @@ class HttpTest extends TestCase {
 	/**
 	 * @depends testApp
 	 */
-	public function testResponse(App $app) {
+	public function testCreateRoutes(App $app) {
+		$provider = function(Http $http) {
+			return [
+				$http->get('/')->controller(ExampleController::do()),
+				$http->get('/template')->template('example.html')
+			];
+		};
+
+		$http = new Http($provider);
+
+		$this->assertCount(2, $http->getRoutes());
+		$this->assertEquals('/', $http->getRoutes()[0]->getUri());
+		$this->assertEquals('GET', $http->getRoutes()[1]->getMethod()[0]);
+
+		return $provider;
+	}
+
+	/**
+	 * @depends testApp
+	 * @depends testCreateRoutes
+	 */
+	public function testResponse(App $app, Closure $routes) {
 		$request = new Request('GET', '/');
 
-		$response = $app->http($request, function(Http $http) {
-			return [
-				$http->get('/')->controller(ExampleController::do())
-			];
-		});
+		$response = $app->http($request, $routes);
 
 		$this->assertInstanceOf(Response::class, $response);
 

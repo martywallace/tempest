@@ -316,4 +316,22 @@ class Http extends Kernel {
 		}
 	}
 
+	/**
+	 * Get all registered routes.
+	 *
+	 * @return Route[]
+	 */
+	public function getRoutes() {
+		return $this->_routes;
+	}
+
+	/**
+	 * Get all registered middleware.
+	 *
+	 * @return mixed[][]
+	 */
+	public function getMiddleware() {
+		return $this->_middleware;
+	}
+
 }

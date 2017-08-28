@@ -1,9 +1,8 @@
 <?php namespace Tempest\Services;
 
 use Exception;
-use Tempest\Service;
+use Tempest\{Service, Utility};
 use SessionHandlerInterface;
-use Tempest\Utility;
 
 /**
  * Manages application session.
