@@ -280,7 +280,7 @@ class Http extends Kernel {
 	 */
 	protected function methodNotAllowed(Request $request, Response $response, array $allowed) {
 		$response->setStatus(Status::METHOD_NOT_ALLOWED)
-			->header(Header::ALLOW, implode(', ', $allowed))
+			->setHeader(Header::ALLOW, implode(', ', $allowed))
 			->render('405.html', ['method' => $request->getMethod(), 'allowed' => $allowed]);
 	}
 

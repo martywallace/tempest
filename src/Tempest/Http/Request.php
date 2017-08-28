@@ -30,6 +30,22 @@ class Request extends Message {
 		);
 	}
 
+	/**
+	 * Statically create a new request object.
+	 *
+	 * @param string $method The request method.
+	 * @param string $uri The request URI.
+	 * @param array $headers The request headers.
+	 * @param string $body The request body.
+	 * @param array $cookies Cookies attached to the request.
+	 * @param array $extra Additional request information.
+	 *
+	 * @return static
+	 */
+	public static function make($method, $uri, array $headers = [], $body = '', array $cookies = [], array $extra = []) {
+		return new static($method, $uri, $headers, $body, $cookies, $extra);
+	}
+
 	/** @var string */
 	private $_method;
 
@@ -61,7 +77,7 @@ class Request extends Message {
 	 * @param array $cookies Cookies attached to the request.
 	 * @param array $extra Additional request information like IP address.
 	 */
-	public function __construct($method, $uri, array $headers = [], $body = '', array $cookies = [], array $extra = []) {
+	private function __construct($method, $uri, array $headers = [], $body = '', array $cookies = [], array $extra = []) {
 		$this->setHeaders($headers);
 		$this->setBody($body);
 

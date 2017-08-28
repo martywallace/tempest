@@ -2,6 +2,7 @@
 
 use Dotenv\Dotenv;
 use Exception;
+use Closure;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent, ServiceEvent};
 use Tempest\Http\{Http, Request, Response};
@@ -231,7 +232,7 @@ abstract class App extends EventDispatcher {
 	 * Handle an incoming HTTP request.
 	 *
 	 * @param Request $request A HTTP request made to the application.
-	 * @param callable|string $routes Known routes to match the request against. Can either be a function accepting a
+	 * @param Closure|string $routes Known routes to match the request against. Can either be a function accepting a
 	 * {@link Http HTTP instance} or a string pointing to a PHP file that returns a function accepting a HTTP instance.
 	 *
 	 * @return Response
