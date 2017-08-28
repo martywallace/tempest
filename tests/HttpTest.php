@@ -4,6 +4,7 @@ use Closure;
 use Tempest\Http\ContentType;
 use Tempest\Http\Header;
 use Tempest\Http\Http;
+use Tempest\Http\Middleware\BodyParser;
 use Tempest\Http\Request;
 use Tempest\Http\Response;
 use Tempest\Http\Status;
@@ -80,8 +81,29 @@ class HttpTest extends TestCase {
 			['/api/cats', ['GET']],
 			['/api/cats', ['POST']]
 		], $uris);
+	}
 
-		return $provider;
+	/**
+	 * @depends testApp
+	 */
+	public function testParseJsonBody(App $app) {
+		$provider = function(Http $http) {
+			$http->middleware(BodyParser::do('parse', [BodyParser::TRIM => true]));
+
+			return [
+				$http->post('/')->controller(ExampleController::do('convertJson'))
+			];
+		};
+
+		$request = Request::make('POST', '/', [
+			Header::CONTENT_TYPE => ContentType::APPLICATION_JSON
+		], '{"first":1,"second":"  two   "}');
+
+		$response = $app->http($request, $provider);
+
+		$this->assertEquals(1, $request->data('first'));
+		$this->assertEquals('two', $request->data('second'));
+		$this->assertEquals('{"first":1,"second":"two"}', $response->getBody());
 	}
 
 	/**

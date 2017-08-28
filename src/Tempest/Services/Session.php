@@ -28,12 +28,27 @@ class Session implements Service {
 
 		session_set_save_handler($handler, true);
 
-		return session_start([
+		$success = session_start([
 			'name' => $name,
 			'use_cookies' => true,
 			'use_only_cookies' => true,
 			'cookie_httponly' => true
 		]);
+
+		if ($success && !$this->has('csrfToken')) {
+			$this->add('csrfToken', bin2hex(random_bytes(32)));
+		}
+
+		return $success;
+	}
+
+	/**
+	 * Determine whether there is an active session.
+	 *
+	 * @return bool
+	 */
+	public function active() {
+		return session_status() === PHP_SESSION_ACTIVE;
 	}
 
 	/**
@@ -89,12 +104,35 @@ class Session implements Service {
 	}
 
 	/**
+	 * Determine whether a property exists within the current session.
+	 *
+	 * @param string $property The property to check for.
+	 *
+	 * @return bool
+	 */
+	public function has($property) {
+		return array_key_exists($property, $_SESSION);
+	}
+
+	/**
 	 * Remove previously added data from the session.
 	 *
 	 * @param string $property The property to remove.
 	 */
 	public function remove($property) {
 		unset($_SESSION[$property]);
+	}
+
+	/**
+	 * Generates a new CSRF token and adds it to the session.
+	 *
+	 * @return string
+	 */
+	public function regenerateCsrfToken() {
+		$token = bin2hex(random_bytes(32));
+		$this->add('csrf', $token);
+
+		return $token;
 	}
 
 }

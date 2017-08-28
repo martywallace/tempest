@@ -13,8 +13,15 @@ use Tempest\Extensions\FileSessionHandler;
  */
 class Sessions extends Handler {
 
+	const NAME = 'name';
+	const PATH = 'path';
+
 	/**
 	 * Start filesystem-based session storage.
+	 *
+	 * @see Sessions::NAME
+	 * @see Sessions::PATH
+	 * @see Sessions::CREATE_CSRF_TOKEN
 	 *
 	 * @param Closure $next
 	 *
@@ -22,13 +29,13 @@ class Sessions extends Handler {
 	 */
 	public function filesystem(Closure $next) {
 		$this->expect([
-			'name' => 'SessionID',
-			'path' => session_save_path()
+			self::NAME => 'SessionID',
+			self::PATH => session_save_path()
 		]);
 
 		App::get()->session->start(new FileSessionHandler(
-			$this->option('path'),
-			$this->option('name')
+			$this->option(self::PATH),
+			$this->option(self::NAME)
 		));
 
 		$next();

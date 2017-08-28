@@ -232,6 +232,19 @@ class Request extends Message {
 	}
 
 	/**
+	 * Obtain a possible CSRF token attached to this request.
+	 *
+	 * @return string
+	 */
+	public function csrfToken() {
+		if (!empty($this->getHeader(Header::X_CSRF_TOKEN))) {
+			return $this->getHeader(Header::X_CSRF_TOKEN);
+		}
+
+		return Utility::dig($this->data(), 'csrfToken');
+	}
+
+	/**
 	 * Retrieve data from the request extras.
 	 *
 	 * @param string $prop The property to retrieve.

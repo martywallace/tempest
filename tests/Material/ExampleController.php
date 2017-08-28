@@ -32,4 +32,8 @@ class ExampleController extends Handler {
 		$this->response->json([]);
 	}
 
+	public function convertJson() {
+		$this->response->json($this->request->data());
+	}
+
 }
