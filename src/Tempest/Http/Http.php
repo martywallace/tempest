@@ -195,10 +195,11 @@ class Http extends Kernel {
 	 * @param SessionHandlerInterface $handler The handler responsible for managing the sessions.
 	 * @param string $name The session name.
 	 *
-	 * @return bool Whether or not the session was started successfully.
+	 * @return $this
 	 *
 	 * @throws Exception If sessions are not enabled.
 	 * @throws Exception If there is already an active session.
+	 * @throws Exception If the session could not be successfully started.
 	 */
 	public function enableSessions(SessionHandlerInterface $handler, $name = 'SessionID') {
 		if (session_status() === PHP_SESSION_DISABLED) throw new Exception('Cannot start session - sessions are disabled.');
@@ -206,12 +207,16 @@ class Http extends Kernel {
 
 		session_set_save_handler($handler, true);
 
-		return session_start([
+		$success = session_start([
 			'name' => $name,
 			'use_cookies' => true,
 			'use_only_cookies' => true,
 			'cookie_httponly' => true
 		]);
+
+		if (!$success) throw new Exception('Could not enable sessions.');
+
+		return $this;
 	}
 
 	/**
