@@ -1,8 +1,8 @@
 <?php namespace Tempest;
 
-use Dotenv\Dotenv;
 use Exception;
 use Closure;
+use Dotenv\Dotenv;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent, ServiceEvent};
 use Tempest\Http\{Http, Request, Response};

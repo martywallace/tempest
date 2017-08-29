@@ -1,5 +1,7 @@
 <?php namespace Tempest;
 
+use Exception;
+
 /**
  * General utilities.
  *
