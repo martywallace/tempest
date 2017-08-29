@@ -2,21 +2,23 @@
 
 use Exception;
 use Closure;
-use Tempest\Http\{Handler, Header, ContentType};
+use Tempest\Http\{
+	Handler, Header, ContentType, Status
+};
 
 /**
  * Inbuilt body parser for populating data contained in request bodies.
  *
  * @author Marty Wallace
  */
-class BodyParser extends Handler {
+class BodyParsing extends Handler {
 
 	const TRIM = 'trim';
 
 	/**
 	 * Parse the request and attach data based on its body.
 	 *
-	 * @see BodyParser::TRIM
+	 * @see BodyParsing::TRIM
 	 *
 	 * @param Closure $next
 	 *
@@ -34,7 +36,8 @@ class BodyParser extends Handler {
 				$data = json_decode($this->request->getBody());
 
 				if (json_last_error() !== JSON_ERROR_NONE) {
-					throw new Exception('The request contained invalid JSON: ' . json_last_error_msg());
+					$this->response->setStatus(Status::BAD_REQUEST)->text('The request contained invalid JSON: ' . json_last_error_msg());
+					return;
 				}
 			}
 

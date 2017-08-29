@@ -11,6 +11,8 @@ use SessionHandlerInterface;
  */
 class Session implements Service {
 
+	const CSRF_TOKEN_NAME = 'CSRFToken';
+
 	/**
 	 * Start a session.
 	 *
@@ -28,18 +30,12 @@ class Session implements Service {
 
 		session_set_save_handler($handler, true);
 
-		$success = session_start([
+		return session_start([
 			'name' => $name,
 			'use_cookies' => true,
 			'use_only_cookies' => true,
 			'cookie_httponly' => true
 		]);
-
-		if ($success && !$this->has('csrfToken')) {
-			$this->add('csrfToken', bin2hex(random_bytes(32)));
-		}
-
-		return $success;
 	}
 
 	/**
@@ -124,13 +120,26 @@ class Session implements Service {
 	}
 
 	/**
+	 * Get the current CSRF token. Creates one if it does not exist.
+	 *
+	 * @return string
+	 */
+	public function getCsrfToken() {
+		if (!$this->has(self::CSRF_TOKEN_NAME)) {
+			$this->regenerateCsrfToken();
+		}
+
+		return $this->get(self::CSRF_TOKEN_NAME);
+	}
+
+	/**
 	 * Generates a new CSRF token and adds it to the session.
 	 *
 	 * @return string
 	 */
 	public function regenerateCsrfToken() {
 		$token = bin2hex(random_bytes(32));
-		$this->add('csrf', $token);
+		$this->add(self::CSRF_TOKEN_NAME, $token);
 
 		return $token;
 	}

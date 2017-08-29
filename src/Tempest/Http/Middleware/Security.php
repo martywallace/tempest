@@ -3,9 +3,7 @@
 use Closure;
 use Exception;
 use Tempest\App;
-use Tempest\Http\{
-	Handler, Header, Status
-};
+use Tempest\Http\{Handler, Header, Status};
 
 /**
  * Basic protective middleware.
@@ -48,20 +46,33 @@ class Security extends Handler {
 	 *
 	 * @throws Exception
 	 */
-	public function csrf(Closure $next) {
+	public function validateCsrf(Closure $next) {
 		if ($this->request->getMethod() === 'GET') {
 			$next();
 		} else {
 			if (!App::get()->session->active()) throw new Exception('There is no active session to read a CSRF token from.');
-			if (!App::get()->session->has('csrfToken')) throw new Exception('There is no CSRF token available.');
-			if (empty($this->request->csrfToken())) throw new Exception('Missing CSRF token.');
 
-			if (hash_equals(App::get()->session->get('csrfToken'), $this->request->csrfToken())) {
-				$next();
+			if (empty($this->request->getCsrfToken())) {
+				$this->response->setStatus(Status::UNAUTHORIZED)->text('Missing CSRF token.');
 			} else {
-				$this->response->setStatus(Status::BAD_REQUEST)->text('Invalid CSRF token.');
+				if (hash_equals(App::get()->session->getCsrfToken(), $this->request->getCsrfToken())) {
+					$next();
+				} else {
+					$this->response->setStatus(Status::UNAUTHORIZED)->text('Invalid CSRF token.');
+				}
 			}
 		}
+	}
+
+	/**
+	 * Regenerates the CSRF token.
+	 *
+	 * @param Closure $next
+	 */
+	public function regenerateCsrf(Closure $next) {
+		App::get()->session->regenerateCsrfToken();
+
+		$next();
 	}
 
 }

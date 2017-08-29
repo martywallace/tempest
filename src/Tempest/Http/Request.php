@@ -1,5 +1,6 @@
 <?php namespace Tempest\Http;
 
+use Tempest\Services\Session;
 use Tempest\Utility;
 
 /**
@@ -236,12 +237,12 @@ class Request extends Message {
 	 *
 	 * @return string
 	 */
-	public function csrfToken() {
+	public function getCsrfToken() {
 		if (!empty($this->getHeader(Header::X_CSRF_TOKEN))) {
 			return $this->getHeader(Header::X_CSRF_TOKEN);
 		}
 
-		return Utility::dig($this->data(), 'csrfToken');
+		return Utility::dig($this->data(), Session::CSRF_TOKEN_NAME);
 	}
 
 	/**

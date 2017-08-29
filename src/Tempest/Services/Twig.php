@@ -31,6 +31,7 @@ class Twig extends Twig_Environment implements Service {
 		$this->addFilter(new Twig_SimpleFilter('kebab', [Utility::class, 'kebab']));
 		$this->addFunction(new Twig_SimpleFunction('carbon', [Carbon::class, 'parse']));
 		$this->addFunction(new Twig_SimpleFunction('now', [Carbon::class, 'now']));
+		$this->addFunction(new Twig_SimpleFunction('getCsrfToken', [App::get()->session, 'getCsrfToken']));
 
 		if (App::get()->dev) {
 			$this->addExtension(new Twig_Extension_Debug());
