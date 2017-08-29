@@ -14,31 +14,6 @@ class Session implements Service {
 	const CSRF_TOKEN_NAME = 'CSRFToken';
 
 	/**
-	 * Start a session.
-	 *
-	 * @param SessionHandlerInterface $handler The handler responsible for managing the sessions.
-	 * @param string $name The session name.
-	 *
-	 * @return bool Whether or not the session was started successfully.
-	 *
-	 * @throws Exception If sessions are not enabled.
-	 * @throws Exception If there is already an active session.
-	 */
-	public function start(SessionHandlerInterface $handler, $name = 'SessionID') {
-		if (session_status() === PHP_SESSION_DISABLED) throw new Exception('Cannot start session - sessions are disabled.');
-		if (session_status() === PHP_SESSION_ACTIVE) throw new Exception('Cannot start session - there is already an active session.');
-
-		session_set_save_handler($handler, true);
-
-		return session_start([
-			'name' => $name,
-			'use_cookies' => true,
-			'use_only_cookies' => true,
-			'cookie_httponly' => true
-		]);
-	}
-
-	/**
 	 * Determine whether there is an active session.
 	 *
 	 * @return bool
@@ -81,8 +56,12 @@ class Session implements Service {
 	 *
 	 * @param string $property The name of the data to add or overwrite.
 	 * @param mixed $value The value to add.
+	 *
+	 * @throws Exception If there is no active session.
 	 */
 	public function add($property, $value) {
+		if (!$this->active()) throw new Exception('There is no active session.');
+
 		$_SESSION[$property] = $value;
 	}
 
@@ -93,8 +72,12 @@ class Session implements Service {
 	 * @param mixed $fallback A fallback value to provide if the property did not exist.
 	 *
 	 * @return mixed
+	 *
+	 * @throws Exception If there is no active session.
 	 */
 	public function get($property = null, $fallback = null) {
+		if (!$this->active()) throw new Exception('There is no active session.');
+
 		if (empty($property)) return $_SESSION;
 		return Utility::dig($_SESSION, $property, $fallback);
 	}
@@ -105,8 +88,12 @@ class Session implements Service {
 	 * @param string $property The property to check for.
 	 *
 	 * @return bool
+	 *
+	 * @throws Exception If there is no active session.
 	 */
 	public function has($property) {
+		if (!$this->active()) throw new Exception('There is no active session.');
+
 		return array_key_exists($property, $_SESSION);
 	}
 
@@ -114,8 +101,12 @@ class Session implements Service {
 	 * Remove previously added data from the session.
 	 *
 	 * @param string $property The property to remove.
+	 *
+	 * @throws Exception If there is no active session.
 	 */
 	public function remove($property) {
+		if (!$this->active()) throw new Exception('There is no active session.');
+
 		unset($_SESSION[$property]);
 	}
 

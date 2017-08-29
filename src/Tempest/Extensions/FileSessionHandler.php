@@ -69,7 +69,7 @@ class FileSessionHandler implements SessionHandlerInterface {
 	 * @return string
 	 */
 	protected function filename($id) {
-		return $this->_storage . '/' . $id;
+		return $this->_storage . '/' . $id . '.txt';
 	}
 
 }

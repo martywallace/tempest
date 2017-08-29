@@ -2,7 +2,8 @@
 
 use Closure;
 use Exception;
-use Tempest\{App, Kernel};
+use SessionHandlerInterface;
+use Tempest\{App, Extensions\FileSessionHandler, Kernel};
 use Tempest\Events\ExceptionEvent;
 use Tempest\Data\RenderableException;
 use FastRoute\{RouteCollector, Dispatcher};
@@ -186,6 +187,31 @@ class Http extends Kernel {
 	 */
 	public function group($uri, array $routes) {
 		return new Group($uri, $routes);
+	}
+
+	/**
+	 * Enable HTTP sessions, beginning a new one if there is not one already.
+	 *
+	 * @param SessionHandlerInterface $handler The handler responsible for managing the sessions.
+	 * @param string $name The session name.
+	 *
+	 * @return bool Whether or not the session was started successfully.
+	 *
+	 * @throws Exception If sessions are not enabled.
+	 * @throws Exception If there is already an active session.
+	 */
+	public function enableSessions(SessionHandlerInterface $handler, $name = 'SessionID') {
+		if (session_status() === PHP_SESSION_DISABLED) throw new Exception('Cannot start session - sessions are disabled.');
+		if (session_status() === PHP_SESSION_ACTIVE) throw new Exception('Cannot start session - there is already an active session.');
+
+		session_set_save_handler($handler, true);
+
+		return session_start([
+			'name' => $name,
+			'use_cookies' => true,
+			'use_only_cookies' => true,
+			'cookie_httponly' => true
+		]);
 	}
 
 	/**
