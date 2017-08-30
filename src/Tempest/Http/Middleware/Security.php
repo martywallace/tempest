@@ -12,29 +12,29 @@ use Tempest\Http\{Handler, Header, Status};
  */
 class Security extends Handler {
 
-	const NOSNIFF = 'nosniff';
-	const DENY_FRAMES = 'denyFrames';
-	const XSS_PROTECTION = 'xssProtection';
+	const OPTION_NOSNIFF = 'nosniff';
+	const OPTION_DENY_FRAMES = 'denyFrames';
+	const OPTION_XSS_PROTECTION = 'xssProtection';
 
 	/**
 	 * Adds some basic response headers that slightly improve application security.
 	 *
-	 * @see Security::NOSNIFF
-	 * @see Security::DENY_FRAMES
-	 * @see Security::XSS_PROTECTION
+	 * @see Security::OPTION_NOSNIFF
+	 * @see Security::OPTION_DENY_FRAMES
+	 * @see Security::OPTION_XSS_PROTECTION
 	 *
 	 * @param Closure $next
 	 */
 	public function headers(Closure $next) {
 		$this->expect([
-			self::NOSNIFF => true,
-			self::DENY_FRAMES => true,
-			self::XSS_PROTECTION => true
+			self::OPTION_NOSNIFF => true,
+			self::OPTION_DENY_FRAMES => true,
+			self::OPTION_XSS_PROTECTION => true
 		]);
 
-		if ($this->option(self::NOSNIFF)) $this->response->setHeader(Header::X_CONTENT_TYPE_OPTIONS, 'nosniff');
-		if ($this->option(self::DENY_FRAMES)) $this->response->setHeader(Header::X_FRAME_OPTIONS, 'sameorigin');
-		if ($this->option(self::XSS_PROTECTION)) $this->response->setHeader(Header::X_XSS_PROTECTION, '1; mode=block');
+		if ($this->option(self::OPTION_NOSNIFF)) $this->response->setHeader(Header::X_CONTENT_TYPE_OPTIONS, 'nosniff');
+		if ($this->option(self::OPTION_DENY_FRAMES)) $this->response->setHeader(Header::X_FRAME_OPTIONS, 'sameorigin');
+		if ($this->option(self::OPTION_XSS_PROTECTION)) $this->response->setHeader(Header::X_XSS_PROTECTION, '1; mode=block');
 
 		$next();
 	}

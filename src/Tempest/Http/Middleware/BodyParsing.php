@@ -13,12 +13,12 @@ use Tempest\Http\{
  */
 class BodyParsing extends Handler {
 
-	const TRIM = 'trim';
+	const OPTION_TRIM = 'trim';
 
 	/**
 	 * Parse the request and attach data based on its body.
 	 *
-	 * @see BodyParsing::TRIM
+	 * @see BodyParsing::OPTION_TRIM
 	 *
 	 * @param Closure $next
 	 *
@@ -26,7 +26,7 @@ class BodyParsing extends Handler {
 	 */
 	public function parse(Closure $next) {
 		$this->expect([
-			self::TRIM => true
+			self::OPTION_TRIM => true
 		]);
 
 		if (!empty($this->request->getBody())) {
@@ -46,7 +46,7 @@ class BodyParsing extends Handler {
 			}
 
 			foreach ($data as $property => $value) {
-				if ($this->option(self::TRIM) && is_string($value)) $value = trim($value);
+				if ($this->option(self::OPTION_TRIM) && is_string($value)) $value = trim($value);
 
 				$this->request->attachData($property, $value);
 			}

@@ -2,8 +2,7 @@
 
 use Exception;
 use Closure;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent, ServiceEvent};
+use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent};
 use Tempest\Http\{Http, Request, Response};
 use Tempest\Services\{Database, Twig, Session};
 
@@ -21,7 +20,7 @@ use Tempest\Services\{Database, Twig, Session};
  *
  * @author Marty Wallace
  */
-abstract class App extends EventDispatcher {
+abstract class App extends Container {
 
 	/** @var static */
 	protected static $_instance;
@@ -78,13 +77,15 @@ abstract class App extends EventDispatcher {
 	/** @var array */
 	private $_config;
 
-	/** @var string[] */
-	private $_services = [];
+	protected function __construct() {
+		$this->addServices([
+			'db' => Database::class,
+			'twig' => Twig::class,
+			'session' => Session::class
+		]);
 
-	/** @var Service[] */
-	private $_serviceInstances = [];
-
-	private function __construct() { }
+		parent::__construct();
+	}
 
 	/**
 	 * @param string $root
@@ -125,12 +126,6 @@ abstract class App extends EventDispatcher {
 			}
 		});
 
-		$this->_services = array_merge([
-			'db' => Database::class,
-			'twig' => Twig::class,
-			'session' => Session::class
-		], $this->services());
-
 		$this->dispatch(AppEvent::SETUP);
 		$this->setup();
 	}
@@ -139,10 +134,7 @@ abstract class App extends EventDispatcher {
 		if ($prop === 'root') return $this->_root;
 		if ($prop === 'dev') return $this->config('dev', false);
 
-		// Search for a service.
-		if ($this->hasService($prop)) return $this->getService($prop);
-
-		return null;
+		return parent::__get($prop);
 	}
 
 	public function __isset($name) {
@@ -163,92 +155,11 @@ abstract class App extends EventDispatcher {
 	}
 
 	/**
-	 * Declare all application services to be bound.
-	 *
-	 * @return string[]
-	 */
-	abstract protected function services();
-
-	/**
 	 * Called after all services are bound to the application.
 	 *
 	 * @return mixed
 	 */
 	abstract protected function setup();
-
-	/**
-	 * Add a service to the application.
-	 *
-	 * @param string $name The name used to reference the service within the application.
-	 * @param string $service The class name of the service to add.
-	 *
-	 * @throws Exception If a service with the same name already exists.
-	 */
-	protected function addService($name, $service) {
-		if ($this->hasService($name)) {
-			throw new Exception('Service "' . $service . '" has already been added to the application.');
-		}
-
-		$this->_services[$name] = $service;
-	}
-
-	/**
-	 * Force boot a service, instantiating it for future usage.
-	 *
-	 * @param string|string[] $names A name or array of names of services to boot.
-	 *
-	 * @throws Exception If an input service has already been booted.
-	 */
-	protected function bootServices($names) {
-		if (!is_array($names)) $names = [$names];
-
-		foreach ($names as $name) {
-			if ($this->hasBootedService($name)) throw new Exception('Service "' . $name . '" has already been booted.');
-
-			$instance = new $this->_services[$name]();
-
-			$this->dispatch(ServiceEvent::BOOTED, new ServiceEvent($name, $instance));
-			$this->_serviceInstances[$name] = $instance;
-		}
-	}
-
-	/**
-	 * Determine whether the application has a service with the specified name.
-	 *
-	 * @param string $name The service name.
-	 *
-	 * @return bool
-	 */
-	public function hasService($name) {
-		return array_key_exists($name, $this->_services);
-	}
-
-	/**
-	 * Determine whether the application has booted a service with the specified name.
-	 *
-	 * @param string $name The service name.
-	 *
-	 * @return bool
-	 */
-	public function hasBootedService($name) {
-		return array_key_exists($name, $this->_serviceInstances);
-	}
-
-	/**
-	 * Get a service. If the service has not been booted, it will be booted first.
-	 *
-	 * @param string $name The service name.
-	 *
-	 * @return Service
-	 *
-	 * @throws Exception If the service does not exist.
-	 */
-	public function getService($name) {
-		if (!$this->hasService($name)) throw new Exception('Service "' . $name . '" does not exist.');
-		if (!$this->hasBootedService($name)) $this->bootServices($name);
-
-		return $this->_serviceInstances[$name];
-	}
 
 	/**
 	 * Handle an incoming HTTP request.
