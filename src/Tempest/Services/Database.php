@@ -3,7 +3,7 @@
 use PDO;
 use PDOStatement;
 use Exception;
-use Tempest\{App, Service};
+use Tempest\App;
 use Tempest\Data\Connection;
 use Tempest\Database\Row;
 

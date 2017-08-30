@@ -2,7 +2,6 @@
 
 use Carbon\Carbon;
 use Tempest\App;
-use Tempest\Service;
 use Tempest\Utility;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
