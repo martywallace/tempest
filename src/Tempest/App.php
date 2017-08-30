@@ -22,6 +22,9 @@ use Tempest\Services\{Database, Twig, Session};
  */
 abstract class App extends Container {
 
+	/** The framework version. */
+	const VERSION = '5.0.0';
+
 	/** @var static */
 	protected static $_instance;
 

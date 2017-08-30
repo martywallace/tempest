@@ -66,20 +66,33 @@ abstract class Container extends EventDispatcher {
 	/**
 	 * Force boot a service, instantiating it for future usage.
 	 *
-	 * @param string|string[] $names A name or array of names of services to boot.
+	 * @param string $name The name of the service to boot.
 	 *
 	 * @throws Exception If an input service has already been booted.
 	 */
-	protected function bootServices($names) {
+	public function bootService($name) {
+		if ($this->hasBootedService($name)) {
+			throw new Exception('Service "' . $name . '" has already been booted.');
+		}
+
+		$instance = new $this->_services[$name]();
+
+		$this->dispatch(ServiceEvent::BOOTED, new ServiceEvent($name, $instance));
+		$this->_serviceInstances[$name] = $instance;
+	}
+
+	/**
+	 * Force boot multiple services, instantiating them for future usage.
+	 *
+	 * @param string[] $names The names of the services to boot.
+	 *
+	 * @throws Exception If an input service has already been booted.
+	 */
+	protected function bootServices(array $names) {
 		if (!is_array($names)) $names = [$names];
 
 		foreach ($names as $name) {
-			if ($this->hasBootedService($name)) throw new Exception('Service "' . $name . '" has already been booted.');
-
-			$instance = new $this->_services[$name]();
-
-			$this->dispatch(ServiceEvent::BOOTED, new ServiceEvent($name, $instance));
-			$this->_serviceInstances[$name] = $instance;
+			$this->bootService($name);
 		}
 	}
 
@@ -116,7 +129,7 @@ abstract class Container extends EventDispatcher {
 	 */
 	public function getService($name) {
 		if (!$this->hasService($name)) throw new Exception('Service "' . $name . '" does not exist.');
-		if (!$this->hasBootedService($name)) $this->bootServices($name);
+		if (!$this->hasBootedService($name)) $this->bootService($name);
 
 		return $this->_serviceInstances[$name];
 	}
