@@ -2,7 +2,6 @@
 
 use Exception;
 use Closure;
-use Dotenv\Dotenv;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent, ServiceEvent};
 use Tempest\Http\{Http, Request, Response};
@@ -30,20 +29,18 @@ abstract class App extends EventDispatcher {
 	/**
 	 * Create and boot up an application instance.
 	 *
-	 * @param string $root The application root directory, usually one level above the webroot.
-	 * @param array|string $config Application configuration. Can either be provided as a raw configuration array, or as
-	 * a string pointing to a configuration file relative to the provided root.
+	 * @param string $root The application root directory, usually one level above the webroot (or wherever your
+	 * composer.json sits).
+	 * @param Closure|array|string $config Application configuration. Can either be provided as a raw configuration
+	 * array, a closure providing the configuration array or a path pointing to a file relative to the application root
+	 * that provides a configuration array in either of the first two formats. In the case of a closure, it will be
+	 * provided with the {@link Environment}.
 	 *
 	 * @return static
 	 *
 	 * @throws Exception If the application has already been booted.
 	 */
 	public static function boot($root, $config = null) {
-		if (file_exists($root . DIRECTORY_SEPARATOR . '.env')) {
-			$env = new Dotenv($root);
-			$env->load();
-		}
-
 		if (!empty(static::$_instance)) {
 			throw new Exception('The application has already been booted.');
 		}
@@ -75,6 +72,9 @@ abstract class App extends EventDispatcher {
 	/** @var string */
 	private $_root;
 
+	/** @var Environment */
+	private $_environment;
+
 	/** @var array */
 	private $_config;
 
@@ -88,14 +88,36 @@ abstract class App extends EventDispatcher {
 
 	/**
 	 * @param string $root
-	 * @param array|string $config
+	 * @param Closure|array|string $config
+	 *
+	 * @throws Exception
 	 */
 	private function _setup($root, $config) {
 		$this->_root = rtrim($root, '/\\');
+		$this->_environment = new Environment();
 
-		if (is_array($config)) $this->_config = $config;
-		else if (is_string($config) && !empty($config)) $this->_config = require($this->_root . DIRECTORY_SEPARATOR . $config);
-		else $this->_config = [];
+		if (!empty($config)) {
+			if (is_string($config)) {
+				$path = $this->_root . DIRECTORY_SEPARATOR . $config;
+
+				if (!file_exists($path)) {
+					throw new Exception('Configuration file "' . $path . '" does not exist.');
+				} else {
+					$config = require($path);
+				}
+			}
+
+			if (is_array($config)) {
+				// Raw configuration.
+				$this->_config = $config;
+			} else if (is_callable($config)) {
+				$this->_config = $config($this->_environment);
+			} else {
+				throw new Exception('Configuration was provided in an unacceptable format.');
+			}
+		} else {
+			$this->_config = [];
+		}
 
 		array_walk_recursive($this->_config, function($value, $key) {
 			if (strpos($key, '.') !== false) {
