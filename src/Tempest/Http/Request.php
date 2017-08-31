@@ -19,6 +19,7 @@ class Request extends Message {
 		$extras = [
 			'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null,
 			'https' => isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']),
+			'port' => isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : null
 		];
 
 		return new static(
@@ -125,6 +126,36 @@ class Request extends Message {
 	 */
 	public function getUri() {
 		return $this->_uri;
+	}
+
+	/**
+	 * The hostname that the request was made to.
+	 *
+	 * @return string
+	 */
+	public function getHost() {
+		return $this->getHeader(Header::HOST);
+	}
+
+	/**
+	 * Get the port that the request was made to. Typically returns 80 for HTTP requests and 443 for HTTPS.
+	 *
+	 * @return int
+	 */
+	public function getPort() {
+		return intval($this->extra('port'));
+	}
+
+	/**
+	 * Gets the base application URL e.g. "https://mydomain.com". If the request was made over HTTP and the port is not
+	 * 80, or the request was made over HTTPS and the port is not 443; the port will be included in the result.
+	 *
+	 * @return string
+	 */
+	public function getBaseUrl() {
+		return ($this->isHttps() ? 'https' : 'http') . '://' . $this->getHost() . (
+			($this->isHttps() && $this->getPort() !== 443) || (!$this->isHttps() && $this->getPort() !== 80) ? $this->getPort() : ''
+		);
 	}
 
 	/**

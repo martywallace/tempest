@@ -2,6 +2,7 @@
 
 use Exception;
 use Tempest\Events\ServiceEvent;
+use Tempest\Services\Service;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**

@@ -1,7 +1,7 @@
 <?php namespace Tempest\Events;
 
 use Symfony\Component\EventDispatcher\Event;
-use Tempest\Service;
+use Tempest\Services\Service;
 
 /**
  * An event related to application services.
