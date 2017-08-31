@@ -1,6 +1,6 @@
 <?php namespace Tempest\Tests\Material;
 
-use Tempest\Service;
+use Tempest\Services\Service;
 
 class ExampleService implements Service {
 

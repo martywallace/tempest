@@ -29,7 +29,8 @@
 		"symfony/console": "^3.3",
 		"symfony/event-dispatcher": "^3.3",
 		"erusev/parsedown": "^1.6",
-		"nesbot/carbon": "^1.22"
+		"nesbot/carbon": "^1.22",
+		"doctrine/inflector": "^1.2"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "6.1"

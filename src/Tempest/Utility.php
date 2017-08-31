@@ -1,6 +1,6 @@
 <?php namespace Tempest;
 
-use Exception;
+use Closure;
 
 /**
  * General utilities.
@@ -68,6 +68,20 @@ class Utility {
 		}
 
 		return trim(trim($base, '-'));
+	}
+
+	/**
+	 * Buffer the output of a function call and return the snapshot as a string.
+	 *
+	 * @param Closure $closure The function to call.
+	 *
+	 * @return string
+	 */
+	public static function buffer(Closure $closure) {
+		ob_start();
+		$closure();
+
+		return ob_get_clean();
 	}
 
 }
