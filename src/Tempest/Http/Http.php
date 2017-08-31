@@ -252,13 +252,13 @@ class Http extends Kernel {
 						throw new Exception('Controller class "' . $action[0] . '" does not exist.');
 					}
 
-					$controller = new $action[0]($request, $response, $action[2]);
+					$controller = new $action[0]($action[2]);
 
 					if (!method_exists($controller, $action[1])) {
 						throw new Exception('Controller class "' . $action[0] . '" does not contain a method "' . $action[1] . '".');
 					}
 
-					$controller->{$action[1]}();
+					$controller->{$action[1]}($request, $response);
 				}
 			};
 
@@ -274,7 +274,7 @@ class Http extends Kernel {
 						throw new Exception('Middleware class "' . $action[0] . '" does not exist.');
 					}
 
-					$middleware = new $action[0]($request, $response, $action[2]);
+					$middleware = new $action[0]($action[2]);
 
 					if (!method_exists($middleware, $action[1])) {
 						throw new Exception('Middleware class "' . $action[0] . '" does not contain a method "' . $action[1] . '".');
@@ -287,7 +287,7 @@ class Http extends Kernel {
 			}, $pipeline);
 
 			// Bind all next closures and call the first.
-			$pipeline = $this->bindNext($pipeline);
+			$pipeline = $this->bindNext($pipeline, $request, $response);
 			$pipeline();
 		}
 	}
@@ -330,19 +330,21 @@ class Http extends Kernel {
 	 * Recursively bind all input closures with a pointer to the next one in line, then return the first closure.
 	 *
 	 * @param Closure[] $pipeline THe closure pipeline.
+	 * @param Request $request The request to push through the pipeline.
+	 * @param Response $response The response to push through the pipeline.
 	 * @param int $index The pipeline index to work from.
 	 *
 	 * @return Closure
 	 */
-	protected function bindNext(array $pipeline, $index = 0) {
+	protected function bindNext(array $pipeline, Request $request, Response $response, $index = 0) {
 		$closure = $pipeline[$index];
 
 		if ($index === count($pipeline) - 1) {
 			// The last item doesn't need to point to a subsequent closure.
 			return $closure;
 		} else {
-			return function() use ($closure, $pipeline, $index) {
-				$closure($this->bindNext($pipeline, $index + 1));
+			return function() use ($closure, $pipeline, $request, $response, $index) {
+				$closure($request, $response, $this->bindNext($pipeline, $request, $response, $index + 1));
 			};
 		}
 	}

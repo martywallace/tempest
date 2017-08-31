@@ -3,7 +3,7 @@
 use Closure;
 use Exception;
 use Tempest\App;
-use Tempest\Http\{Handler, Header, Status};
+use Tempest\Http\{Handler, Request, Response, Header, Status};
 
 /**
  * Basic protective middleware.
@@ -23,18 +23,20 @@ class Security extends Handler {
 	 * @see Security::OPTION_DENY_FRAMES
 	 * @see Security::OPTION_XSS_PROTECTION
 	 *
+	 * @param Request $request
+	 * @param Response $response
 	 * @param Closure $next
 	 */
-	public function headers(Closure $next) {
+	public function headers(Request $request, Response $response, Closure $next) {
 		$this->expect([
 			self::OPTION_NOSNIFF => true,
 			self::OPTION_DENY_FRAMES => true,
 			self::OPTION_XSS_PROTECTION => true
 		]);
 
-		if ($this->option(self::OPTION_NOSNIFF)) $this->response->setHeader(Header::X_CONTENT_TYPE_OPTIONS, 'nosniff');
-		if ($this->option(self::OPTION_DENY_FRAMES)) $this->response->setHeader(Header::X_FRAME_OPTIONS, 'sameorigin');
-		if ($this->option(self::OPTION_XSS_PROTECTION)) $this->response->setHeader(Header::X_XSS_PROTECTION, '1; mode=block');
+		if ($this->option(self::OPTION_NOSNIFF)) $response->setHeader(Header::X_CONTENT_TYPE_OPTIONS, 'nosniff');
+		if ($this->option(self::OPTION_DENY_FRAMES)) $response->setHeader(Header::X_FRAME_OPTIONS, 'sameorigin');
+		if ($this->option(self::OPTION_XSS_PROTECTION)) $response->setHeader(Header::X_XSS_PROTECTION, '1; mode=block');
 
 		$next();
 	}
@@ -42,23 +44,25 @@ class Security extends Handler {
 	/**
 	 * Validates the request against the current CSRF token.
 	 *
+	 * @param Request $request
+	 * @param Response $response
 	 * @param Closure $next
 	 *
 	 * @throws Exception
 	 */
-	public function validateCsrf(Closure $next) {
-		if ($this->request->getMethod() === 'GET') {
+	public function validateCsrf(Request $request, Response $response, Closure $next) {
+		if ($request->getMethod() === 'GET') {
 			$next();
 		} else {
 			if (!App::get()->session->active()) throw new Exception('There is no active session to read a CSRF token from.');
 
-			if (empty($this->request->getCsrfToken())) {
-				$this->response->setStatus(Status::UNAUTHORIZED)->text('Missing CSRF token.');
+			if (empty($request->getCsrfToken())) {
+				$response->setStatus(Status::UNAUTHORIZED)->text('Missing CSRF token.');
 			} else {
-				if (hash_equals(App::get()->session->getCsrfToken(), $this->request->getCsrfToken())) {
+				if (hash_equals(App::get()->session->getCsrfToken(), $request->getCsrfToken())) {
 					$next();
 				} else {
-					$this->response->setStatus(Status::UNAUTHORIZED)->text('Invalid CSRF token.');
+					$response->setStatus(Status::UNAUTHORIZED)->text('Invalid CSRF token.');
 				}
 			}
 		}
@@ -67,11 +71,12 @@ class Security extends Handler {
 	/**
 	 * Regenerates the CSRF token.
 	 *
+	 * @param Request $request
+	 * @param Response $response
 	 * @param Closure $next
 	 */
-	public function regenerateCsrf(Closure $next) {
+	public function regenerateCsrf(Request $request, Response $response, Closure $next) {
 		App::get()->session->regenerateCsrfToken();
-
 		$next();
 	}
 

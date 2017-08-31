@@ -6,9 +6,6 @@ use Tempest\Utility;
 /**
  * A route handler - either in the form of middleware or a controller.
  *
- * @property-read Request $request The request made to trigger this handler.
- * @property-read Response $response The response that was generated to be sent at the end of the request.
- *
  * @author Marty Wallace
  */
 abstract class Handler {
@@ -31,12 +28,6 @@ abstract class Handler {
 		return [static::class, $method, $options];
 	}
 
-	/** @var Request */
-	private $_request;
-
-	/** @var Response */
-	private $_response;
-
 	/** @var array */
 	private $_options;
 
@@ -44,22 +35,10 @@ abstract class Handler {
 	 * Handler constructor.
 	 *
 	 * @internal
-	 *
-	 * @param Request $request
-	 * @param Response $response
 	 * @param array $options
 	 */
-	public function __construct(Request $request, Response $response, array $options = []) {
-		$this->_request = $request;
-		$this->_response = $response;
+	public function __construct(array $options = []) {
 		$this->_options = $options;
-	}
-
-	public function __get($prop) {
-		if ($prop === 'request') return $this->_request;
-		if ($prop === 'response') return $this->_response;
-
-		return null;
 	}
 
 	public function __isset($prop) {

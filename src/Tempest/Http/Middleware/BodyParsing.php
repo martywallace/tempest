@@ -2,9 +2,7 @@
 
 use Exception;
 use Closure;
-use Tempest\Http\{
-	Handler, Header, ContentType, Status
-};
+use Tempest\Http\{Handler, Request, Response, Header, ContentType, Status};
 
 /**
  * Inbuilt body parser for populating data contained in request bodies.
@@ -20,35 +18,37 @@ class BodyParsing extends Handler {
 	 *
 	 * @see BodyParsing::OPTION_TRIM
 	 *
+	 * @param Request $request
+	 * @param Response $response
 	 * @param Closure $next
 	 *
 	 * @throws Exception
 	 */
-	public function parse(Closure $next) {
+	public function parse(Request $request, Response $response, Closure $next) {
 		$this->expect([
 			self::OPTION_TRIM => true
 		]);
 
-		if (!empty($this->request->getBody())) {
+		if (!empty($request->getBody())) {
 			$data = [];
 
-			if ($this->request->getHeader(Header::CONTENT_TYPE) === ContentType::APPLICATION_JSON) {
-				$data = json_decode($this->request->getBody());
+			if ($request->getHeader(Header::CONTENT_TYPE) === ContentType::APPLICATION_JSON) {
+				$data = json_decode($request->getBody());
 
 				if (json_last_error() !== JSON_ERROR_NONE) {
-					$this->response->setStatus(Status::BAD_REQUEST)->text('The request contained invalid JSON: ' . json_last_error_msg());
+					$response->setStatus(Status::BAD_REQUEST)->text('The request contained invalid JSON: ' . json_last_error_msg());
 					return;
 				}
 			}
 
-			if ($this->request->getHeader(Header::CONTENT_TYPE) === ContentType::APPLICATION_X_WWW_FORM_URLENCODED) {
-				parse_str($this->request->getBody(), $data);
+			if ($request->getHeader(Header::CONTENT_TYPE) === ContentType::APPLICATION_X_WWW_FORM_URLENCODED) {
+				parse_str($request->getBody(), $data);
 			}
 
 			foreach ($data as $property => $value) {
 				if ($this->option(self::OPTION_TRIM) && is_string($value)) $value = trim($value);
 
-				$this->request->attachData($property, $value);
+				$request->attachData($property, $value);
 			}
 		}
 
