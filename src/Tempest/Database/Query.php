@@ -35,6 +35,17 @@ class Query {
 		return static::create()->raw('SELECT ' . implode(', ', $fields) . ' FROM ' . $table);
 	}
 
+	/**
+	 * Creates a DELETE query.
+	 *
+	 * @param string $table The table to DELETE from.
+	 *
+	 * @return $this
+	 */
+	public static function delete($table) {
+		return static::create()->raw('DELETE FROM ' . $table);
+	}
+
 	/** @var string[] */
 	private $_query = [];
 
@@ -165,6 +176,13 @@ class Query {
 	public function first() {
 		$all = $this->all();
 		return empty($all) ? null : $all[0];
+	}
+
+	/**
+	 * Execute the query.
+	 */
+	public function execute() {
+		App::get()->db->query($this->getQuery(), $this->getBindings());
 	}
 
 }

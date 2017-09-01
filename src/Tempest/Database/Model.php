@@ -100,12 +100,21 @@ abstract class Model extends EventDispatcher {
 	}
 
 	/**
+	 * Returns a DELETE query for the table associated with this model.
+	 *
+	 * @return Query
+	 */
+	public static function delete() {
+		return Query::delete(static::getTable());
+	}
+
+	/**
 	 * Retrieve all rows within the table associated with this model and map them to this model.
 	 *
 	 * @return static[]
 	 */
 	public static function all() {
-		return static::from(Query::select(static::getTable())->get());
+		return static::from(Query::select(static::getTable())->all());
 	}
 
 	/**
