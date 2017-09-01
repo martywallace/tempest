@@ -109,6 +109,19 @@ abstract class Model extends EventDispatcher {
 	}
 
 	/**
+	 * Returns an INSERT INTO query for the table associated with this model.
+	 *
+	 * @param array $data THe data to insert.
+	 * @param bool $updateOnDuplicate Whether or not to append an ON DUPLICATE KEY UPDATE statement to the query.
+	 *
+	 * @return Query
+	 */
+	public static function insert(array $data = [], $updateOnDuplicate = true) {
+		// TODO: Provide non-unique fields.
+		return Query::insert(static::getTable(), $data, []);
+	}
+
+	/**
 	 * Retrieve all rows within the table associated with this model and map them to this model.
 	 *
 	 * @return static[]
@@ -258,6 +271,15 @@ abstract class Model extends EventDispatcher {
 		$this->_data[$field] = $value;
 
 		return $this;
+	}
+
+	/**
+	 * Saves this model into the database.
+	 *
+	 * @param bool $updateOnDuplicate Whether or not to update a matching duplicate record if one was found.
+	 */
+	public function save($updateOnDuplicate = true) {
+		static::insert($this->_data, $updateOnDuplicate)->execute();
 	}
 
 }

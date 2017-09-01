@@ -40,10 +40,38 @@ class Query {
 	 *
 	 * @param string $table The table to DELETE from.
 	 *
-	 * @return $this
+	 * @return static
 	 */
 	public static function delete($table) {
 		return static::create()->raw('DELETE FROM ' . $table);
+	}
+
+	/**
+	 * Creates an INSERT INTO query.
+	 *
+	 * @param string $table The table to insert data into.
+	 * @param array $data The data to insert.
+	 * @param array $updatable If provided, includes an ON DUPLICATE KEY UPDATE statement for the provided columns.
+	 *
+	 * @return static
+	 */
+	public static function insert($table, array $data = [], array $updatable = []) {
+		$fields = array_keys($data);
+		$placeholders = array_map(function($field) { return ':' . $field; }, $fields);
+
+		$query = static::create()->raw('INSERT INTO ' . $table . '(' . implode(', ', $fields) . ') VALUES(' . implode(', ', $placeholders) . ')');
+
+		if (!empty($updatable)) {
+			$pairs = array_map(function($field) {
+				return $field . ' = :' . $field;
+			}, array_intersect($updatable, $fields));
+
+			$query = $query->raw('ON DUPLICATE KEY UPDATE ' . implode(', ', $pairs));
+		}
+
+		$query->bind(array_combine($placeholders, $data));
+
+		return $query;
 	}
 
 	/** @var string[] */
@@ -97,6 +125,18 @@ class Query {
 	}
 
 	/**
+	 * Add value bindings.
+	 *
+	 * @param array $bindings Bindings to provide.
+	 *
+	 * @return $this
+	 */
+	public function bind(array $bindings) {
+		$this->_bindings = array_merge($this->_bindings, $bindings);
+		return $this;
+	}
+
+	/**
 	 * Append raw SQL to the query.
 	 *
 	 * @param string $query The raw SQL to append.
@@ -106,7 +146,7 @@ class Query {
 	 */
 	public function raw($query, array $bindings = []) {
 		$this->_query[] = $query;
-		$this->_bindings = array_merge($this->_bindings, $bindings);
+		$this->bind($bindings);
 
 		return $this;
 	}
