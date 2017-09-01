@@ -22,7 +22,9 @@ class Database implements Service {
 
 	public function __construct() {
 		$conn = Connection::fromConnectionString(App::get()->config('db'));
+
 		$this->_pdo = new PDO('mysql:host=' . $conn->host . ';dbname=' . $conn->resource,$conn->username, $conn->password);
+		$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 	}
 
 	/**
@@ -71,15 +73,15 @@ class Database implements Service {
 	 * Prepare and execute a query, returning the PDOStatement that is created when preparing the query.
 	 *
 	 * @param string $query The query to execute.
-	 * @param array $params Optional parameters to bind to the query.
+	 * @param array $bindings Optional parameters to bind to the query.
 	 *
 	 * @return PDOStatement
 	 *
 	 * @throws Exception If the PDOStatement returns any errors, they are thrown as an exception.
 	 */
-	public function query($query, array $params = null) {
+	public function query($query, array $bindings = []) {
 		$stmt = $this->prepare($query);
-		$stmt->execute($params);
+		$stmt->execute($bindings);
 
 		if ($stmt->errorCode() !== PDO::ERR_NONE) {
 			$err = $stmt->errorInfo();
@@ -93,12 +95,12 @@ class Database implements Service {
 	 * Returns the first row provided by executing a query.
 	 *
 	 * @param string $query The query to execute.
-	 * @param array $params Parameters to bind to the query.
+	 * @param array $bindings Parameters to bind to the query.
 	 *
 	 * @return Row
 	 */
-	public function one($query, array $params = null) {
-		$rows = $this->all($query, $params);
+	public function one($query, array $bindings = []) {
+		$rows = $this->all($query, $bindings);
 		return count($rows) > 0 ? $rows[0] : null;
 	}
 
@@ -106,12 +108,12 @@ class Database implements Service {
 	 * Returns all rows provided by executing a query.
 	 *
 	 * @param string $query The query to execute.
-	 * @param array $params Parameters to bind to the query.
+	 * @param array $bindings Parameters to bind to the query.
 	 *
 	 * @return Row[]
 	 */
-	public function all($query, array $params = null) {
-		$stmt = $this->query($query, $params);
+	public function all($query, array $bindings = []) {
+		$stmt = $this->query($query, $bindings);
 		return $stmt->fetchAll(PDO::FETCH_CLASS, Row::class);
 	}
 
@@ -119,15 +121,15 @@ class Database implements Service {
 	 * Returns the first value in the first column returned from executing a query.
 	 *
 	 * @param string $query The query to execute.
-	 * @param array $params Parameters to bind to the query.
+	 * @param array $bindings Parameters to bind to the query.
 	 * @param mixed $fallback A fallback value to use if no results were returned by the query.
 	 *
 	 * @return mixed
 	 *
 	 * @throws Exception If the internal PDOStatement returns any errors, they are thrown as an exception.
 	 */
-	public function prop($query, array $params = null, $fallback = null) {
-		$result = $this->query($query, $params)->fetch(PDO::FETCH_NUM);
+	public function prop($query, array $bindings = [], $fallback = null) {
+		$result = $this->query($query, $bindings)->fetch(PDO::FETCH_NUM);
 		return empty($result) ? $fallback : $result[0];
 	}
 

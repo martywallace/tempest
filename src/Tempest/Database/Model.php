@@ -2,6 +2,7 @@
 
 use Exception;
 use ReflectionClass;
+use Tempest\App;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Doctrine\Common\Inflector\Inflector;
 
@@ -12,8 +13,24 @@ use Doctrine\Common\Inflector\Inflector;
  */
 abstract class Model extends EventDispatcher {
 
+	/** @var string */
+	protected static $_table = null;
+
 	/** @var SealedField[] */
-	private static $_fields = null;
+	protected static $_fields = null;
+
+	/**
+	 * Get the table name associated with this model.
+	 *
+	 * @return string
+	 */
+	public static function getTable() {
+		if (empty(static::$_table)) {
+			static::$_table = static::table();
+		}
+
+		return static::$_table;
+	}
 
 	/**
 	 * Retrieve all declared fields for this model.
@@ -69,6 +86,26 @@ abstract class Model extends EventDispatcher {
 		}
 
 		return empty($rows) ? null : new static($rows->getValues());
+	}
+
+	/**
+	 * Returns a SELECT query that resolves to one or more instances of this model.
+	 *
+	 * @param string[] $fields The fields to select.
+	 *
+	 * @return Query
+	 */
+	public static function select(array $fields = ['*']) {
+		return Query::select(static::getTable(), $fields)->produces(static::class);
+	}
+
+	/**
+	 * Retrieve all rows within the table associated with this model and map them to this model.
+	 *
+	 * @return static[]
+	 */
+	public static function all() {
+		return static::from(Query::select(static::getTable())->get());
 	}
 
 	/**
