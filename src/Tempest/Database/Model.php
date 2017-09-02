@@ -2,7 +2,6 @@
 
 use Exception;
 use ReflectionClass;
-use Tempest\App;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Doctrine\Common\Inflector\Inflector;
 

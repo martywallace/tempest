@@ -12,13 +12,19 @@ class Field extends SealedField {
 	const INT = 'int';
 	const STRING = 'string';
 	const DATETIME = 'datetime';
+	const BOOL = 'bool';
+	const TEXT = 'text';
+	const DECIMAL = 'decimal';
 
 	/**
 	 * A field representing an integer value.
 	 *
+	 * @param int $length The maximum integer length to be stored in this field.
+	 * @param bool $unsigned Whether or not the int is unsigned.
+	 *
 	 * @return static
 	 */
-	public static function int() {
+	public static function int($length = 10, $unsigned = true) {
 		return new static(static::INT);
 	}
 
@@ -46,8 +52,7 @@ class Field extends SealedField {
 	 * @param string $type
 	 */
 	protected function __construct($type) {
-		$this->type = $type;
-
+		$this->setAttr(self::ATTR_TYPE, $type);
 		parent::__construct($this);
 	}
 
@@ -58,9 +63,49 @@ class Field extends SealedField {
 	 *
 	 * @return $this
 	 */
-	public function setDefault($value) {
-		$this->default = $value;
+	public function default($value) {
+		$this->setAttr(self::ATTR_DEFAULT, $value);
 		return $this;
+	}
+
+	/**
+	 * Declare that this field is non-nullable.
+	 *
+	 * @return $this
+	 */
+	public function notNullable() {
+		$this->setAttr(self::ATTR_NULLABLE, false);
+		return $this;
+	}
+
+	/**
+	 * Declare this field as auto-incrementing.
+	 *
+	 * @return $this
+	 */
+	public function increments() {
+		$this->setAttr(self::ATTR_AUTO_INCREMENT, true);
+		return $this;
+	}
+
+	/**
+	 * Mark this column as a primary key.
+	 *
+	 * @param string $compound Compound key name, if this is a compund key.
+	 *
+	 * @return $this
+	 */
+	public function primary($compound = null) {
+		$this->setAttr(self::ATTR_PRIMARY, empty($compound) ? true : $compound);
+		return $this;
+	}
+
+	public function unique() {
+		//
+	}
+
+	public function index() {
+		//
 	}
 
 	/**
