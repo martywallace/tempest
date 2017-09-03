@@ -38,9 +38,13 @@ abstract class Model extends EventDispatcher {
 	 */
 	public static function getFields() {
 		if (empty(static::$_fields)) {
-			return array_map(function(Field $field) {
-				return $field->seal();
-			}, static::fields());
+			$sealed = [];
+
+			foreach (static::fields() as $name => $field) {
+				$sealed[] = $field->seal($name);
+			}
+
+			return $sealed;
 		}
 
 		return static::$_fields;
@@ -66,6 +70,52 @@ abstract class Model extends EventDispatcher {
 	 */
 	public static function getField($field) {
 		return static::hasField($field) ? static::getFields()[$field] : null;
+	}
+
+	/**
+	 * Retrieve all fields that are PRIMARY keyed.
+	 *
+	 * @return SealedField[]
+	 */
+	public static function getPrimaryFields() {
+		return array_values(array_filter(static::getFields(), function(SealedField $field) {
+			return $field->hasPrimaryKey();
+		}));
+	}
+
+	/**
+	 * Retrieve all fields that are either PRIMARY or UNIQUE keyed.
+	 *
+	 * @return SealedField[]
+	 */
+	public static function getUniqueFields() {
+		return array_values(array_filter(static::getFields(), function(SealedField $field) {
+			return $field->isUnique();
+		}));
+	}
+
+	/**
+	 * Retrieve all fields that are not PRIMARY or UNIQUE keyed.
+	 *
+	 * @return SealedField[]
+	 */
+	public static function getNonUniqueFields() {
+		return array_values(array_filter(static::getFields(), function(SealedField $field) {
+			return !$field->isUnique();
+		}));
+	}
+
+	/**
+	 * Retrieve the auto-incrementing field,  if this model declared one.
+	 *
+	 * @return SealedField
+	 */
+	public static function getIncrementingField() {
+		foreach (static::getFields() as $field) {
+			if ($field->isAutoIncrementing()) return $field;
+		}
+
+		return null;
 	}
 
 	/**
@@ -150,18 +200,7 @@ abstract class Model extends EventDispatcher {
 	}
 
 	/**
-	 * Perform a database migration for the table associated with this model.
-	 *
-	 * @return array The performed queries.
-	 */
-	public static function migrate() {
-		$queries = [];
-
-		return $queries;
-	}
-
-	/*
-	 * The known fields for this model.
+	 * Declares fields for this model.
 	 *
 	 * @return Field[]
 	 */

@@ -11,9 +11,13 @@ class SealedField {
 	const ATTR_AUTO_INCREMENT = 'autoIncrement';
 	const ATTR_NULLABLE = 'nullable';
 	const ATTR_DEFAULT = 'default';
-	const ATTR_PRIMARY = 'primary';
-	const ATTR_UNIQUE = 'unique';
-	const ATTR_INDEX = 'index';
+	const ATTR_RPRIMARY_KEY = 'primaryKey';
+
+	const KEY_UNIQUE = 'unique';
+	const KEY_INDEX = 'index';
+
+	/** @var string */
+	private $_name;
 
 	/** @var mixed[] */
 	private $_attributes = [
@@ -21,13 +25,30 @@ class SealedField {
 		self::ATTR_AUTO_INCREMENT => false,
 		self::ATTR_DEFAULT => null,
 		self::ATTR_NULLABLE => true,
-		self::ATTR_PRIMARY => false,
-		self::ATTR_UNIQUE => false,
-		self::ATTR_INDEX => false
+		self::ATTR_RPRIMARY_KEY => false
 	];
 
-	protected function __construct(Field $field) {
+	/** @var array */
+	private $_keys = [
+		self::KEY_UNIQUE => [],
+		self::KEY_INDEX => []
+	];
+
+	protected function __construct($name, Field $field) {
+		$this->_name = $name;
+
 		$this->setAttrs($field->getAttrs());
+		$this->setKeys($field->getKeys());
+	}
+
+	/**
+	 * Retrieve the name of this field as provided when {@link Model::fields declaring the available fields} for a
+	 * model.
+	 *
+	 * @return string
+	 */
+	public function getName() {
+		return $this->_name;
 	}
 
 	/**
@@ -78,6 +99,45 @@ class SealedField {
 	}
 
 	/**
+	 * Adds a key for this field.
+	 *
+	 * @param string $type The key type.
+	 * @param string|bool $value The key name in the case of a compound key, or true for non-compound.
+	 */
+	protected function addKey($type, $value) {
+		$this->_keys[$type][] = $value;
+	}
+
+	/**
+	 * Get a key.
+	 *
+	 * @param string $type The key type.
+	 *
+	 * @return string[]
+	 */
+	protected function getKey($type) {
+		return $this->_keys[$type];
+	}
+
+	/**
+	 * Set multiple keys.
+	 *
+	 * @param array $keys The keys to set.
+	 */
+	protected function setKeys(array $keys) {
+		$this->_keys = $keys;
+	}
+
+	/**
+	 * Get all keys.
+	 *
+	 * @return string[][]
+	 */
+	protected function getKeys() {
+		return $this->_keys;
+	}
+
+	/**
 	 * Retrieve the field type.
 	 *
 	 * @return string
@@ -100,7 +160,7 @@ class SealedField {
 	 *
 	 * @return bool
 	 */
-	public function isAutoIncrement() {
+	public function isAutoIncrementing() {
 		return $this->getAttr(self::ATTR_AUTO_INCREMENT);
 	}
 
@@ -111,6 +171,43 @@ class SealedField {
 	 */
 	public function isNullable() {
 		return $this->getAttr(self::ATTR_NULLABLE);
+	}
+
+	/**
+	 * Whether or not this field is part of a primary key.
+	 *
+	 * @return bool
+	 */
+	public function hasPrimaryKey() {
+		return $this->getAttr(self::ATTR_RPRIMARY_KEY);
+	}
+
+	/**
+	 * Whether or not this field is part of a unique key.
+	 *
+	 * @return bool
+	 */
+	public function hasUniqueKey() {
+		return count($this->getKey(self::KEY_UNIQUE)) > 0;
+	}
+
+	/**
+	 * Whether or not this field has an index.
+	 *
+	 * @return bool
+	 */
+	public function hasIndex() {
+		return count($this->getKey(self::KEY_INDEX)) > 0;
+	}
+
+	/**
+	 * Whether or not this field is unique, based on whether it has either a {@link hasPrimaryKey PRIMARY} or
+	 * {@link hasUniqueKey UNIQUE} key.
+	 *
+	 * @return bool
+	 */
+	public function isUnique() {
+		return $this->hasPrimaryKey() || $this->hasUniqueKey();
 	}
 
 }

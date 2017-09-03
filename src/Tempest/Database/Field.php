@@ -1,6 +1,6 @@
 <?php namespace Tempest\Database;
 
-use Closure;
+use Exception;
 
 /**
  * A field for a model.
@@ -24,7 +24,7 @@ class Field extends SealedField {
 	 *
 	 * @return static
 	 */
-	public static function int($length = 10, $unsigned = true) {
+	public static function int() {
 		return new static(static::INT);
 	}
 
@@ -53,7 +53,7 @@ class Field extends SealedField {
 	 */
 	protected function __construct($type) {
 		$this->setAttr(self::ATTR_TYPE, $type);
-		parent::__construct($this);
+		parent::__construct($this->getName(), $this);
 	}
 
 	/**
@@ -79,33 +79,47 @@ class Field extends SealedField {
 	}
 
 	/**
-	 * Declare this field as auto-incrementing.
+	 * Declare this field as auto-incrementing. This also {@link primary marks the field as part of the PRIMARY key}.
 	 *
 	 * @return $this
 	 */
 	public function increments() {
-		$this->setAttr(self::ATTR_AUTO_INCREMENT, true);
+		$this->primary()->setAttr(self::ATTR_AUTO_INCREMENT, true);
 		return $this;
 	}
 
 	/**
-	 * Mark this column as a primary key.
-	 *
-	 * @param string $compound Compound key name, if this is a compund key.
+	 * Mark this field as a primary key.
 	 *
 	 * @return $this
 	 */
-	public function primary($compound = null) {
-		$this->setAttr(self::ATTR_PRIMARY, empty($compound) ? true : $compound);
+	public function primary() {
+		$this->setAttr(self::ATTR_RPRIMARY_KEY, true);
 		return $this;
 	}
 
-	public function unique() {
-		//
+	/**
+	 * Mark this field as a unique key.
+	 *
+	 * @param string|string[] $name Compound key name, if this is a compound key.
+	 *
+	 * @return $this
+	 */
+	public function unique($name = null) {
+		$this->addKey(self::KEY_UNIQUE, empty($name) ? true : $name);
+		return $this;
 	}
 
-	public function index() {
-		//
+	/**
+	 * Mark this field as an index.
+	 *
+	 * @param string|string[] $name Compound key name, if this is a compound key.
+	 *
+	 * @return $this
+	 */
+	public function index($name = null) {
+		$this->addKey(self::KEY_INDEX, empty($name) ? true : $name);
+		return $this;
 	}
 
 	/**
@@ -113,10 +127,12 @@ class Field extends SealedField {
 	 *
 	 * @internal
 	 *
+	 * @param string $name The name of the field.
+	 *
 	 * @return SealedField
 	 */
-	public function seal() {
-		return new SealedField($this);
+	public function seal($name) {
+		return new SealedField($name, $this);
 	}
 
 }
