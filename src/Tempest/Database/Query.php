@@ -51,27 +51,12 @@ class Query {
 	 *
 	 * @param string $table The table to insert data into.
 	 * @param array $data The data to insert.
-	 * @param array $updatable If provided, includes an ON DUPLICATE KEY UPDATE statement for the provided columns.
 	 *
 	 * @return static
 	 */
-	public static function insert($table, array $data = [], array $updatable = []) {
-		$fields = array_keys($data);
-		$placeholders = array_map(function($field) { return ':' . $field; }, $fields);
-
-		$query = static::create()->raw('INSERT INTO ' . $table . '(' . implode(', ', $fields) . ') VALUES(' . implode(', ', $placeholders) . ')');
-
-		if (!empty($updatable)) {
-			$pairs = array_map(function($field) {
-				return $field . ' = :' . $field;
-			}, array_intersect($updatable, $fields));
-
-			$query = $query->raw('ON DUPLICATE KEY UPDATE ' . implode(', ', $pairs));
-		}
-
-		$query->bind(array_combine($placeholders, $data));
-
-		return $query;
+	public static function insert($table, array $data = []) {
+		return static::create()->raw('INSERT INTO ' . $table . ' (' . implode(', ', array_keys($data)) . ') VALUES(' . implode(', ', array_fill(0, count($data), '?')) . ')')
+			->bind($data);
 	}
 
 	/** @var string[] */
@@ -127,12 +112,14 @@ class Query {
 	/**
 	 * Add value bindings.
 	 *
-	 * @param array $bindings Bindings to provide.
+	 * @param mixed|mixed[] $bindings Bindings to provide.
 	 *
 	 * @return $this
 	 */
-	public function bind(array $bindings) {
-		$this->_bindings = array_merge($this->_bindings, $bindings);
+	public function bind($bindings) {
+		if (!is_array($bindings)) $bindings = [$bindings];
+
+		$this->_bindings = array_merge($this->_bindings, array_values($bindings));
 		return $this;
 	}
 
@@ -140,11 +127,11 @@ class Query {
 	 * Append raw SQL to the query.
 	 *
 	 * @param string $query The raw SQL to append.
-	 * @param array $bindings Values to include in the query.
+	 * @param mixed|mixed[] $bindings Values to include in the query.
 	 *
 	 * @return $this
 	 */
-	public function raw($query, array $bindings = []) {
+	public function raw($query, $bindings = []) {
 		$this->_query[] = $query;
 		$this->bind($bindings);
 
@@ -160,7 +147,19 @@ class Query {
 	 * @return $this
 	 */
 	public function where($column, $value) {
-		return $this->raw('WHERE ' . $column . ' = ?', [$value]);
+		return $this->raw('WHERE ' . $column . ' = ?', $value);
+	}
+
+	/**
+	 * Appends an AND statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 * @param mixed $value The subject value.
+	 *
+	 * @return $this
+	 */
+	public function and($column, $value) {
+		return $this->raw('AND ' . $column . ' = ?')->bind($value);
 	}
 
 	/**
@@ -193,6 +192,18 @@ class Query {
 	 */
 	public function limit($limit, $offset = 0) {
 		return $this->raw('LIMIT ?, ?', [$offset, $limit]);
+	}
+
+	/**
+	 * Appends an ON DUPLICATE KEY UPDATE statement to the query.
+	 *
+	 * @param array $data The fields to update if a duplicate was detected in the previous {@link insert INSERT}.
+	 *
+	 * @return $this
+	 */
+	public function onDuplicateKeyUpdate(array $data) {
+		$pairs = array_map(function($field) { return $field . ' = ?'; }, array_keys($data));
+		return $this->raw('ON DUPLICATE KEY UPDATE ' . implode(', ', $pairs))->bind($data);
 	}
 
 	/**
