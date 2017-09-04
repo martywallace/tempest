@@ -32,7 +32,7 @@ class BodyParsing extends Handler {
 		if (!empty($request->getBody())) {
 			$data = [];
 
-			if (stripos($request->getHeader(Header::CONTENT_TYPE), ContentType::APPLICATION_JSON) >= 0) {
+			if (stripos($request->getHeader(Header::CONTENT_TYPE), ContentType::APPLICATION_JSON) !== false) {
 				$data = json_decode($request->getBody());
 
 				if (json_last_error() !== JSON_ERROR_NONE) {
@@ -40,8 +40,7 @@ class BodyParsing extends Handler {
 					return;
 				}
 			}
-
-			if (stripos($request->getHeader(Header::CONTENT_TYPE), ContentType::APPLICATION_X_WWW_FORM_URLENCODED) >= 0) {
+			if (stripos($request->getHeader(Header::CONTENT_TYPE), ContentType::APPLICATION_X_WWW_FORM_URLENCODED) !== false) {
 				parse_str($request->getBody(), $data);
 			}
 

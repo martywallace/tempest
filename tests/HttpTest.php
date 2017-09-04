@@ -88,7 +88,7 @@ class HttpTest extends TestCase {
 	 */
 	public function testParseJsonBody(App $app) {
 		$provider = function(Http $http) {
-			$http->middleware(BodyParsing::do('parse', [BodyParsing::OPTION_TRIM => true]));
+			$http->middleware(BodyParsing::do('parse'));
 
 			return [
 				$http->post('/')->controller(ExampleController::do('convertJson'))
