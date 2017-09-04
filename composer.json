@@ -22,7 +22,7 @@
 		}
 	},
 	"require": {
-		"php": ">=7.1",
+		"php": ">=7.0",
 		"nikic/fast-route": "1.2.*",
 		"twig/twig": "2.3.*",
 		"vlucas/phpdotenv": "^2.4",
