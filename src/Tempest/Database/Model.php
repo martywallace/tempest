@@ -41,7 +41,7 @@ abstract class Model extends EventDispatcher {
 			$sealed = [];
 
 			foreach (static::fields() as $name => $field) {
-				$sealed[] = $field->seal($name);
+				$sealed[$name] = $field->seal($name);
 			}
 
 			return $sealed;
