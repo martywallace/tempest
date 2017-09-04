@@ -5,11 +5,6 @@
 	"homepage": "https://github.com/MartyWallace/Tempest",
 	"type": "library",
 	"license": "MIT",
-	"config": {
-		"platform": {
-			"php": "7.0"
-		}
-	},
 	"authors": [{
 		"name": "Marty Wallace",
 		"email": "marty@martywallace.com",
