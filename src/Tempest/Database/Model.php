@@ -241,6 +241,10 @@ abstract class Model extends EventDispatcher {
 		else $this->_undeclared[$prop] = $value;
 	}
 
+	public function __isset($prop) {
+		return static::hasField($prop) || array_key_exists($prop, $this->_undeclared);
+	}
+
 	/**
 	 * Fill this model with data.
 	 *
