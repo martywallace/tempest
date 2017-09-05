@@ -14,9 +14,6 @@ use Doctrine\Common\Inflector\Inflector;
  */
 abstract class Model extends EventDispatcher implements JsonSerializable {
 
-	/** @var string */
-	protected static $_table = null;
-
 	/** @var SealedField[] */
 	protected static $_fields = null;
 
@@ -26,11 +23,7 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	 * @return string
 	 */
 	public static function getTable() {
-		if (empty(static::$_table)) {
-			static::$_table = static::table();
-		}
-
-		return static::$_table;
+		return static::table();
 	}
 
 	/**

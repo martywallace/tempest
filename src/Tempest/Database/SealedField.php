@@ -58,10 +58,14 @@ class SealedField {
 					break;
 
 				case Field::JSON:
-					$result = json_encode($value);
+					if (!is_string($value)) {
+						$result = json_encode($value);
 
-					if (json_last_error() !== JSON_ERROR_NONE) return null;
-					return $result;
+						if (json_last_error() !== JSON_ERROR_NONE) return null;
+						return $result;
+					}
+
+					return $value;
 					break;
 			}
 		}
@@ -99,10 +103,14 @@ class SealedField {
 					break;
 
 				case Field::JSON:
-					$result = json_decode($value);
+					if (is_string($value)) {
+						$result = json_decode($value);
 
-					if (json_last_error() !== JSON_ERROR_NONE) return null;
-					return $result;
+						if (json_last_error() !== JSON_ERROR_NONE) return null;
+						return $result;
+					}
+
+					return $value;
 					break;
 			}
 		}

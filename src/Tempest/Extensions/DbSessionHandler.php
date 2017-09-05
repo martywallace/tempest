@@ -23,7 +23,7 @@ class DbSessionHandler implements SessionHandlerInterface {
 
 	public function gc($lifetime) {
 		Session::delete()
-			->whereGreater('updated', Carbon::now()->addSeconds($lifetime))
+			->whereGreater('updated', Carbon::now()->subSeconds($lifetime)->toDateTimeString())
 			->execute();
 
 		return true;
@@ -35,19 +35,26 @@ class DbSessionHandler implements SessionHandlerInterface {
 
 	public function read($id) {
 		/** @var Session $session */
-		$session = Session::select()->where('id', $id)->first();
+		$session = Session::find($id);
 
 		return !empty($session) ? $session->data : '';
 	}
 
 	public function write($id, $data) {
-		$session = Session::create([
-			'id' => $id,
-			'updated' => Carbon::now(),
-			'data' => $data
-		]);
+		$session = Session::find($id);
 
-		$session->save();
+		if (!empty($session)) {
+			$session->fill([
+				'updated' => Carbon::now(),
+				'data' => $data
+			])->save();
+		} else {
+			Session::create([
+				'id' => $id,
+				'updated' => Carbon::now(),
+				'data' => $data
+			])->save();
+		}
 
 		return true;
 	}
