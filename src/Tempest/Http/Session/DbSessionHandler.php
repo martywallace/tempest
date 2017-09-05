@@ -1,4 +1,4 @@
-<?php namespace Tempest\Extensions;
+<?php namespace Tempest\Http\Session;
 
 use Carbon\Carbon;
 use Tempest\Database\Models\Session;
