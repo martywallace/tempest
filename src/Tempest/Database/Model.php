@@ -283,7 +283,7 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 
 		/** @var Field $field */
 		foreach (static::getFields() as $name => $field) {
-			$this->_data[$name] = $field->getDefault();
+			$this->setFieldValue($name, $field->getDefault());
 		}
 
 		return $this;
