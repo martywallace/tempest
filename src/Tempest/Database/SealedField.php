@@ -1,4 +1,5 @@
 <?php namespace Tempest\Database;
+use Carbon\Carbon;
 
 /**
  * A real-only field declaration.
@@ -35,7 +36,7 @@ class SealedField {
 	}
 
 	/**
-	 * Converts a value to a storable, raw value for MySQL.
+	 * Converts a value to a store-able, raw value for MySQL.
 	 *
 	 * @param mixed $value The value to convert.
 	 *
@@ -43,7 +44,26 @@ class SealedField {
 	 */
 	public function toRaw($value) {
 		if (!$this->isNull($value)) {
-			return $value;
+			switch($this->_type) {
+				default:
+					return strval($value);
+					break;
+
+				case Field::BOOL:
+					return strval(!!$value);
+
+				case Field::DATETIME:
+					if ($value instanceof Carbon) return $value->toDateTimeString();
+					return Carbon::parse($value)->toDateTimeString();
+					break;
+
+				case Field::JSON:
+					$result = json_encode($value);
+
+					if (json_last_error() !== JSON_ERROR_NONE) return null;
+					return $result;
+					break;
+			}
 		}
 
 		return null;
@@ -58,7 +78,33 @@ class SealedField {
 	 */
 	public function toRefined($value) {
 		if (!$this->isNull($value)) {
-			return $value;
+			switch($this->_type) {
+				default:
+					return strval($value);
+					break;
+
+				case Field::INT:
+					return intval($value);
+					break;
+
+				case Field::DECIMAL:
+					return floatval($value);
+
+				case Field::BOOL:
+					return !!$value;
+
+				case Field::DATETIME:
+					if ($value instanceof Carbon) return $value;
+					return Carbon::parse($value);
+					break;
+
+				case Field::JSON:
+					$result = json_decode($value);
+
+					if (json_last_error() !== JSON_ERROR_NONE) return null;
+					return $result;
+					break;
+			}
 		}
 
 		return null;
