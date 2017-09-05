@@ -139,7 +139,7 @@ class Query {
 	}
 
 	/**
-	 * Appends a WHERE statement to the query.
+	 * Appends a WHERE statement to the query for an equal match.
 	 *
 	 * @param string $column The subject column.
 	 * @param mixed $value The value to match.
@@ -148,6 +148,30 @@ class Query {
 	 */
 	public function where($column, $value) {
 		return $this->raw('WHERE ' . $column . ' = ?', $value);
+	}
+
+	/**
+	 * Appends a WHERE statement to the query for a less than match.
+	 *
+	 * @param string $column The subject column.
+	 * @param mixed $value The value to match.
+	 *
+	 * @return $this
+	 */
+	public function whereLess($column, $value) {
+		return $this->raw('WHERE ' . $column . ' < ?', $value);
+	}
+
+	/**
+	 * Appends a WHERE statement to the query for a greater than match.
+	 *
+	 * @param string $column The subject column.
+	 * @param mixed $value The value to match.
+	 *
+	 * @return $this
+	 */
+	public function whereGreater($column, $value) {
+		return $this->raw('WHERE ' . $column . ' > ?', $value);
 	}
 
 	/**

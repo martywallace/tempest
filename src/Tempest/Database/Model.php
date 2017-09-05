@@ -2,16 +2,17 @@
 
 use Exception;
 use ReflectionClass;
+use JsonSerializable;
+use Tempest\App;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Doctrine\Common\Inflector\Inflector;
-use Tempest\App;
 
 /**
  * A database model, derived from a {@link Row}.
  *
  * @author Marty Wallace
  */
-abstract class Model extends EventDispatcher {
+abstract class Model extends EventDispatcher implements JsonSerializable {
 
 	/** @var string */
 	protected static $_table = null;
@@ -79,9 +80,9 @@ abstract class Model extends EventDispatcher {
 	 * @return SealedField[]
 	 */
 	public static function getPrimaryFields() {
-		return array_values(array_filter(static::getFields(), function(SealedField $field) {
-			return $field->hasPrimaryKey();
-		}));
+		return array_filter(static::getFields(), function(SealedField $field) {
+			return $field->hasPrimaryIndex();
+		});
 	}
 
 	/**
@@ -90,9 +91,9 @@ abstract class Model extends EventDispatcher {
 	 * @return SealedField[]
 	 */
 	public static function getUniqueFields() {
-		return array_values(array_filter(static::getFields(), function(SealedField $field) {
-			return $field->isUnique();
-		}));
+		return array_filter(static::getFields(), function(SealedField $field) {
+			return $field->hasUniqueIndex();
+		});
 	}
 
 	/**
@@ -101,9 +102,9 @@ abstract class Model extends EventDispatcher {
 	 * @return SealedField[]
 	 */
 	public static function getNonUniqueFields() {
-		return array_values(array_filter(static::getFields(), function(SealedField $field) {
-			return !$field->isUnique();
-		}));
+		return array_filter(static::getFields(), function(SealedField $field) {
+			return !$field->hasUniqueIndex();
+		});
 	}
 
 	/**
@@ -113,7 +114,7 @@ abstract class Model extends EventDispatcher {
 	 */
 	public static function getIncrementingField() {
 		foreach (static::getFields() as $field) {
-			if ($field->isAutoIncrementing()) return $field;
+			if ($field->getAutoIncrement()) return $field;
 		}
 
 		return null;
@@ -170,6 +171,24 @@ abstract class Model extends EventDispatcher {
 	}
 
 	/**
+	 * Find an instance of this model using its primary key, assuming it declares a single primary key.
+	 *
+	 * @param mixed $primary The primary key value.
+	 *
+	 * @return static
+	 *
+	 * @throws Exception If there is not exactly one primary key declared by this model.
+	 */
+	public static function find($primary) {
+		$fields = static::getPrimaryFields();
+
+		if (count($fields) === 0) throw new Exception('There are no primary keys declared by "' . static::reflect()->getShortName() . '".');
+		if (count($fields) > 1) throw new Exception('"' . static::reflect()->getShortName() . '" defines multiple primary keys.');
+
+		return static::select()->where(array_pop($fields)->getName(), $primary)->first();
+	}
+
+	/**
 	 * Retrieve all rows within the table associated with this model and map them to this model.
 	 *
 	 * @return static[]
@@ -188,9 +207,9 @@ abstract class Model extends EventDispatcher {
 	}
 
 	/**
-	 * Create a new model and optionally pre-populate it with data.
+	 * Create a new model and optionally {@link fill} it with data.
 	 *
-	 * @param array $data Optional data to populate the newly created model with.
+	 * @param array $data Optional data to {@link fill} the newly created model with.
 	 *
 	 * @return static
 	 */
@@ -230,7 +249,7 @@ abstract class Model extends EventDispatcher {
 	}
 
 	public function __get($prop) {
-		if (static::hasField($prop)) return $this->getFieldValue($prop);
+		if (static::hasField($prop)) return $this->getRefined($prop);
 		if (array_key_exists($prop, $this->_undeclared)) return $this->_undeclared[$prop];
 
 		return null;
@@ -278,7 +297,7 @@ abstract class Model extends EventDispatcher {
 	}
 
 	/**
-	 * Get the value attached to a specified field.
+	 * Get the raw value attached to a specified field.
 	 *
 	 * @param string $field The field name.
 	 *
@@ -286,12 +305,29 @@ abstract class Model extends EventDispatcher {
 	 *
 	 * @throws Exception I this model does not declare the provided field.
 	 */
-	public function getFieldValue($field) {
+	public function getRaw($field) {
 		if (!static::hasField($field)) {
 			throw new Exception('Model "' . static::reflect()->getShortName() . '" does not declare a field "' . $field . '".');
 		}
 
-		return $this->_data[$field];
+		return static::getField($field)->toRaw($this->_data[$field]);
+	}
+
+	/**
+	 * Get the refined value attached to a specified field.
+	 *
+	 * @param string $field The field name.
+	 *
+	 * @return mixed
+	 *
+	 * @throws Exception I this model does not declare the provided field.
+	 */
+	public function getRefined($field) {
+		if (!static::hasField($field)) {
+			throw new Exception('Model "' . static::reflect()->getShortName() . '" does not declare a field "' . $field . '".');
+		}
+
+		return static::getField($field)->toRefined($this->_data[$field]);
 	}
 
 	/**
@@ -309,7 +345,7 @@ abstract class Model extends EventDispatcher {
 			throw new Exception('Model "' . static::reflect()->getShortName() . '" does not declare a field "' . $field . '".');
 		}
 
-		$this->_data[$field] = $value;
+		$this->_data[$field] = static::getField($field)->toRaw($value);
 
 		return $this;
 	}
@@ -320,7 +356,28 @@ abstract class Model extends EventDispatcher {
 	 * @return array
 	 */
 	public function getAllRaw() {
-		return $this->_data;
+		$result = [];
+
+		foreach ($this->_data as $field => $value) {
+			$result[$field] = static::getField($field)->toRaw($value);
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Get all refined values.
+	 *
+	 * @return array
+	 */
+	public function getAllRefined() {
+		$result = [];
+
+		foreach ($this->_data as $field => $value) {
+			$result[$field] = static::getField($field)->toRefined($value);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -332,10 +389,26 @@ abstract class Model extends EventDispatcher {
 		$result = [];
 
 		foreach (static::getNonUniqueFields() as $field) {
-			$result[$field->getName()] = $this->getFieldValue($field->getName());
+			$result[$field->getName()] = $this->getRaw($field->getName());
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Gets the primary key value in the case where this model has a single primary key.
+	 *
+	 * @return mixed
+	 *
+	 * @throws Exception If there is not exactly one primary key.
+	 */
+	public function getPrimaryKey() {
+		$primary = static::getPrimaryFields();
+
+		if (count($primary) === 0) throw new Exception('There are no primary keys declared by "' . static::reflect()->getShortName() . '".');
+		if (count($primary) > 1) throw new Exception('"' . static::reflect()->getShortName() . '" defines multiple primary keys.');
+
+		return $this->getRefined(array_pop($primary)->getName());
 	}
 
 	/**
@@ -356,11 +429,15 @@ abstract class Model extends EventDispatcher {
 
 		if (!empty($incrementing)) {
 			// This model has a field that should auto-increment.
-			if (empty($this->getFieldValue($incrementing->getName()))) {
+			if (empty($this->getRaw($incrementing->getName()))) {
 				// There is no existing value for this field, set it to the last insert ID.
 				$this->setFieldValue($incrementing->getName(), App::get()->db->getLastInsertId());
 			}
 		}
+	}
+
+	public function jsonSerialize() {
+		return $this->getAllRefined();
 	}
 
 }

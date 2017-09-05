@@ -1,7 +1,5 @@
 <?php namespace Tempest\Database;
 
-use Exception;
-
 /**
  * A field for a model.
  *
@@ -15,12 +13,11 @@ class Field extends SealedField {
 	const BOOL = 'bool';
 	const TEXT = 'text';
 	const DECIMAL = 'decimal';
+	const JSON = 'json';
+	const ENUM = 'enum';
 
 	/**
 	 * A field representing an integer value.
-	 *
-	 * @param int $length The maximum integer length to be stored in this field.
-	 * @param bool $unsigned Whether or not the int is unsigned.
 	 *
 	 * @return static
 	 */
@@ -47,12 +44,57 @@ class Field extends SealedField {
 	}
 
 	/**
+	 * A field representing a boolean value.
+	 *
+	 * @return static
+	 */
+	public static function bool() {
+		return new static(static::BOOL);
+	}
+
+	/**
+	 * A field representing a text value.
+	 *
+	 * @return static
+	 */
+	public static function text() {
+		return new static(static::TEXT);
+	}
+
+	/**
+	 * A field representing a decimal value.
+	 *
+	 * @return static
+	 */
+	public static function decimal() {
+		return new static(static::DECIMAL);
+	}
+
+	/**
+	 * A field representing a JSON value.
+	 *
+	 * @return static
+	 */
+	public static function json() {
+		return new static(static::JSON);
+	}
+
+	/**
+	 * A field representing an enum value.
+	 *
+	 * @return static
+	 */
+	public static function enum() {
+		return new static(static::ENUM);
+	}
+
+	/**
 	 * Field constructor.
 	 *
 	 * @param string $type
 	 */
 	protected function __construct($type) {
-		$this->setAttr(self::ATTR_TYPE, $type);
+		$this->setType($type);
 		parent::__construct($this->getName(), $this);
 	}
 
@@ -64,61 +106,64 @@ class Field extends SealedField {
 	 * @return $this
 	 */
 	public function default($value) {
-		$this->setAttr(self::ATTR_DEFAULT, $value);
+		$this->setDefault($value);
+
 		return $this;
 	}
 
 	/**
-	 * Declare that this field is non-nullable.
-	 *
-	 * @return $this
-	 */
-	public function notNullable() {
-		$this->setAttr(self::ATTR_NULLABLE, false);
-		return $this;
-	}
-
-	/**
-	 * Declare this field as auto-incrementing. This also {@link primary marks the field as part of the PRIMARY key}.
-	 *
-	 * @return $this
-	 */
-	public function increments() {
-		$this->primary()->setAttr(self::ATTR_AUTO_INCREMENT, true);
-		return $this;
-	}
-
-	/**
-	 * Mark this field as a primary key.
+	 * Adds a primary key index to this field.
 	 *
 	 * @return $this
 	 */
 	public function primary() {
-		$this->setAttr(self::ATTR_RPRIMARY_KEY, true);
+		$this->addIndex(Index::PRIMARY);
 		return $this;
 	}
 
 	/**
-	 * Mark this field as a unique key.
+	 * Adds a unique index to this field.
 	 *
-	 * @param string|string[] $name Compound key name, if this is a compound key.
+	 * @param string $name Optional index name, used for compound indexes.
 	 *
 	 * @return $this
 	 */
 	public function unique($name = null) {
-		$this->addKey(self::KEY_UNIQUE, empty($name) ? true : $name);
+		$this->addIndex(Index::UNIQUE, $name);
 		return $this;
 	}
 
 	/**
-	 * Mark this field as an index.
+	 * Adds an index to this field.
 	 *
-	 * @param string|string[] $name Compound key name, if this is a compound key.
+	 * @param string $name Optional index name, used for compound indexes.
 	 *
 	 * @return $this
 	 */
 	public function index($name = null) {
-		$this->addKey(self::KEY_INDEX, empty($name) ? true : $name);
+		$this->addIndex(Index::INDEX, $name);
+		return $this;
+	}
+
+	/**
+	 * Marks this field as auto-incrementing. This also adds a primary key index to this field.
+	 *
+	 * @return $this
+	 */
+	public function increments() {
+		$this->setAutoIncrement(true);
+		$this->addIndex(Index::PRIMARY);
+
+		return $this;
+	}
+
+	/**
+	 * Marks this field as non-nullable.
+	 *
+	 * @return $this
+	 */
+	public function notNullable() {
+		$this->setNullable(false);
 		return $this;
 	}
 
