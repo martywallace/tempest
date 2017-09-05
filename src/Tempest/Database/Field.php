@@ -82,10 +82,15 @@ class Field extends SealedField {
 	/**
 	 * A field representing an enum value.
 	 *
+	 * @param string[] The enum set.
+	 *
 	 * @return static
 	 */
-	public static function enum() {
-		return new static(static::ENUM);
+	public static function enum(array $set) {
+		$field = new static(static::ENUM);
+		$field->setSet($set);
+
+		return $field;
 	}
 
 	/**

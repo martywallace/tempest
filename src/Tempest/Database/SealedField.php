@@ -26,6 +26,9 @@ class SealedField {
 	/** @var Index[] */
 	private $_indexes = [];
 
+	/** @var string[] */
+	private $_set = null;
+
 	protected function __construct($name, Field $field) {
 		$this->_name = $name;
 		$this->_type = $field->getType();
@@ -33,6 +36,7 @@ class SealedField {
 		$this->_default = $field->getDefault();
 		$this->_nullable = $field->getNullable();
 		$this->_indexes = $field->getIndexes();
+		$this->_set = $field->getSet();
 	}
 
 	/**
@@ -47,6 +51,11 @@ class SealedField {
 			switch($this->_type) {
 				default:
 					return strval($value);
+					break;
+
+				case Field::ENUM:
+					if (in_array($value, $this->getSet())) return strval($value);
+					return null;
 					break;
 
 				case Field::BOOL:
@@ -100,6 +109,11 @@ class SealedField {
 				case Field::DATETIME:
 					if ($value instanceof Carbon) return $value;
 					return Carbon::parse($value);
+					break;
+
+				case Field::ENUM:
+					if (in_array($value, $this->getSet())) return strval($value);
+					return null;
 					break;
 
 				case Field::JSON:
@@ -282,6 +296,24 @@ class SealedField {
 	 */
 	protected function setIndexes(array $indexes) {
 		$this->_indexes = $indexes;
+	}
+
+	/**
+	 * Gets the enum set for this field if it is an enum.
+	 *
+	 * @return string[]
+	 */
+	public function getSet() {
+		return $this->_set;
+	}
+
+	/**
+	 * Sets the enum set.
+	 *
+	 * @param string[] $set The enum set.
+	 */
+	protected function setSet(array $set) {
+		$this->_set = $set;
 	}
 
 	/**
