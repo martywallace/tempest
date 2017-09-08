@@ -24,7 +24,9 @@ class Database implements Service {
 		$conn = Connection::fromConnectionString(App::get()->config('db'));
 
 		$this->_pdo = new PDO('mysql:host=' . $conn->host . ';dbname=' . $conn->resource,$conn->username, $conn->password);
+
 		$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+		$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
 
 	/**
@@ -76,17 +78,10 @@ class Database implements Service {
 	 * @param array $bindings Optional parameters to bind to the query.
 	 *
 	 * @return PDOStatement
-	 *
-	 * @throws Exception If the PDOStatement returns any errors, they are thrown as an exception.
 	 */
 	public function query($query, array $bindings = []) {
 		$stmt = $this->prepare($query);
 		$stmt->execute($bindings);
-
-		if ($stmt->errorCode() !== PDO::ERR_NONE) {
-			$err = $stmt->errorInfo();
-			throw new Exception($err[0] . ': ' . $err[2]);
-		}
 
 		return $stmt;
 	}
