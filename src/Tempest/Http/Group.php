@@ -53,7 +53,7 @@ class Group extends Resource {
 			$child->prependUri($this->getUri());
 
 			foreach ($this->getMiddleware() as $middleware) {
-				$child->prependMiddleware($middleware[0], $middleware[1]);
+				$child->prependMiddleware($middleware);
 			}
 
 			if ($child instanceof Group) {
