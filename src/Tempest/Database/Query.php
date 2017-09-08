@@ -139,7 +139,7 @@ class Query {
 	}
 
 	/**
-	 * Appends a WHERE statement to the query for an equal match.
+	 * Appends a WHERE [column] = [value] statement to the query for an equal match.
 	 *
 	 * @param string $column The subject column.
 	 * @param mixed $value The value to match.
@@ -151,7 +151,7 @@ class Query {
 	}
 
 	/**
-	 * Appends a WHERE statement to the query for a less than match.
+	 * Appends a WHERE [column] < [value] statement to the query for a less than match.
 	 *
 	 * @param string $column The subject column.
 	 * @param mixed $value The value to match.
@@ -163,7 +163,19 @@ class Query {
 	}
 
 	/**
-	 * Appends a WHERE statement to the query for a greater than match.
+	 * Appends a WHERE [column] <= [value] statement to the query for a less than match.
+	 *
+	 * @param string $column The subject column.
+	 * @param mixed $value The value to match.
+	 *
+	 * @return $this
+	 */
+	public function whereLessOrEqual($column, $value) {
+		return $this->raw('WHERE ' . $column . ' <= ?', $value);
+	}
+
+	/**
+	 * Appends a WHERE [column] > [value] statement to the query for a greater than match.
 	 *
 	 * @param string $column The subject column.
 	 * @param mixed $value The value to match.
@@ -175,15 +187,148 @@ class Query {
 	}
 
 	/**
-	 * Appends an AND statement to the query.
+	 * Appends a WHERE [column] >= [value] statement to the query for a less than match.
 	 *
 	 * @param string $column The subject column.
-	 * @param mixed $value The subject value.
+	 * @param mixed $value The value to match.
+	 *
+	 * @return $this
+	 */
+	public function whereGreaterOrEqual($column, $value) {
+		return $this->raw('WHERE ' . $column . ' >= ?', $value);
+	}
+
+	/**
+	 * Appends an INNER JOIN [table] ON [left] = [right] statement to the query.
+	 *
+	 * @param string $table The table to join.
+	 * @param string $left The left side of the ON statement.
+	 * @param string $right The right side of the ON statement.
+	 *
+	 * @return $this
+	 */
+	public function innerJoin($table, $left, $right) {
+		return $this->raw('INNER JOIN ' . $table . ' ON ' . $left . ' = ' . $right);
+	}
+
+	/**
+	 * Appends an AND [column] = [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
 	 *
 	 * @return $this
 	 */
 	public function and($column, $value) {
-		return $this->raw('AND ' . $column . ' = ?')->bind($value);
+		return $this->raw('AND ' . $column . ' = ?', $value);
+	}
+
+	/**
+	 * Appends an AND [column] < [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function andLess($column, $value) {
+		return $this->raw('AND ' . $column . ' < ?', $value);
+	}
+
+	/**
+	 * Appends an AND [column] <= [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function andLessOrEqual($column, $value) {
+		return $this->raw('AND ' . $column . ' <= ?', $value);
+	}
+
+	/**
+	 * Appends an AND [column] > [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function andGreater($column, $value) {
+		return $this->raw('AND ' . $column . ' > ?', $value);
+	}
+
+	/**
+	 * Appends an AND [column] >= [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function andGreaterOrEqual($column, $value) {
+		return $this->raw('AND ' . $column . ' >= ?', $value);
+	}
+
+	/**
+	 * Appends an OR [column] = [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function or($column, $value) {
+		return $this->raw('OR ' . $column . ' = ?', $value);
+	}
+
+	/**
+	 * Appends an OR [column] < [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function orLess($column, $value) {
+		return $this->raw('OR ' . $column . ' < ?', $value);
+	}
+
+	/**
+	 * Appends an OR [column] <= [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function orLessOrEqual($column, $value) {
+		return $this->raw('OR ' . $column . ' <= ?', $value);
+	}
+
+	/**
+	 * Appends an OR [column] > [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function orGreater($column, $value) {
+		return $this->raw('OR ' . $column . ' > ?', $value);
+	}
+
+	/**
+	 * Appends an OR [column] >= [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function orGreaterOrEqual($column, $value) {
+		return $this->raw('OR ' . $column . ' >= ?', $value);
 	}
 
 	/**
