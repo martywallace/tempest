@@ -182,6 +182,27 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	}
 
 	/**
+	 * Attempt to find a record with the specfied primary key, else creates a new one. The record is not automatically
+	 * saved to the database.
+	 *
+	 * @param mixed $primary The primary key value.
+	 * @param array $data Data to fill the existing or newly created model with.
+	 *
+	 * @return static
+	 */
+	public static function findOrCreate($primary, array $data = []) {
+		$model = static::find($primary);
+
+		if (empty($model)) {
+			$model = static::create();
+		}
+
+		$model->fill($data);
+
+		return $model;
+	}
+
+	/**
 	 * Retrieve all rows within the table associated with this model and map them to this model.
 	 *
 	 * @return static[]

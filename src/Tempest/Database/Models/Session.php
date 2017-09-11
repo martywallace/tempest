@@ -20,7 +20,7 @@ class Session extends Model {
 		return [
 			'id' => Field::string()->primary(),
 			'created' => Field::dateTime()->default('now'),
-			'updated' => Field::dateTime(),
+			'updated' => Field::dateTime()->default('now'),
 			'data' => Field::text()
 		];
 	}

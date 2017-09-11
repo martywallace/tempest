@@ -41,20 +41,11 @@ class DbSessionHandler implements SessionHandlerInterface {
 	}
 
 	public function write($id, $data) {
-		$session = Session::find($id);
-
-		if (!empty($session)) {
-			$session->fill([
-				'updated' => Carbon::now(),
-				'data' => $data
-			])->save();
-		} else {
-			Session::create([
-				'id' => $id,
-				'updated' => Carbon::now(),
-				'data' => $data
-			])->save();
-		}
+		Session::findOrCreate($id, [
+			'id' => $id,
+			'updated' => Carbon::now(),
+			'data' => $data
+		])->save();
 
 		return true;
 	}

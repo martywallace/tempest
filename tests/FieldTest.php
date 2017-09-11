@@ -22,4 +22,10 @@ class FieldTest extends TestCase {
 		$this->assertEquals(true, $field->isNull([]));
 	}
 
+	public function testIntToRaw() {
+		$field = Field::int();
+
+		$this->assertEquals(1, $field->toRaw('1'));
+	}
+
 }

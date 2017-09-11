@@ -84,4 +84,15 @@ class Utility {
 		return ob_get_clean();
 	}
 
+	/**
+	 * Generates a random string of specified length.
+	 *
+	 * @param int $length The amount of characters the string should contain.
+	 *
+	 * @return string
+	 */
+	public static function randomString($length = 16) {
+		//
+	}
+
 }
