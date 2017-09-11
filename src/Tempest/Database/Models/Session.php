@@ -21,6 +21,7 @@ class Session extends Model {
 			'id' => Field::string()->primary(),
 			'created' => Field::dateTime()->default('now'),
 			'updated' => Field::dateTime()->default('now'),
+			'ip' => Field::string(),
 			'data' => Field::text()
 		];
 	}

@@ -125,10 +125,10 @@ class Session implements Service {
 	/**
 	 * Generates a new CSRF token and adds it to the session.
 	 *
-	 * @return string
+	 * @return string The generated token.
 	 */
 	public function regenerateCsrfToken() {
-		$token = bin2hex(random_bytes(32));
+		$token = Utility::randomString(64);
 		$this->add(self::CSRF_TOKEN_NAME, $token);
 
 		return $token;

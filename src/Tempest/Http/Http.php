@@ -2,11 +2,13 @@
 
 use Closure;
 use Exception;
-use SessionHandlerInterface;
-use Tempest\{App, Extensions\FileSessionHandler, Kernel};
+use Tempest\App;
+use Tempest\Kernel;
 use Tempest\Events\ExceptionEvent;
 use Tempest\Data\RenderableException;
-use FastRoute\{RouteCollector, Dispatcher};
+use Tempest\Http\Session\BaseSessionHandler;
+use FastRoute\RouteCollector;
+use FastRoute\Dispatcher;
 
 /**
  * The HTTP kernel deals with interpreting a HTTP {@link Request request} and generating a {@link Response response}.
@@ -20,6 +22,9 @@ class Http extends Kernel {
 
 	/** @var mixed[][] */
 	private $_middleware = [];
+
+	/** @var BaseSessionHandler */
+	private $_sessionHandler;
 
 	/**
 	 * Http constructor.
@@ -63,6 +68,11 @@ class Http extends Kernel {
 		// Bind the request and response to Twig.
 		App::get()->twig->addGlobal('request', $request);
 		App::get()->twig->addGlobal('response', $response);
+
+		// If sessions are enabled, attach some information from the request to it.
+		if ($this->_sessionHandler) {
+			$this->_sessionHandler->attachRequest($request);
+		}
 
 		try {
 			// Attempt to match a route.
@@ -192,7 +202,7 @@ class Http extends Kernel {
 	/**
 	 * Enable HTTP sessions, beginning a new one if there is not one already.
 	 *
-	 * @param SessionHandlerInterface $handler The handler responsible for managing the sessions.
+	 * @param BaseSessionHandler $handler The handler responsible for managing the sessions.
 	 * @param string $name The session name.
 	 *
 	 * @return $this
@@ -201,9 +211,11 @@ class Http extends Kernel {
 	 * @throws Exception If there is already an active session.
 	 * @throws Exception If the session could not be successfully started.
 	 */
-	public function enableSessions(SessionHandlerInterface $handler, $name = 'SessionID') {
+	public function enableSessions(BaseSessionHandler $handler, $name = 'SessionID') {
 		if (session_status() === PHP_SESSION_DISABLED) throw new Exception('Cannot start session - sessions are disabled.');
 		if (session_status() === PHP_SESSION_ACTIVE) throw new Exception('Cannot start session - there is already an active session.');
+
+		$this->_sessionHandler = $handler;
 
 		session_set_save_handler($handler, true);
 
@@ -214,7 +226,9 @@ class Http extends Kernel {
 			'cookie_httponly' => true
 		]);
 
-		if (!$success) throw new Exception('Could not enable sessions.');
+		if (!$success) {
+			throw new Exception('Could not enable sessions.');
+		}
 
 		return $this;
 	}
@@ -365,6 +379,15 @@ class Http extends Kernel {
 	 */
 	public function getMiddleware() {
 		return $this->_middleware;
+	}
+
+	/**
+	 * Get the active session handler, if sessions were enabled.
+	 *
+	 * @return BaseSessionHandler
+	 */
+	public function getSessionHandler() {
+		return $this->_sessionHandler;
 	}
 
 }

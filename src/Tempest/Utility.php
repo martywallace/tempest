@@ -85,14 +85,14 @@ class Utility {
 	}
 
 	/**
-	 * Generates a random string of specified length.
+	 * Generates a random string of specified length by combination of {@link random_bytes} and {@link bin2hex}.
 	 *
 	 * @param int $length The amount of characters the string should contain.
 	 *
 	 * @return string
 	 */
 	public static function randomString($length = 16) {
-		//
+		return substr(bin2hex(random_bytes(ceil($length / 2))), 0, $length);
 	}
 
 }

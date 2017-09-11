@@ -1,14 +1,13 @@
 <?php namespace Tempest\Http\Session;
 
 use Exception;
-use SessionHandlerInterface;
 
 /**
  * Manages session data in the filesystem.
  *
  * @author Marty Wallace
  */
-class FileSessionHandler implements SessionHandlerInterface {
+class FileSessionHandler extends BaseSessionHandler {
 
 	/** @var string */
 	private $_storage;
@@ -20,10 +19,6 @@ class FileSessionHandler implements SessionHandlerInterface {
 	 */
 	public function __construct($storage) {
 		$this->_storage = rtrim($storage, '/\\');
-	}
-
-	public function close() {
-		return true;
 	}
 
 	public function destroy($id) {

@@ -2,18 +2,13 @@
 
 use Carbon\Carbon;
 use Tempest\Database\Models\Session;
-use SessionHandlerInterface;
 
 /**
  * Manages storing and retrieving session data from the database.
  *
  * @author Marty Wallace
  */
-class DbSessionHandler implements SessionHandlerInterface {
-
-	public function close() {
-		return true;
-	}
+class DbSessionHandler extends BaseSessionHandler {
 
 	public function destroy($id) {
 		Session::delete()->where('id', $id)->execute();
@@ -23,13 +18,9 @@ class DbSessionHandler implements SessionHandlerInterface {
 
 	public function gc($lifetime) {
 		Session::delete()
-			->whereGreater('updated', Carbon::now()->subSeconds($lifetime)->toDateTimeString())
+			->whereLessOrEqual('updated', Carbon::now()->subSeconds($lifetime)->toDateTimeString())
 			->execute();
 
-		return true;
-	}
-
-	public function open($path, $name) {
 		return true;
 	}
 
@@ -44,6 +35,7 @@ class DbSessionHandler implements SessionHandlerInterface {
 		Session::findOrCreate($id, [
 			'id' => $id,
 			'updated' => Carbon::now(),
+			'ip' => $this->getRequest() ? $this->getRequest()->getIP() : null,
 			'data' => $data
 		])->save();
 
