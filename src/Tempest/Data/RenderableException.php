@@ -3,6 +3,7 @@
 use Exception;
 use ReflectionClass;
 use Tempest\App;
+use Tempest\Utility;
 
 /**
  * An exception wrapper that provides cleaner data for rendering.
@@ -30,16 +31,16 @@ class RenderableException {
 
 		if ($prop === 'trace') {
 			return array_map(function(array $trace) {
-				$reflection = new ReflectionClass($trace['class']);
+				$reflection = null;
 
-				return [
-					'class' => $trace['class'],
-					'short' => $reflection->getShortName(),
-					'file' => $this->cleanupFilename($trace['file']),
-					'line' => $trace['line'],
-					'type' => $trace['type'],
-					'function' => $trace['function']
-				];
+				if (array_key_exists('class', $trace)) {
+					$reflection = new ReflectionClass($trace['class']);
+				}
+
+				return array_merge($trace, [
+					'short' => !empty($reflection) ? $reflection->getShortName() : '',
+					'file' => $this->cleanupFilename($trace['file'])
+				]);
 			}, $this->_exception->getTrace());
 		}
 
