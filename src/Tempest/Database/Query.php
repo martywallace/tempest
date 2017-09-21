@@ -199,6 +199,18 @@ class Query {
 	}
 
 	/**
+	 * Appends a WHERE [column] LIKE [value] statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 * @param mixed $value The value to match.
+	 *
+	 * @return $this
+	 */
+	public function whereLike($column, $value) {
+		return $this->raw('WHERE ' . $column . ' LIKE ?', $value);
+	}
+
+	/**
 	 * Appends an INNER JOIN [table] ON [left] = [right] statement to the query.
 	 *
 	 * @param string $table The table to join.
@@ -272,6 +284,18 @@ class Query {
 	}
 
 	/**
+	 * Appends an AND [column] LIKE [value] statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 * @param mixed $value The value to match.
+	 *
+	 * @return $this
+	 */
+	public function andLike($column, $value) {
+		return $this->raw('AND ' . $column . ' LIKE ?', $value);
+	}
+
+	/**
 	 * Appends an OR [column] = [value] statement to the query.
 	 *
 	 * @param string $column The subject field.
@@ -329,6 +353,18 @@ class Query {
 	 */
 	public function orGreaterOrEqual($column, $value) {
 		return $this->raw('OR ' . $column . ' >= ?', $value);
+	}
+
+	/**
+	 * Appends an OR [column] LIKE [value] statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 * @param mixed $value The value to match.
+	 *
+	 * @return $this
+	 */
+	public function orLike($column, $value) {
+		return $this->raw('OR ' . $column . ' LIKE ?', $value);
 	}
 
 	/**
