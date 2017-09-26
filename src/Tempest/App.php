@@ -4,7 +4,9 @@ use Exception;
 use Closure;
 use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent};
 use Tempest\Http\{Http, Request, Response};
-use Tempest\Services\{Database, Twig, Session};
+use Tempest\Services\{
+	Database, Markdown, Twig, Session
+};
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -17,6 +19,7 @@ use Tempest\Services\{Database, Twig, Session};
  * @property-read Database $db The inbuilt database service.
  * @property-read Twig $twig The inbuilt Twig service, used to render Twig templates.
  * @property-read Session $session The inbuilt session handling service.
+ * @property-read Markdown $markdown The inbuilt service for rendering markdown.
  *
  * @author Marty Wallace
  */
@@ -84,7 +87,8 @@ abstract class App extends Container {
 		$this->addServices([
 			'db' => Database::class,
 			'twig' => Twig::class,
-			'session' => Session::class
+			'session' => Session::class,
+			'markdown' => Markdown::class
 		]);
 
 		parent::__construct();
