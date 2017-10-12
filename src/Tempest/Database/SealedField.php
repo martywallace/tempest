@@ -59,7 +59,7 @@ class SealedField {
 					break;
 
 				case Field::BOOL:
-					return strval(!!$value);
+					return intval(!!$value);
 
 				case Field::DATETIME:
 					if ($value instanceof Carbon) return $value->toDateTimeString();
