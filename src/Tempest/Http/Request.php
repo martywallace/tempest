@@ -22,10 +22,27 @@ class Request extends Message {
 			'port' => isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : null
 		];
 
+		if (function_exists('getallheaders')) {
+			$headers = getallheaders();
+		} else {
+			// Nginx environments do not have the inbuilt getallheaders() function. This polyfill
+			// was taken from http://php.net/getallheaders
+			$headers = [];
+
+			if (is_array($_SERVER)) {
+				foreach ($_SERVER as $name => $value) {
+					if (substr($name, 0, 5) === 'HTTP_') {
+						$key = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+						$headers[$key] = $value;
+					}
+				}
+			}
+		}
+
 		return new static(
 			$_SERVER['REQUEST_METHOD'],
 			$_SERVER['REQUEST_URI'],
-			getallheaders(),
+			$headers,
 			file_get_contents('php://input'),
 			$_COOKIE,
 			$extras
