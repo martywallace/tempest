@@ -151,6 +151,42 @@ class Query {
 	}
 
 	/**
+	 * Appends a WHERE [column] != [value] statement to the query for an equal match.
+	 *
+	 * @param string $column The subject column.
+	 * @param mixed $value The value to match.
+	 *
+	 * @return $this
+	 */
+	public function whereNot($column, $value) {
+		return $this->raw('WHERE ' . $column . ' != ?', $value);
+	}
+
+	/**
+	 * Appends a WHERE [column] IN([...values]) statement to the query for an equal match.
+	 *
+	 * @param string $column The subject column.
+	 * @param array $values The value to match.
+	 *
+	 * @return $this
+	 */
+	public function whereIn($column, array $values) {
+		return $this->raw('WHERE ' . $column . ' IN(' . array_fill(0, count($values), '?') . ')', $values);
+	}
+
+	/**
+	 * Appends a WHERE [column] NOT IN([...values]) statement to the query for an equal match.
+	 *
+	 * @param string $column The subject column.
+	 * @param array $values The value to match.
+	 *
+	 * @return $this
+	 */
+	public function whereNotIn($column, array $values) {
+		return $this->raw('WHERE ' . $column . ' NOT IN(' . array_fill(0, count($values), '?') . ')', $values);
+	}
+
+	/**
 	 * Appends a WHERE [column] < [value] statement to the query for a less than match.
 	 *
 	 * @param string $column The subject column.
@@ -236,6 +272,42 @@ class Query {
 	}
 
 	/**
+	 * Appends an AND [column] != [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function andNot($column, $value) {
+		return $this->raw('AND ' . $column . ' != ?', $value);
+	}
+
+	/**
+	 * Appends an AND [column] IN([...values]) statement to the query for an equal match.
+	 *
+	 * @param string $column The subject column.
+	 * @param array $values The value to match.
+	 *
+	 * @return $this
+	 */
+	public function andIn($column, array $values) {
+		return $this->raw('AND ' . $column . ' IN(' . array_fill(0, count($values), '?') . ')', $values);
+	}
+
+	/**
+	 * Appends an AND [column] NOT IN([...values]) statement to the query for an equal match.
+	 *
+	 * @param string $column The subject column.
+	 * @param array $values The value to match.
+	 *
+	 * @return $this
+	 */
+	public function andNotIn($column, array $values) {
+		return $this->raw('AND ' . $column . ' NOT IN(' . array_fill(0, count($values), '?') . ')', $values);
+	}
+
+	/**
 	 * Appends an AND [column] < [value] statement to the query.
 	 *
 	 * @param string $column The subject field.
@@ -305,6 +377,42 @@ class Query {
 	 */
 	public function or($column, $value) {
 		return $this->raw('OR ' . $column . ' = ?', $value);
+	}
+
+	/**
+	 * Appends an OR [column] != [value] statement to the query.
+	 *
+	 * @param string $column The subject field.
+	 * @param mixed $value The value.
+	 *
+	 * @return $this
+	 */
+	public function orNot($column, $value) {
+		return $this->raw('OR ' . $column . ' != ?', $value);
+	}
+
+	/**
+	 * Appends an OR [column] IN([...values]) statement to the query for an equal match.
+	 *
+	 * @param string $column The subject column.
+	 * @param array $values The value to match.
+	 *
+	 * @return $this
+	 */
+	public function orIn($column, array $values) {
+		return $this->raw('OR ' . $column . ' IN(' . array_fill(0, count($values), '?') . ')', $values);
+	}
+
+	/**
+	 * Appends an OR [column] NOT IN([...values]) statement to the query for an equal match.
+	 *
+	 * @param string $column The subject column.
+	 * @param array $values The value to match.
+	 *
+	 * @return $this
+	 */
+	public function orNotIn($column, array $values) {
+		return $this->raw('OR ' . $column . ' NOT IN(' . array_fill(0, count($values), '?') . ')', $values);
 	}
 
 	/**
