@@ -260,6 +260,32 @@ class Query {
 	}
 
 	/**
+	 * Appends a LEFT JOIN [table] ON [left] = [right] statement to the query.
+	 *
+	 * @param string $table The table to join.
+	 * @param string $left The left side of the ON statement.
+	 * @param string $right The right side of the ON statement.
+	 *
+	 * @return $this
+	 */
+	public function leftJoin($table, $left, $right) {
+		return $this->raw('LEFT JOIN ' . $table . ' ON ' . $left . ' = ' . $right);
+	}
+
+	/**
+	 * Appends a RIGHT JOIN [table] ON [left] = [right] statement to the query.
+	 *
+	 * @param string $table The table to join.
+	 * @param string $left The left side of the ON statement.
+	 * @param string $right The right side of the ON statement.
+	 *
+	 * @return $this
+	 */
+	public function rightJoin($table, $left, $right) {
+		return $this->raw('RIGHT JOIN ' . $table . ' ON ' . $left . ' = ' . $right);
+	}
+
+	/**
 	 * Appends an AND [column] = [value] statement to the query.
 	 *
 	 * @param string $column The subject field.
@@ -505,6 +531,17 @@ class Query {
 	 */
 	public function limit($limit, $offset = 0) {
 		return $this->raw('LIMIT ?, ?', [$offset, $limit]);
+	}
+
+	/**
+	 * Append a GROUP BY [column] statement to the query.
+	 *
+	 * @param string $column The column to group by.
+	 *
+	 * @return $this
+	 */
+	public function groupBy($column) {
+		return $this->raw('GROUP BY ' .$column);
 	}
 
 	/**
