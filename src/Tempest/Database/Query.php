@@ -171,7 +171,7 @@ class Query {
 	 * @return $this
 	 */
 	public function whereIn($column, array $values) {
-		return $this->raw('WHERE ' . $column . ' IN(' . array_fill(0, count($values), '?') . ')', $values);
+		return $this->raw('WHERE ' . $column . ' IN(' . implode(', ', array_fill(0, count($values), '?')) . ')', $values);
 	}
 
 	/**
@@ -183,7 +183,7 @@ class Query {
 	 * @return $this
 	 */
 	public function whereNotIn($column, array $values) {
-		return $this->raw('WHERE ' . $column . ' NOT IN(' . array_fill(0, count($values), '?') . ')', $values);
+		return $this->raw('WHERE ' . $column . ' NOT IN(' . implode(', ', array_fill(0, count($values), '?')) . ')', $values);
 	}
 
 	/**
@@ -318,7 +318,7 @@ class Query {
 	 * @return $this
 	 */
 	public function andIn($column, array $values) {
-		return $this->raw('AND ' . $column . ' IN(' . array_fill(0, count($values), '?') . ')', $values);
+		return $this->raw('AND ' . $column . ' IN(' . implode(', ', array_fill(0, count($values), '?')) . ')', $values);
 	}
 
 	/**
@@ -330,7 +330,7 @@ class Query {
 	 * @return $this
 	 */
 	public function andNotIn($column, array $values) {
-		return $this->raw('AND ' . $column . ' NOT IN(' . array_fill(0, count($values), '?') . ')', $values);
+		return $this->raw('AND ' . $column . ' NOT IN(' . implode(', ', array_fill(0, count($values), '?')) . ')', $values);
 	}
 
 	/**
@@ -426,7 +426,7 @@ class Query {
 	 * @return $this
 	 */
 	public function orIn($column, array $values) {
-		return $this->raw('OR ' . $column . ' IN(' . array_fill(0, count($values), '?') . ')', $values);
+		return $this->raw('OR ' . $column . ' IN(' . implode(', ', array_fill(0, count($values), '?')) . ')', $values);
 	}
 
 	/**
@@ -438,7 +438,7 @@ class Query {
 	 * @return $this
 	 */
 	public function orNotIn($column, array $values) {
-		return $this->raw('OR ' . $column . ' NOT IN(' . array_fill(0, count($values), '?') . ')', $values);
+		return $this->raw('OR ' . $column . ' NOT IN(' . implode(', ', array_fill(0, count($values), '?')) . ')', $values);
 	}
 
 	/**
