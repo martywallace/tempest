@@ -1,14 +1,14 @@
 {
-	"name": "martywallace/tempest",
+	"name": "ascensionwd/tempest",
 	"version": "5.0.0-alpha",
 	"description": "A tiny PHP framework.",
-	"homepage": "https://github.com/MartyWallace/Tempest",
+	"homepage": "https://github.com/ascensionwd/tempest",
 	"type": "library",
 	"license": "MIT",
 	"authors": [{
 		"name": "Marty Wallace",
-		"email": "marty@martywallace.com",
-		"homepage": "https://martywallace.com",
+		"email": "marty@ascensionwd.com.au",
+		"homepage": "https://ascensionwd.com.au",
 		"role": "Lead Developer"
 	}],
 	"autoload": {
