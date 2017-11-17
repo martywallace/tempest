@@ -30,12 +30,12 @@ class UtilityTest extends TestCase {
 			]
 		];
 
-		$this->assertEquals('e', Utility::dig($tree, 'c.d'));
-		$this->assertEquals('b', Utility::dig($tree, 'a'));
-		$this->assertEquals('n', Utility::dig($tree, 'c.f.i.l.m'));
-		$this->assertEquals('q', Utility::dig($tree, 'c.o.p'));
-		$this->assertEquals(null, Utility::dig($tree, 'nonexistentKey'));
-		$this->assertEquals('fallback', Utility::dig($tree, 'c.f.nonexistentKey', 'fallback'));
+		$this->assertEquals('e', Utility::evaluate($tree, 'c.d'));
+		$this->assertEquals('b', Utility::evaluate($tree, 'a'));
+		$this->assertEquals('n', Utility::evaluate($tree, 'c.f.i.l.m'));
+		$this->assertEquals('q', Utility::evaluate($tree, 'c.o.p'));
+		$this->assertEquals(null, Utility::evaluate($tree, 'nonexistentKey'));
+		$this->assertEquals('fallback', Utility::evaluate($tree, 'c.f.nonexistentKey', 'fallback'));
 	}
 
 	public function testKebab() {

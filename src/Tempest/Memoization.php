@@ -28,7 +28,7 @@ class Memoization {
 
 		if (empty($key)) {
 			if (count($backtrace) >= 2) {
-				$key = get_class($function->getClosureThis()) . '@' . Utility::dig($backtrace, '1.function') . '@' . serialize($function->getStaticVariables());
+				$key = get_class($function->getClosureThis()) . '@' . Utility::evaluate($backtrace, '1.function') . '@' . serialize($function->getStaticVariables());
 			}
 		}
 

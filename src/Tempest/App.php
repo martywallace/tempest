@@ -158,7 +158,7 @@ abstract class App extends Container {
 	 */
 	public function config($query = null, $fallback = null) {
 		if ($query === null) return $this->_config;
-		return Utility::dig($this->_config, $query, $fallback);
+		return Utility::evaluate($this->_config, $query, $fallback);
 	}
 
 	/**

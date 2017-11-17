@@ -19,7 +19,7 @@ class Utility {
 	 *
 	 * @return mixed
 	 */
-	public static function dig($instance, $query, $fallback = null) {
+	public static function evaluate($instance, $query, $fallback = null) {
 		if (!empty($instance)) {
 			$query = array_filter(explode('.', $query), function($value) {
 				// Remove any sneaky empty values.

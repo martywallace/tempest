@@ -206,7 +206,7 @@ class Request extends Message {
 	 */
 	public function named($property = null, $fallback = null) {
 		if (empty($property)) return $this->_named;
-		return Utility::dig($this->_named, $property, $fallback);
+		return array_key_exists($property, $this->_named) ? $this->_named[$property] : $fallback;
 	}
 
 	/**
@@ -240,7 +240,7 @@ class Request extends Message {
 	 */
 	public function data($property = null, $fallback = null) {
 		if (empty($property)) return $this->_data;
-		return Utility::dig($this->_data, $property, $fallback);
+		return array_key_exists($property, $this->_data) ? $this->_data[$property] : $fallback;
 	}
 
 	/**
@@ -264,7 +264,7 @@ class Request extends Message {
 	 */
 	public function query($property = null, $fallback = null) {
 		if (empty($property)) return $this->_query;
-		return Utility::dig($this->_query, $property, $fallback);
+		return array_key_exists($property, $this->_query) ? $this->_query[$property] : $fallback;
 	}
 
 	/**
@@ -277,7 +277,7 @@ class Request extends Message {
 	 */
 	public function cookie($cookie = null, $fallback = null) {
 		if (empty($cookie)) return $this->_cookies;
-		return Utility::dig($this->_cookies, $cookie, $fallback);
+		return array_key_exists($cookie, $this->_cookies) ? $this->_cookies[$cookie] : $fallback;
 	}
 
 	/**
@@ -290,7 +290,7 @@ class Request extends Message {
 			return $this->getHeader(Header::X_CSRF_TOKEN);
 		}
 
-		return Utility::dig($this->data(), Session::CSRF_TOKEN_NAME);
+		return Utility::evaluate($this->data(), Session::CSRF_TOKEN_NAME);
 	}
 
 	/**
@@ -302,7 +302,7 @@ class Request extends Message {
 	 * @return mixed
 	 */
 	protected function extra($prop, $fallback = null) {
-		return Utility::dig($this->_extra, $prop, $fallback);
+		return Utility::evaluate($this->_extra, $prop, $fallback);
 	}
 
 }

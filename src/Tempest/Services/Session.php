@@ -78,7 +78,7 @@ class Session implements Service {
 		if (!$this->active()) throw new Exception('There is no active session.');
 
 		if (empty($property)) return $_SESSION;
-		return Utility::dig($_SESSION, $property, $fallback);
+		return Utility::evaluate($_SESSION, $property, $fallback);
 	}
 
 	/**

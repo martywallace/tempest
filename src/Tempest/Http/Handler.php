@@ -55,7 +55,7 @@ abstract class Handler {
 	 */
 	public function option($option = null, $fallback = null) {
 		if (empty($option)) return $this->_options;
-		return Utility::dig($this->_options, $option, $fallback);
+		return Utility::evaluate($this->_options, $option, $fallback);
 	}
 
 	/**
