@@ -1,6 +1,6 @@
 {
 	"name": "ascensionwd/tempest",
-	"version": "5.0.0-alpha",
+	"version": "0.1.0",
 	"description": "A tiny PHP framework.",
 	"homepage": "https://github.com/ascensionwd/tempest",
 	"type": "library",
@@ -20,6 +20,11 @@
 		"psr-4": {
 			"Tempest\\Tests\\": "tests/"
 		}
+	},
+	"scripts": {
+		"post-create-project-cmd": [
+			"@php -r ./bin/scaffold.php"
+		]
 	},
 	"require": {
 		"php": ">=7.1",
