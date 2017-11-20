@@ -10,8 +10,7 @@ use Closure;
 class Utility {
 
 	/**
-	 * Dig into an instance and expose a descendant value using a dot (.) delimited query. The query can contain array
-	 * keys, class properties and even class methods.
+	 * Evaluate a dot delimited string, digging into descendants and calling methods along the way.
 	 *
 	 * @param mixed $instance The instance to dig for data.
 	 * @param string $query A dot (.) delimited query representing the tree to follow when digging for a value.

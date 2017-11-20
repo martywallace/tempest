@@ -2,11 +2,15 @@
 
 use Exception;
 use Closure;
-use Tempest\Events\{AppEvent, ExceptionEvent, HttpKernelEvent};
-use Tempest\Http\{Http, Request, Response};
-use Tempest\Services\{
-	Database, Markdown, Twig, Session
-};
+use Tempest\Events\AppEvent;
+use Tempest\Events\ExceptionEvent;
+use Tempest\Kernel\Kernel;
+use Tempest\Kernel\Input;
+use Tempest\Kernel\Output;
+use Tempest\Services\Database;
+use Tempest\Services\Markdown;
+use Tempest\Services\Twig;
+use Tempest\Services\Session;
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -26,7 +30,7 @@ use Tempest\Services\{
 abstract class App extends Container {
 
 	/** The framework version. */
-	const VERSION = '5.0.0';
+	const VERSION = '1.0.0';
 
 	/** @var static */
 	protected static $_instance;
@@ -169,29 +173,55 @@ abstract class App extends Container {
 	abstract protected function setup();
 
 	/**
-	 * Handle an incoming HTTP request.
+	 * Handle input and generate output through a kernel.
 	 *
-	 * @param Request $request A HTTP request made to the application.
-	 * @param Closure|string $routes Known routes to match the request against. Can either be a function accepting a
-	 * {@link Http HTTP instance} or a string pointing to a PHP file that returns a function accepting a HTTP instance.
+	 * @param string $kernel The kernel to use.
+	 * @param Input $input Input for the kernel.
+	 * @param Closure|string $config Configuration to provide the kernel before parsing through the input, provided as
+	 * either a Closure accepting the Kernel as its only argument or a string pointing to a file which returns said
+	 * Closure relative to the {@link $root application root}.
 	 *
-	 * @return Response
+	 * @return Output
 	 */
-	public function http(Request $request, $routes = null) {
-		$kernel = new Http($routes);
+	public function handle($kernel, Input $input, $config = null) {
+		$kernel = $this->makeKernel($kernel, $config);
 
 		$kernel->addListener(ExceptionEvent::EXCEPTION, function(ExceptionEvent $event) {
 			$this->dispatch(ExceptionEvent::EXCEPTION, $event);
 		});
 
-		$this->dispatch(HttpKernelEvent::BOOTED, new HttpKernelEvent($kernel, $request));
+		// $this->dispatch(HttpKernelEvent::BOOTED, new HttpKernelEvent($kernel, $request));
 
 		// Handle the request and generate a response.
-		$response = $kernel->handle($request);
+		return $kernel->handle($input);
 
-		$this->dispatch(HttpKernelEvent::RESPONSE_READY, new HttpKernelEvent($kernel, $request, $response));
+		// $this->dispatch(HttpKernelEvent::RESPONSE_READY, new HttpKernelEvent($kernel, $request, $response));
 
 		return $response;
+	}
+
+	/**
+	 * Create a new kernel.
+	 *
+	 * @param string $class The kernel class name.
+	 * @param mixed $config Configuration to provide to the kernel.
+	 *
+	 * @return Kernel
+	 *
+	 * @throws Exception If the provided class name could not be resolves to an instance of {@link Kernel}.
+	 */
+	protected function makeKernel($class, $config) {
+		if (!class_exists($class)) {
+			throw new Exception('Nonexistent class "' . $class . '" cannot be used as a kernel.');
+		}
+
+		$kernel = new $class($config);
+
+		if (!($kernel instanceof Kernel)) {
+			throw new Exception('Class "' . $class . '" is not a kernel.');
+		}
+
+		return $kernel;
 	}
 
 	/**

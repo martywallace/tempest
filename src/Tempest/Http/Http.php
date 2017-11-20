@@ -3,7 +3,8 @@
 use Closure;
 use Exception;
 use Tempest\App;
-use Tempest\Kernel;
+use Tempest\Kernel\Kernel;
+use Tempest\Kernel\Input;
 use Tempest\Events\ExceptionEvent;
 use Tempest\Data\RenderableException;
 use Tempest\Http\Session\BaseSessionHandler;
@@ -35,21 +36,13 @@ class Http extends Kernel {
 	 * @throws Exception
 	 */
 	public function __construct($routes) {
+		parent::__construct($routes);
+
 		$root = new Group();
 
-		if (!empty($routes)) {
-			if (is_callable($routes)) {
-				// Function provided directly.
-				$root->add($routes($this));
-			} else {
-				$external = require App::get()->root . DIRECTORY_SEPARATOR . $routes;
-
-				if (!is_callable($external)) {
-					throw new Exception('External route files must return a callable that returns an array of routes to handle.');
-				}
-
-				$root->add($external($this));
-			}
+		if ($this->getConfig()) {
+			// Attach the routes to the root group.
+			$root->add($this->getConfig());
 		}
 
 		$this->_routes = $root->flatten();
@@ -62,7 +55,7 @@ class Http extends Kernel {
 	 *
 	 * @return Response
 	 */
-	public function handle(Request $request) {
+	public function handle(Input $request) {
 		$response = Response::make();
 
 		// Bind the request and response to Twig.

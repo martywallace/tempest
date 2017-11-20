@@ -1,5 +1,6 @@
 <?php namespace Tempest\Http;
 
+use Tempest\Kernel\Input;
 use Tempest\Services\Session;
 use Tempest\Utility;
 
@@ -8,7 +9,7 @@ use Tempest\Utility;
  *
  * @author Marty Wallace
  */
-class Request extends Message {
+class Request extends Message implements Input {
 
 	/**
 	 * Capture an incoming HTTP request and generate a new {@link Request request} from it.
