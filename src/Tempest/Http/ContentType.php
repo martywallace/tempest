@@ -1,11 +1,13 @@
 <?php namespace Tempest\Http;
 
+use Tempest\Data\Enum;
+
 /**
  * Common HTTP content-types.
  *
  * @author Marty Wallace
  */
-class ContentType {
+class ContentType extends Enum {
 
 	const APPLICATION_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlencoded';
 	const APPLICATION_JAVASCRIPT = 'application/javascript';

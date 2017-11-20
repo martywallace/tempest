@@ -99,7 +99,8 @@ class HttpTest extends TestCase {
 			Header::CONTENT_TYPE => ContentType::APPLICATION_JSON
 		], '{"first":1,"second":"  two   "}');
 
-		$response = $app->http($request, $provider);
+		/** @var Response $response */
+		$response = $app->handle(Http::class, $request, $provider);
 
 		$this->assertEquals(1, $request->data('first'));
 		$this->assertEquals('two', $request->data('second'));
@@ -111,7 +112,8 @@ class HttpTest extends TestCase {
 	 * @depends testCreateRoutes
 	 */
 	public function testTextResponse(App $app, Closure $routes) {
-		$response = $app->http(Request::make('GET', '/'), $routes);
+		/** @var Response $response */
+		$response = $app->handle(Http::class, Request::make('GET', '/'), $routes);
 
 		$this->assertInstanceOf(Response::class, $response);
 		$this->assertEquals('Test', $response->getBody());
@@ -124,7 +126,8 @@ class HttpTest extends TestCase {
 	 * @depends testCreateRoutes
 	 */
 	public function testJsonResponse(App $app, Closure $routes) {
-		$response = $app->http(Request::make('GET', '/json'), $routes);
+		/** @var Response $response */
+		$response = $app->handle(Http::class, Request::make('GET', '/json'), $routes);
 
 		$this->assertEquals(ContentType::APPLICATION_JSON, $response->getType());
 		$this->assertEquals('{"test":10}', $response->getBody());
@@ -135,7 +138,8 @@ class HttpTest extends TestCase {
 	 * @depends testCreateRoutes
 	 */
 	public function testTemplateResponse(App $app, Closure $routes) {
-		$response = $app->http(Request::make('GET', '/template'), $routes);
+		/** @var Response $response */
+		$response = $app->handle(Http::class, Request::make('GET', '/template'), $routes);
 
 		$this->assertEquals($app->twig->render('example.html'), $response->getBody());
 		$this->assertEquals(ContentType::TEXT_HTML, $response->getType());
@@ -146,7 +150,8 @@ class HttpTest extends TestCase {
 	 * @depends testCreateRoutes
 	 */
 	public function testNotFound(App $app, Closure $routes) {
-		$response = $app->http(Request::make('GET', '/doesnotexist'), $routes);
+		/** @var Response $response */
+		$response = $app->handle(Http::class, Request::make('GET', '/doesnotexist'), $routes);
 
 		$this->assertEquals(Status::NOT_FOUND, $response->getStatus());
 		$this->assertEquals($app->twig->render('404.html'), $response->getBody());
@@ -157,7 +162,8 @@ class HttpTest extends TestCase {
 	 * @depends testCreateRoutes
 	 */
 	public function testMethodNotAllowed(App $app, Closure $routes) {
-		$response = $app->http(Request::make('POST', '/'), $routes);
+		/** @var Response $response */
+		$response = $app->handle(Http::class, Request::make('POST', '/'), $routes);
 
 		$this->assertEquals(Status::METHOD_NOT_ALLOWED, $response->getStatus());
 		$this->assertEquals($app->twig->render('405.html'), $response->getBody());

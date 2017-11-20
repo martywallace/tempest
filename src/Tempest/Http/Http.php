@@ -8,6 +8,7 @@ use Tempest\Kernel\Input;
 use Tempest\Events\ExceptionEvent;
 use Tempest\Data\RenderableException;
 use Tempest\Http\Session\BaseSessionHandler;
+use Tempest\Http\Session\Directive;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 
@@ -51,7 +52,7 @@ class Http extends Kernel {
 	/**
 	 * Handle an incoming {@link Request HTTP request} and generate a {@link Response response} for sending.
 	 *
-	 * @param Request $request The request to handle.
+	 * @param Request|Input $request The request to handle.
 	 *
 	 * @return Response
 	 */
@@ -196,7 +197,7 @@ class Http extends Kernel {
 	 * Enable HTTP sessions, beginning a new one if there is not one already.
 	 *
 	 * @param BaseSessionHandler $handler The handler responsible for managing the sessions.
-	 * @param string $name The session name.
+	 * @param array $directives The session {@link Directive directives}.
 	 *
 	 * @return $this
 	 *
@@ -204,7 +205,7 @@ class Http extends Kernel {
 	 * @throws Exception If there is already an active session.
 	 * @throws Exception If the session could not be successfully started.
 	 */
-	public function enableSessions(BaseSessionHandler $handler, $name = 'SessionID') {
+	public function enableSessions(BaseSessionHandler $handler, $directives = []) {
 		if (session_status() === PHP_SESSION_DISABLED) throw new Exception('Cannot start session - sessions are disabled.');
 		if (session_status() === PHP_SESSION_ACTIVE) throw new Exception('Cannot start session - there is already an active session.');
 
@@ -212,12 +213,12 @@ class Http extends Kernel {
 
 		session_set_save_handler($handler, true);
 
-		$success = session_start([
-			'name' => $name,
-			'use_cookies' => true,
-			'use_only_cookies' => true,
-			'cookie_httponly' => true
-		]);
+		$success = session_start(array_merge([
+			Directive::NAME => 'SessionID',
+			Directive::USE_COOKIES => true,
+			Directive::USE_ONLY_COOKIES => true,
+			Directive::COOKIE_HTTPONLY => true
+		], $directives));
 
 		if (!$success) {
 			throw new Exception('Could not enable sessions.');

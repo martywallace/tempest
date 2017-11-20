@@ -1,9 +1,10 @@
 <?php namespace Tempest;
 
-use Exception;
 use Closure;
+use Exception;
 use Tempest\Events\AppEvent;
 use Tempest\Events\ExceptionEvent;
+use Tempest\Events\KernelEvent;
 use Tempest\Kernel\Kernel;
 use Tempest\Kernel\Input;
 use Tempest\Kernel\Output;
@@ -190,14 +191,12 @@ abstract class App extends Container {
 			$this->dispatch(ExceptionEvent::EXCEPTION, $event);
 		});
 
-		// $this->dispatch(HttpKernelEvent::BOOTED, new HttpKernelEvent($kernel, $request));
+		$this->dispatch(KernelEvent::BOOTED, new KernelEvent($kernel, $input));
 
-		// Handle the request and generate a response.
-		return $kernel->handle($input);
+		$output = $kernel->handle($input);
+		$this->dispatch(KernelEvent::OUTPUT_READY, new KernelEvent($kernel, $input, $output));
 
-		// $this->dispatch(HttpKernelEvent::RESPONSE_READY, new HttpKernelEvent($kernel, $request, $response));
-
-		return $response;
+		return $output;
 	}
 
 	/**
