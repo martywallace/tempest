@@ -30,8 +30,10 @@ class Utility {
 
 				foreach ($query as $prop) {
 					if (is_array($target) && array_key_exists($prop, $target)) {
-						if (is_callable($target[$prop])) $target = $target[$prop]();
-						else $target = $target[$prop];
+						// @deprecated This will call global callables which is not a good idea.
+						// if (is_callable([$target, $target[$prop]])) $target = $target[$prop]();
+
+						$target = $target[$prop];
 					}
 
 					else if (is_object($target) && property_exists($target, $prop)) $target = $target->{$prop};

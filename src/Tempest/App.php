@@ -19,6 +19,8 @@ use Tempest\Services\Session;
  *
  * @property-read string $root The application root directory - the result of moving on directory up from the value
  * provided to {@link App::boot()}. Always without a trailing slash.
+ * @property-read string $storage The application storage directory as defined in the application configuration. If it
+ * is not defined, NULL is returned. Always without a trailing slash.
  * @property-read bool $dev Whether or not the application is in development mode.
  *
  * @property-read Database $db The inbuilt database service.
@@ -144,6 +146,7 @@ abstract class App extends Container {
 
 	public function __get($prop) {
 		if ($prop === 'root') return $this->_root;
+		if ($prop === 'storage') return $this->config('storage') ? $this->_root . '/' . trim($this->config('storage'), '/') : null;
 		if ($prop === 'dev') return $this->config('dev', false);
 
 		return parent::__get($prop);

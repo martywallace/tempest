@@ -21,21 +21,16 @@ class UtilityTest extends TestCase {
 				'f' => [
 					'g' => 'h',
 					'i' => $object
-				],
-				'o' => function() {
-					return [
-						'p' => 'q'
-					];
-				}
+				]
 			]
 		];
 
 		$this->assertEquals('e', Utility::evaluate($tree, 'c.d'));
 		$this->assertEquals('b', Utility::evaluate($tree, 'a'));
 		$this->assertEquals('n', Utility::evaluate($tree, 'c.f.i.l.m'));
-		$this->assertEquals('q', Utility::evaluate($tree, 'c.o.p'));
 		$this->assertEquals(null, Utility::evaluate($tree, 'nonexistentKey'));
 		$this->assertEquals('fallback', Utility::evaluate($tree, 'c.f.nonexistentKey', 'fallback'));
+		$this->assertEquals('max', Utility::evaluate(['test' => 'max'], 'test'));
 	}
 
 	public function testKebab() {
