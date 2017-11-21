@@ -177,14 +177,42 @@ class Request extends Message implements Input {
 	}
 
 	/**
-	 * Determine which of the provided content-types is the most desirable based on the accept header.
+	 * Negotiate the quality factor of a content-type based on the accept header.
 	 *
-	 * @param string[] $test One or more content-types to check.
+	 * @param string $contentType The content-type to check.
 	 *
-	 * @return string
+	 * @return float
 	 */
-	public function negotiateContentType(array $test) {
-		//
+	public function negotiate($contentType) {
+		$quality = 0;
+
+		$accepts = $this->getHeader(Header::ACCEPT, ContentType::ANY)->parse();
+		$testp = preg_split('/\s*\/\s*/', $contentType);
+
+		foreach ($accepts as $accept) {
+			if (strtolower($accept[0]) === strtolower($contentType)) {
+				// Exact match, so we can return it immediately.
+				return count($accept) >= 2 && array_key_exists('q', $accept[1]) ? floatval($accept[1]['q']) : 1;
+			} else {
+				$acceptp = preg_split('/\s*\/\s*/', $accept[0]);
+
+				// Left-side match with wildcard subtype accepted.
+				if (count($acceptp) >= 2 && $acceptp[1] === '*' && strtolower($testp[0]) === strtolower($acceptp[0])) {
+					$quality = max($quality, count($accept) >= 2 && array_key_exists('q', $accept[1]) ? floatval($accept[1]['q']) : 1);
+				}
+			}
+		}
+
+		if ($quality === 0) {
+			// Attempt to fall back to the quality factor of */*.
+			foreach ($accepts as $accept) {
+				if ($accept[0] === ContentType::ANY) {
+					return count($accept) >= 2 && array_key_exists('q', $accept[1]) ? floatval($accept[1]['q']) : 1;
+				}
+			}
+		}
+
+		return $quality;
 	}
 
 	/**
