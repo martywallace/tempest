@@ -177,6 +177,17 @@ class Request extends Message implements Input {
 	}
 
 	/**
+	 * Determine which of the provided content-types is the most desirable based on the accept header.
+	 *
+	 * @param string[] $test One or more content-types to check.
+	 *
+	 * @return string
+	 */
+	public function negotiateContentType(array $test) {
+		//
+	}
+
+	/**
 	 * Attaches {@link Request::named() named} data to this request.
 	 *
 	 * @param string $property The property to create.

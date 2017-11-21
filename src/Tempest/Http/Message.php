@@ -1,4 +1,5 @@
 <?php namespace Tempest\Http;
+
 use Tempest\Utility;
 
 /**
@@ -8,7 +9,7 @@ use Tempest\Utility;
  */
 abstract class Message {
 
-	/** @var string[] */
+	/** @var Header[] */
 	private $_headers = [];
 
 	/** @var string */
@@ -17,7 +18,7 @@ abstract class Message {
 	/**
 	 * Get all headers attached to this message.
 	 *
-	 * @return string[]
+	 * @return Header[]
 	 */
 	public function getHeaders() {
 		return $this->_headers;
@@ -53,13 +54,17 @@ abstract class Message {
 	 * Get a header.
 	 *
 	 * @param string $header The header name to get or set.
-	 * @param string $fallback A fallback value to provide if the header was not set.
+	 * @param string $fallback A fallback value to provide if the header was not set. If the fallback is non-empty, it
+	 * is used as the value of a newly created {@link Header header} instance.
 	 *
-	 * @return string
+	 * @return Header
 	 */
 	public function getHeader($header, $fallback = null) {
 		$header = Utility::kebab($header, true);
-		return $this->hasHeader($header) ? $this->_headers[$header] : $fallback;
+
+		return $this->hasHeader($header)
+			? $this->_headers[$header]
+			: (empty($fallback) ? null : new Header($header, $fallback));
 	}
 
 	/**
@@ -71,7 +76,7 @@ abstract class Message {
 	 * @return $this
 	 */
 	public function setHeader($header, $value) {
-		$this->_headers[Utility::kebab($header, true)] = $value;
+		$this->_headers[Utility::kebab($header, true)] = new Header($header, $value);
 		return $this;
 	}
 

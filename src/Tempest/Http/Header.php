@@ -1,11 +1,14 @@
 <?php namespace Tempest\Http;
 
+use Tempest\Data\Enum;
+use Tempest\Utility;
+
 /**
- * Common HTTP headers for convenience.
+ * A HTTP header.
  *
  * @author Marty Wallace
  */
-class Header {
+class Header extends Enum {
 
 	const ACCEPT = 'Accept';
 	const ACCEPT_CHARSET = 'Accept-Charset';
@@ -92,5 +95,45 @@ class Header {
 	const X_ROBOTS_TAG = 'X-Robots-Tag';
 	const X_UA_COMPATIBLE = 'X-UA-Compatible';
 	const X_XSS_PROTECTION = 'X-XSS-Protection';
+
+	/** @var string */
+	private $_name;
+
+	/** @var string */
+	private $_value;
+
+	public function __construct($name, $value) {
+		$this->_name = Utility::kebab($name, true);
+		$this->_value = $value;
+	}
+
+	/**
+	 * The header name.
+	 *
+	 * @return string
+	 */
+	public function getName() {
+		return $this->_name;
+	}
+
+	/**
+	 * The header value.
+	 *
+	 * @return string
+	 */
+	public function getValue() {
+		return $this->_value;
+	}
+
+	/**
+	 * Get the parsed header body.
+	 *
+	 * @return array
+	 */
+	public function parse() {
+		return array_map(function($chunk) {
+			return preg_split('/\s*;\s*/', $chunk);
+		}, preg_split('/\s*,\s*/', $this->_value));
+	}
 
 }

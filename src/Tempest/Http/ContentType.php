@@ -9,6 +9,7 @@ use Tempest\Data\Enum;
  */
 class ContentType extends Enum {
 
+	const ANY = '*/*';
 	const APPLICATION_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlencoded';
 	const APPLICATION_JAVASCRIPT = 'application/javascript';
 	const APPLICATION_JSON = 'application/json';

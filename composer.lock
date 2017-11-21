@@ -4,67 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5ac6ca36895bcbdf583673ea11fc27a",
+    "content-hash": "fa51049c7560f837c7a0c6b503ac3fdd",
     "packages": [
-        {
-            "name": "aura/accept",
-            "version": "2.2.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/auraphp/Aura.Accept.git",
-                "reference": "38d835363d424e07b35dd35f46b00b2916500ee6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/auraphp/Aura.Accept/zipball/38d835363d424e07b35dd35f46b00b2916500ee6",
-                "reference": "38d835363d424e07b35dd35f46b00b2916500ee6",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "require-dev": {
-                "aura/di": "~2.0",
-                "phpunit/phpunit": "~5.7 || ~4.8"
-            },
-            "type": "library",
-            "extra": {
-                "aura": {
-                    "type": "library",
-                    "config": {
-                        "common": "Aura\\Accept\\_Config\\Common"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Aura\\Accept\\": "src/",
-                    "Aura\\Accept\\_Config\\": "config/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Aura.Accept Contributors",
-                    "homepage": "https://github.com/auraphp/Aura.Accept/contributors"
-                }
-            ],
-            "description": "Provides content-negotiation tools using Accept* headers.",
-            "homepage": "https://github.com/auraphp/Aura.Accept",
-            "keywords": [
-                "accept",
-                "accept-charset",
-                "accept-encoding",
-                "accept-language",
-                "content negotiation",
-                "content type",
-                "media type"
-            ],
-            "time": "2017-03-10T17:30:49+00:00"
-        },
         {
             "name": "doctrine/inflector",
             "version": "v1.2.0",

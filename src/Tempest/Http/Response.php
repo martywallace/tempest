@@ -212,8 +212,8 @@ class Response extends Message implements Output {
 		header_remove(Header::X_POWERED_BY);
 		http_response_code($this->_status);
 
-		foreach ($this->getHeaders() as $header => $value) {
-			header($header . ': ' . $value);
+		foreach ($this->getHeaders() as $header) {
+			header($header->getName() . ': ' . $header->getValue());
 		}
 
 		foreach ($this->_cookies as $name => $details) {
