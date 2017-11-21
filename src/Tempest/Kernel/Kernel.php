@@ -3,6 +3,7 @@
 use Closure;
 use Exception;
 use Tempest\App;
+use Tempest\Utility;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -38,6 +39,26 @@ abstract class Kernel extends EventDispatcher {
 
 			$this->_config = $config($this);
 		}
+	}
+
+	/**
+	 * Prepares data to dump to the kernel.
+	 *
+	 * @param mixed $data The data to dump.
+	 * @param string $format The format to use.
+	 *
+	 * @return Output|string
+	 */
+	public function dump($data, $format = App::DUMP_FORMAT_PRINT_R) {
+		if ($format === App::DUMP_FORMAT_JSON) {
+			return json_encode($data, JSON_PRETTY_PRINT);
+		}
+
+		return Utility::buffer(function() use ($data, $format) {
+			if ($format === App::DUMP_FORMAT_PRINT_R) print_r($data);
+			else if ($format === App::DUMP_FORMAT_VAR_DUMP) var_dump($data);
+			else throw new Exception('Unknown dump format "' . $format . '".');
+		});
 	}
 
 	/**

@@ -1,6 +1,7 @@
 <?php namespace Tempest\Http\Session;
 
 use Exception;
+use Tempest\App;
 
 /**
  * Manages session data in the filesystem.
@@ -15,10 +16,12 @@ class FileSessionHandler extends BaseSessionHandler {
 	/**
 	 * FileSessionHandler constructor.
 	 *
-	 * @param string $storage The storage location for generated sessions.
+	 * @param string $storage The storage location for generated sessions. Falls back to the default storage directory
+	 * if not provided.
 	 */
-	public function __construct($storage) {
-		$this->_storage = rtrim($storage, '/\\');
+	public function __construct($storage = null) {
+		if (!empty($storage)) $this->_storage = rtrim($storage, '/\\');
+		else $this->_storage = App::get()->storage . DIRECTORY_SEPARATOR . 'sessions';
 	}
 
 	public function destroy($id) {
@@ -44,6 +47,10 @@ class FileSessionHandler extends BaseSessionHandler {
 			throw new Exception('Session storage directory "' . $this->_storage . '" does not exist.');
 		}
 
+		if (!is_writable($this->_storage)) {
+			throw new Exception('Session storage directory "' . $this->_storage . '" is not writable.');
+		}
+
 		return true;
 	}
 
@@ -64,7 +71,7 @@ class FileSessionHandler extends BaseSessionHandler {
 	 * @return string
 	 */
 	protected function filename($id) {
-		return $this->_storage . '/' . $id . '.txt';
+		return $this->_storage . DIRECTORY_SEPARATOR . $id;
 	}
 
 }

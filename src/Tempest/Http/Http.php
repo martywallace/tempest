@@ -50,6 +50,22 @@ class Http extends Kernel {
 	}
 
 	/**
+	 * Dump output as a HTTP response.
+	 *
+	 * @param mixed $data The data to debug.
+	 * @param string $format The debugging format.
+	 *
+	 * @return Response
+	 *
+	 * @throws Exception If there is no active kernel to handle the dump.
+	 */
+	public function dump($data, $format = App::DUMP_FORMAT_PRINT_R) {
+		return Response::make()
+			->setHeader(Header::CONTENT_TYPE, $format === App::DUMP_FORMAT_JSON ? ContentType::APPLICATION_JSON : ContentType::TEXT_PLAIN)
+			->setBody(parent::dump($data, $format));
+	}
+
+	/**
 	 * Handle an incoming {@link Request HTTP request} and generate a {@link Response response} for sending.
 	 *
 	 * @param Request|Input $request The request to handle.

@@ -160,22 +160,6 @@ class Response extends Message implements Output {
 	}
 
 	/**
-	 * Sets the response body to the value of print_r or var_dump applied to the target object.
-	 *
-	 * @param mixed $object The object to debug.
-	 * @param string $mode The debugging mode - either "print_r" or "var_dump".
-	 *
-	 * @return $this
-	 */
-	public function dump($object, $mode = 'print_r') {
-		return $this->text(Utility::buffer(function() use ($object, $mode) {
-			if ($mode === 'print_r') print_r($object);
-			else if ($mode === 'var_dump') var_dump($object);
-			else throw new Exception('Unknown dump mode "' . $mode . '".');
-		}));
-	}
-
-	/**
 	 * Returns the current response status.
 	 *
 	 * @return int
@@ -239,9 +223,7 @@ class Response extends Message implements Output {
 			if ($action === self::COOKIE_DELETE) setcookie($name, null, time(), '/');
 		}
 
-		echo $this->getBody();
-
-		App::get()->terminate();
+		App::get()->terminate($this->getBody());
 	}
 
 }

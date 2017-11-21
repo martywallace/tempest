@@ -35,6 +35,15 @@ abstract class App extends Container {
 	/** The framework version. */
 	const VERSION = '1.0.0';
 
+	/** Dump data as provided by {@link print_r()}. */
+	const DUMP_FORMAT_PRINT_R = 'print_r';
+
+	/** Dump data as provided by {@link var_dump()}. */
+	const DUMP_FORMAT_VAR_DUMP = 'var_dump';
+
+	/** Dump data as provided by {@link json_encode()}. */
+	const DUMP_FORMAT_JSON = 'json';
+
 	/** @var static */
 	protected static $_instance;
 
@@ -89,6 +98,9 @@ abstract class App extends Container {
 
 	/** @var array */
 	private $_config;
+
+	/** @var Kernel */
+	private $_kernel;
 
 	protected function __construct() {
 		$this->addServices([
@@ -170,6 +182,29 @@ abstract class App extends Container {
 	}
 
 	/**
+	 * Dump output to the active kernel and terminal the application.
+	 *
+	 * @see App::DUMP_FORMAT_PRINT_R
+	 * @see App::DUMP_FORMAT_VAR_DUMP
+	 * @see App::DUMP_FORMAT_JSON
+	 *
+	 * @param mixed $data The data to debug.
+	 * @param string $format The debugging format.
+	 *
+	 * @throws Exception If there is no active kernel to handle the dump.
+	 */
+	public function dump($data, $format = self::DUMP_FORMAT_PRINT_R) {
+		if (!$this->_kernel) {
+			throw new Exception('There is no attached kernel to dump to.');
+		}
+
+		$output = $this->_kernel->dump($data, $format);
+
+		if ($output instanceof Output) $output->send();
+		else $this->terminate($output);
+	}
+
+	/**
 	 * Called after all services are bound to the application.
 	 *
 	 * @return mixed
@@ -188,16 +223,16 @@ abstract class App extends Container {
 	 * @return Output
 	 */
 	public function handle($kernel, Input $input, $config = null) {
-		$kernel = $this->makeKernel($kernel, $config);
+		$this->_kernel = $this->makeKernel($kernel, $config);
 
-		$kernel->addListener(ExceptionEvent::EXCEPTION, function(ExceptionEvent $event) {
+		$this->_kernel->addListener(ExceptionEvent::EXCEPTION, function(ExceptionEvent $event) {
 			$this->dispatch(ExceptionEvent::EXCEPTION, $event);
 		});
 
-		$this->dispatch(KernelEvent::BOOTED, new KernelEvent($kernel, $input));
+		$this->dispatch(KernelEvent::BOOTED, new KernelEvent($this->_kernel, $input));
 
-		$output = $kernel->handle($input);
-		$this->dispatch(KernelEvent::OUTPUT_READY, new KernelEvent($kernel, $input, $output));
+		$output = $this->_kernel->handle($input);
+		$this->dispatch(KernelEvent::OUTPUT_READY, new KernelEvent($this->_kernel, $input, $output));
 
 		return $output;
 	}
@@ -227,11 +262,15 @@ abstract class App extends Container {
 	}
 
 	/**
-	 * Terminate the application.
+	 * Terminate the application and send final output to the outer context.
+	 *
+	 * @param string $output The output to send.
 	 */
-	public function terminate() {
+	public function terminate($output) {
 		$this->dispatch(AppEvent::TERMINATE);
-		exit;
+
+		// No turning back.
+		exit($output);
 	}
 
 }
