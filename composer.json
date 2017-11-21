@@ -21,11 +21,6 @@
 			"Tempest\\Tests\\": "tests/"
 		}
 	},
-	"scripts": {
-		"post-create-project-cmd": [
-			"@php -r ./bin/scaffold.php"
-		]
-	},
 	"require": {
 		"php": ">=7.1",
 		"nikic/fast-route": "1.2.*",
