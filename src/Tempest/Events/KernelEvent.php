@@ -8,10 +8,6 @@ use Tempest\Kernel\Output;
 /**
  * Events related to the {@link Http HTTP Kernel}.
  *
- * @property-read Kernel $kernel The kernel triggering this event.
- * @property-read Input $input The kernel input.
- * @property-read Output $output The kernel output.
- *
  * @author Marty Wallace
  */
 class KernelEvent extends Event {
@@ -34,12 +30,25 @@ class KernelEvent extends Event {
 		$this->_output = $output;
 	}
 
-	public function __get($prop) {
-		if ($prop === 'kernel') return $this->_kernel;
-		if ($prop === 'input') return $this->_input;
-		if ($prop === 'output') return $this->_output;
+	/**
+	 * @return Kernel
+	 */
+	public function getKernel() {
+		return $this->_kernel;
+	}
 
-		return null;
+	/**
+	 * @return Input
+	 */
+	public function getInput() {
+		return $this->_input;
+	}
+
+	/**
+	 * @return Output
+	 */
+	public function getOutput() {
+		return $this->_output;
 	}
 
 }

@@ -18,10 +18,13 @@ class FileSessionHandler extends BaseSessionHandler {
 	 *
 	 * @param string $storage The storage location for generated sessions. Falls back to the default storage directory
 	 * if not provided.
+	 *
+	 * @throws Exception If no storage directory can be resolved.
 	 */
 	public function __construct($storage = null) {
 		if (!empty($storage)) $this->_storage = rtrim($storage, '/\\');
-		else $this->_storage = App::get()->storage . DIRECTORY_SEPARATOR . 'sessions';
+		else if (!empty(App::get()->storage) )$this->_storage = App::get()->storage . DIRECTORY_SEPARATOR . 'sessions';
+		else throw new Exception('No storage directory is defined to save sessions to.');
 	}
 
 	public function destroy($id) {

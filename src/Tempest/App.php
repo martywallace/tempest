@@ -126,6 +126,10 @@ abstract class App extends Container {
 		$this->_root = rtrim($root, '/\\');
 		$this->_environment = new Environment();
 
+		set_exception_handler(function(Exception $exception) {
+			$this->terminate($exception);
+		});
+
 		if (!empty($config)) {
 			if (is_string($config)) {
 				$path = $this->_root . DIRECTORY_SEPARATOR . $config;
@@ -231,10 +235,7 @@ abstract class App extends Container {
 		$this->_kernel = $this->makeKernel($kernel, $config);
 
 		$this->_kernel->addListener(ExceptionEvent::EXCEPTION, function(ExceptionEvent $event) {
-			// Log the exception.
-			$this->log->critical($event->exception->getMessage(), $event->exception->getTrace());
-
-			// Forward the event to outer listeners.
+			$this->log->critical($event->getException()->getMessage(), $event->getException()->getTrace());
 			$this->dispatch(ExceptionEvent::EXCEPTION, $event);
 		});
 
