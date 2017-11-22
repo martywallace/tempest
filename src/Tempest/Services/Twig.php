@@ -18,6 +18,7 @@ class Twig extends Twig_Environment implements Service {
 
 	public function __construct() {
 		$loader = new Twig_Loader_Filesystem();
+
 		parent::__construct($loader, ['debug' => App::get()->dev]);
 
 		foreach ($this->getTemplatePaths() as $path) {

@@ -12,6 +12,7 @@ use Tempest\Services\Database;
 use Tempest\Services\Markdown;
 use Tempest\Services\Twig;
 use Tempest\Services\Session;
+use Tempest\Services\Log;
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -27,6 +28,7 @@ use Tempest\Services\Session;
  * @property-read Twig $twig The inbuilt Twig service, used to render Twig templates.
  * @property-read Session $session The inbuilt session handling service.
  * @property-read Markdown $markdown The inbuilt service for rendering markdown.
+ * @property-read Log $log The inbuilt service for logging.
  *
  * @author Marty Wallace
  */
@@ -107,7 +109,8 @@ abstract class App extends Container {
 			'db' => Database::class,
 			'twig' => Twig::class,
 			'session' => Session::class,
-			'markdown' => Markdown::class
+			'markdown' => Markdown::class,
+			'log' => Log::class
 		]);
 
 		parent::__construct();
@@ -228,6 +231,10 @@ abstract class App extends Container {
 		$this->_kernel = $this->makeKernel($kernel, $config);
 
 		$this->_kernel->addListener(ExceptionEvent::EXCEPTION, function(ExceptionEvent $event) {
+			// Log the exception.
+			$this->log->critical($event->exception->getMessage(), $event->exception->getTrace());
+
+			// Forward the event to outer listeners.
 			$this->dispatch(ExceptionEvent::EXCEPTION, $event);
 		});
 
