@@ -125,21 +125,4 @@ class Header extends Enum {
 		return $this->_value;
 	}
 
-	/**
-	 * Get the parsed header body.
-	 *
-	 * @return array
-	 */
-	public function parse() {
-		return array_map(function($chunk) {
-			$partitions = preg_split('/\s*;\s*/', $chunk);
-
-			if (count($partitions) >= 2) {
-				parse_str($partitions[1], $partitions[1]);
-			}
-
-			return $partitions;
-		}, preg_split('/\s*,\s*/', $this->_value));
-	}
-
 }

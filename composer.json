@@ -30,7 +30,8 @@
 		"symfony/event-dispatcher": "^3.3",
 		"erusev/parsedown": "^1.6",
 		"nesbot/carbon": "^1.22",
-		"doctrine/inflector": "^1.2"
+		"doctrine/inflector": "^1.2",
+		"willdurand/negotiation": "^2.3"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "6.3"

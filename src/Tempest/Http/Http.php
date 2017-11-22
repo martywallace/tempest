@@ -256,7 +256,7 @@ class Http extends Kernel {
 	protected function found(Request $request, Response $response, Route $route, array $named) {
 		foreach ($named as $property => $value) {
 			// Attached all named route data.
-			$request->attachNamed($property, $value);
+			$request->attachParam($property, $value);
 		}
 
 		if ($route->getMode() === Route::MODE_UNDETERMINED) {

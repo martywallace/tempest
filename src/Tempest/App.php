@@ -152,6 +152,8 @@ abstract class App extends Container {
 			}
 		});
 
+		date_default_timezone_set($this->config('timezone', 'UTC'));
+
 		$this->dispatch(AppEvent::SETUP);
 		$this->setup();
 	}

@@ -118,7 +118,7 @@ class HttpTest extends TestCase {
 		$this->assertInstanceOf(Response::class, $response);
 		$this->assertEquals('Test', $response->getBody());
 		$this->assertEquals(Status::OK, $response->getStatus());
-		$this->assertEquals(ContentType::TEXT_PLAIN, $response->getType());
+		$this->assertEquals(ContentType::TEXT_PLAIN, $response->getType()->getValue());
 	}
 
 	/**
@@ -129,7 +129,7 @@ class HttpTest extends TestCase {
 		/** @var Response $response */
 		$response = $app->handle(Http::class, Request::make('GET', '/json'), $routes);
 
-		$this->assertEquals(ContentType::APPLICATION_JSON, $response->getType());
+		$this->assertEquals(ContentType::APPLICATION_JSON, $response->getType()->getValue());
 		$this->assertEquals('{"test":10}', $response->getBody());
 	}
 
@@ -142,7 +142,7 @@ class HttpTest extends TestCase {
 		$response = $app->handle(Http::class, Request::make('GET', '/template'), $routes);
 
 		$this->assertEquals($app->twig->render('example.html'), $response->getBody());
-		$this->assertEquals(ContentType::TEXT_HTML, $response->getType());
+		$this->assertEquals(ContentType::TEXT_HTML, $response->getType()->getValue());
 	}
 
 	/**
@@ -167,7 +167,7 @@ class HttpTest extends TestCase {
 
 		$this->assertEquals(Status::METHOD_NOT_ALLOWED, $response->getStatus());
 		$this->assertEquals($app->twig->render('405.html'), $response->getBody());
-		$this->assertEquals('GET', $response->getHeader(Header::ALLOW));
+		$this->assertEquals('GET', $response->getHeader(Header::ALLOW)->getValue());
 	}
 
 }

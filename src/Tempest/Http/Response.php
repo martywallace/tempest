@@ -171,7 +171,7 @@ class Response extends Message implements Output {
 	/**
 	 * Gets the Content-Type header.
 	 *
-	 * @return string
+	 * @return Header
 	 */
 	public function getType() {
 		return $this->getHeader(Header::CONTENT_TYPE);

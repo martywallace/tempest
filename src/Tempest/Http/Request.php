@@ -1,8 +1,17 @@
 <?php namespace Tempest\Http;
 
+use Negotiation\AcceptCharset;
+use Negotiation\AcceptEncoding;
+use Negotiation\AcceptHeader;
+use Negotiation\CharsetNegotiator;
+use Negotiation\EncodingNegotiator;
 use Tempest\Kernel\Input;
 use Tempest\Services\Session;
 use Tempest\Utility;
+use Negotiation\Negotiator;
+use Negotiation\LanguageNegotiator;
+use Negotiation\Accept;
+use Negotiation\AcceptLanguage;
 
 /**
  * A request made to the HTTP kernel.
@@ -76,7 +85,7 @@ class Request extends Message implements Input {
 	private $_query;
 
 	/** @var mixed[] */
-	private $_named = [];
+	private $_params = [];
 
 	/** @var mixed[] */
 	private $_data = [];
@@ -86,6 +95,9 @@ class Request extends Message implements Input {
 
 	/** @var array */
 	private $_extra = [];
+
+	/** @var Negotiator[] */
+	private $_negotiators = [];
 
 	/**
 	 * Request constructor.
@@ -177,52 +189,61 @@ class Request extends Message implements Input {
 	}
 
 	/**
-	 * Negotiate the quality factor of a content-type based on the accept header.
+	 * Perform content-type negotiation.
 	 *
-	 * @param string $contentType The content-type to check.
+	 * @param array $priorities A list of content-types to negotiate with.
 	 *
-	 * @return float
+	 * @return AcceptHeader|Accept
 	 */
-	public function negotiate($contentType) {
-		$quality = 0;
-
-		$accepts = $this->getHeader(Header::ACCEPT, ContentType::ANY)->parse();
-		$testp = preg_split('/\s*\/\s*/', $contentType);
-
-		foreach ($accepts as $accept) {
-			if (strtolower($accept[0]) === strtolower($contentType)) {
-				// Exact match, so we can return it immediately.
-				return count($accept) >= 2 && array_key_exists('q', $accept[1]) ? floatval($accept[1]['q']) : 1;
-			} else {
-				$acceptp = preg_split('/\s*\/\s*/', $accept[0]);
-
-				// Left-side match with wildcard subtype accepted.
-				if (count($acceptp) >= 2 && $acceptp[1] === '*' && strtolower($testp[0]) === strtolower($acceptp[0])) {
-					$quality = max($quality, count($accept) >= 2 && array_key_exists('q', $accept[1]) ? floatval($accept[1]['q']) : 1);
-				}
-			}
-		}
-
-		if ($quality === 0) {
-			// Attempt to fall back to the quality factor of */*.
-			foreach ($accepts as $accept) {
-				if ($accept[0] === ContentType::ANY) {
-					return count($accept) >= 2 && array_key_exists('q', $accept[1]) ? floatval($accept[1]['q']) : 1;
-				}
-			}
-		}
-
-		return $quality;
+	public function negotiate(array $priorities) {
+		return $this->getNegotiator(Negotiator::class)
+			->getBest($this->getHeader(Header::ACCEPT, ContentType::ANY)->getValue(), $priorities);
 	}
 
 	/**
-	 * Attaches {@link Request::named() named} data to this request.
+	 * Perform language negotiation.
+	 *
+	 * @param array $priorities A list of languages to negotiate with.
+	 *
+	 * @return AcceptHeader|AcceptLanguage
+	 */
+	public function negotiateLanguage(array $priorities) {
+		return $this->getNegotiator(LanguageNegotiator::class)
+			->getBest($this->getHeader(Header::ACCEPT_LANGUAGE, '')->getValue(), $priorities);
+	}
+
+	/**
+	 * Perform encoding negotiation.
+	 *
+	 * @param array $priorities A list of encodings to negotiate with.
+	 *
+	 * @return AcceptHeader|AcceptEncoding
+	 */
+	public function negotiateEncoding(array $priorities) {
+		return $this->getNegotiator(EncodingNegotiator::class)
+			->getBest($this->getHeader(Header::ACCEPT_ENCODING)->getValue(), $priorities);
+	}
+
+	/**
+	 * Perform charset negotiation.
+	 *
+	 * @param array $priorities A list of charsets to negotiate with.
+	 *
+	 * @return AcceptHeader|AcceptCharset
+	 */
+	public function negotiateCharset(array $priorities) {
+		return $this->getNegotiator(CharsetNegotiator::class)
+			->getBest($this->getHeader(Header::ACCEPT_CHARSET)->getValue(), $priorities);
+	}
+
+	/**
+	 * Attaches {@link Request::param() URL params} to this request.
 	 *
 	 * @param string $property The property to create.
 	 * @param mixed $value The value to attach.
 	 */
-	public function attachNamed($property, $value) {
-		$this->_named[$property] = $value;
+	public function attachParam($property, $value) {
+		$this->_params[$property] = $value;
 	}
 
 	/**
@@ -232,21 +253,21 @@ class Request extends Message implements Input {
 	 *
 	 * @return bool
 	 */
-	public function hasNamed($property) {
-		return array_key_exists($property, $this->_named);
+	public function hasParam($property) {
+		return array_key_exists($property, $this->_params);
 	}
 
 	/**
-	 * Retrieve named data.
+	 * Retrieve a URL parameter.
 	 *
-	 * @param string $property The property to retrieve. If not provided, the entire set of named data is returned.
+	 * @param string $property The property to retrieve. If not provided, the entire set of parameters is returned.
 	 * @param mixed $fallback A fallback value to provide if the property did not exist.
 	 *
 	 * @return mixed
 	 */
-	public function named($property = null, $fallback = null) {
-		if (empty($property)) return $this->_named;
-		return array_key_exists($property, $this->_named) ? $this->_named[$property] : $fallback;
+	public function param($property = null, $fallback = null) {
+		if (empty($property)) return $this->_params;
+		return array_key_exists($property, $this->_params) ? $this->_params[$property] : $fallback;
 	}
 
 	/**
@@ -343,6 +364,21 @@ class Request extends Message implements Input {
 	 */
 	protected function extra($prop, $fallback = null) {
 		return Utility::evaluate($this->_extra, $prop, $fallback);
+	}
+
+	/**
+	 * Get a negotiator instance.
+	 *
+	 * @param string $class The negotiator class name.
+	 *
+	 * @return Negotiator
+	 */
+	protected function getNegotiator($class) {
+		if (!array_key_exists($class, $this->_negotiators)) {
+			$this->_negotiators[$class] = new $class();
+		}
+
+		return $this->_negotiators[$class];
 	}
 
 }
