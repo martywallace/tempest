@@ -196,8 +196,11 @@ class Request extends Message implements Input {
 	 * @return AcceptHeader|Accept
 	 */
 	public function negotiate(array $priorities) {
-		return $this->getNegotiator(Negotiator::class)
-			->getBest($this->getHeader(Header::ACCEPT, ContentType::ANY)->getValue(), $priorities);
+		$accept = $this->getHeader(Header::ACCEPT);
+
+		return empty($accept)
+			? null
+			: $this->getNegotiator(Negotiator::class)->getBest($accept->getValue(), $priorities);
 	}
 
 	/**
@@ -208,8 +211,11 @@ class Request extends Message implements Input {
 	 * @return AcceptHeader|AcceptLanguage
 	 */
 	public function negotiateLanguage(array $priorities) {
-		return $this->getNegotiator(LanguageNegotiator::class)
-			->getBest($this->getHeader(Header::ACCEPT_LANGUAGE, '')->getValue(), $priorities);
+		$acceptLanguage = $this->getHeader(Header::ACCEPT_LANGUAGE);
+
+		return empty($acceptLanguage)
+			? null
+			: $this->getNegotiator(LanguageNegotiator::class)->getBest($acceptLanguage->getValue(), $priorities);
 	}
 
 	/**
@@ -220,8 +226,11 @@ class Request extends Message implements Input {
 	 * @return AcceptHeader|AcceptEncoding
 	 */
 	public function negotiateEncoding(array $priorities) {
-		return $this->getNegotiator(EncodingNegotiator::class)
-			->getBest($this->getHeader(Header::ACCEPT_ENCODING)->getValue(), $priorities);
+		$acceptEncoding = $this->getHeader(Header::ACCEPT_ENCODING);
+
+		return empty($acceptEncoding)
+			? null
+			: $this->getNegotiator(EncodingNegotiator::class)->getBest($acceptEncoding->getValue(), $priorities);
 	}
 
 	/**
@@ -232,8 +241,55 @@ class Request extends Message implements Input {
 	 * @return AcceptHeader|AcceptCharset
 	 */
 	public function negotiateCharset(array $priorities) {
-		return $this->getNegotiator(CharsetNegotiator::class)
-			->getBest($this->getHeader(Header::ACCEPT_CHARSET)->getValue(), $priorities);
+		$acceptCharset = $this->getHeader(Header::ACCEPT_CHARSET);
+
+		return empty($acceptCharset)
+			? null
+			: $this->getNegotiator(CharsetNegotiator::class)->getBest($acceptCharset->getValue(), $priorities);
+	}
+
+	/**
+	 * Determine whether the specified content-type is accepted by the request source.
+	 *
+	 * @param string $type The content-type to check.
+	 *
+	 * @return bool
+	 */
+	public function accepts($type) {
+		return !empty($this->negotiate([$type]));
+	}
+
+	/**
+	 * Determine whether the specified language is accepted by the request source.
+	 *
+	 * @param string $lang The language to check.
+	 *
+	 * @return bool
+	 */
+	public function acceptsLanguage($lang) {
+		return !empty($this->negotiateLanguage([$lang]));
+	}
+
+	/**
+	 * Determine whether the specified encoding is accepted by the request source.
+	 *
+	 * @param string $encoding The encoding to check.
+	 *
+	 * @return bool
+	 */
+	public function acceptsEncoding($encoding) {
+		return !empty($this->negotiateEncoding([$encoding]));
+	}
+
+	/**
+	 * Determine whether the specified charset is accepted by the request source.
+	 *
+	 * @param string $charset The language to check.
+	 *
+	 * @return bool
+	 */
+	public function acceptsCharset($charset) {
+		return !empty($this->negotiateCharset([$charset]));
 	}
 
 	/**

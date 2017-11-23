@@ -2,6 +2,7 @@
 
 use Closure;
 use Exception;
+use Throwable;
 use Tempest\Events\AppEvent;
 use Tempest\Events\ExceptionEvent;
 use Tempest\Events\KernelEvent;
@@ -126,8 +127,8 @@ abstract class App extends Container {
 		$this->_root = rtrim($root, '/\\');
 		$this->_environment = new Environment();
 
-		set_exception_handler(function(Exception $exception) {
-			$this->terminate($exception);
+		set_exception_handler(function(Throwable $throwable) {
+			$this->terminate($throwable);
 		});
 
 		if (!empty($config)) {

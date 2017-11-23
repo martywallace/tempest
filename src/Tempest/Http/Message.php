@@ -64,7 +64,7 @@ abstract class Message {
 
 		return $this->hasHeader($header)
 			? $this->_headers[$header]
-			: (empty($fallback) ? null : new Header($header, $fallback));
+			: ($fallback === null ? null : new Header($header, $fallback));
 	}
 
 	/**
