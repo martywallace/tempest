@@ -79,4 +79,13 @@ abstract class Kernel extends EventDispatcher {
 	 */
 	public abstract function handle(Input $input);
 
+	/**
+	 * Handle an exception thrown by this kernel.
+	 *
+	 * @param Input $input The kernel input causing the exception.
+	 * @param Output $output The kernel output to potentially bind exception information to.
+	 * @param Exception $exception The exception thrown.
+	 */
+	protected abstract function handleException(Input $input, Output $output, Exception $exception);
+
 }

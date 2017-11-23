@@ -32,9 +32,9 @@ class HttpTest extends TestCase {
 	public function testCreateRoutes() {
 		$provider = function(Http $http) {
 			return [
-				$http->get('/')->controller(ExampleController::do()),
-				$http->get('/json')->controller(ExampleController::do('json')),
-				$http->get('/template')->template('example.html')
+				$http->get('/')->controller(ExampleController::bind()),
+				$http->get('/json')->controller(ExampleController::bind('json')),
+				$http->get('/template')->render('example.html')
 			];
 		};
 
@@ -50,16 +50,16 @@ class HttpTest extends TestCase {
 	public function testCreateRouteGroups() {
 		$provider = function(Http $http) {
 			return [
-				$http->get('/')->template('example.html'),
+				$http->get('/')->render('example.html'),
 				$http->group('/api', [
-					$http->get('/')->controller(ExampleController::do('getAll')),
+					$http->get('/')->controller(ExampleController::bind('getAll')),
 					$http->group('/dogs', [
-						$http->get('/')->controller(ExampleController::do('getDogs')),
-						$http->post('/')->controller(ExampleController::do('createDog'))
+						$http->get('/')->controller(ExampleController::bind('getDogs')),
+						$http->post('/')->controller(ExampleController::bind('createDog'))
 					]),
 					$http->group('/cats', [
-						$http->get('/')->controller(ExampleController::do('getCats')),
-						$http->post('/')->controller(ExampleController::do('createCat'))
+						$http->get('/')->controller(ExampleController::bind('getCats')),
+						$http->post('/')->controller(ExampleController::bind('createCat'))
 					])
 				])
 			];
@@ -88,10 +88,10 @@ class HttpTest extends TestCase {
 	 */
 	public function testParseJsonBody(App $app) {
 		$provider = function(Http $http) {
-			$http->middleware(BodyParsing::do('parse'));
+			$http->middleware(BodyParsing::bind('parse'));
 
 			return [
-				$http->post('/')->controller(ExampleController::do('convertJson'))
+				$http->post('/')->controller(ExampleController::bind('convertJson'))
 			];
 		};
 

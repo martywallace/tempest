@@ -36,7 +36,7 @@ use Tempest\Services\Log;
 abstract class App extends Container {
 
 	/** The framework version. */
-	const VERSION = '1.0.0';
+	const VERSION = '5.0.0';
 
 	/** Dump data as provided by {@link print_r()}. */
 	const DUMP_FORMAT_PRINT_R = 'print_r';

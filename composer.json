@@ -1,6 +1,6 @@
 {
 	"name": "ascensionwd/tempest",
-	"version": "0.1.0",
+	"version": "5.0.0",
 	"description": "A tiny PHP framework.",
 	"homepage": "https://github.com/ascensionwd/tempest",
 	"type": "library",

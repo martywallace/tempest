@@ -20,7 +20,7 @@ abstract class Handler {
 	 *
 	 * @throws Exception if the method does not exist within this class.
 	 */
-	public static function do($method = 'index', array $options = []) {
+	public static function bind($method = 'index', array $options = []) {
 		if (!method_exists(static::class, $method)) {
 			throw new Exception('HTTP handler "' . static::class . '" does not define a method "' . $method . '".');
 		}

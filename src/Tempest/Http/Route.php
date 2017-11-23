@@ -45,8 +45,6 @@ class Route extends Resource {
 	/**
 	 * Get the route mode (e.g. whether this route renders a template, calls a controller, etc).
 	 *
-	 * @internal
-	 *
 	 * @see Route::MODE_UNDETERMINED
 	 * @see Route::MODE_TEMPLATE
 	 * @see Route::MODE_CONTROLLER
@@ -63,8 +61,6 @@ class Route extends Resource {
 	/**
 	 * Get the template attached to this route.
 	 *
-	 * @internal
-	 *
 	 * @return string
 	 */
 	public function getTemplate() {
@@ -73,8 +69,6 @@ class Route extends Resource {
 
 	/**
 	 * Get the controller attached to this route.
-	 *
-	 * @internal
 	 *
 	 * @return mixed[]
 	 */
@@ -92,7 +86,7 @@ class Route extends Resource {
 	 * @throws Exception If the route already handles a controller.
 	 * @throws Exception If the route already handles a template.
 	 */
-	public function template($name) {
+	public function render($name) {
 		if (!empty($this->_template)) throw new Exception('This route already triggers a template.');
 		if (!empty($this->_controller)) throw new Exception('A route cannot trigger both a template and a controller.');
 

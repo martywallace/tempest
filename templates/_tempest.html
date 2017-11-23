@@ -19,60 +19,38 @@
           font-family: sans-serif;
           font-size: 14px;
           line-height: 1.6;
-          padding: 40px 10px 10px;
-          text-align: center;
+          padding: 20px;
           color: #444;
-          background: #EEE;
+          background: #FAFAFA;
         }
 
         code {
-          font-family: 'Courier New', monospace;
+          font-family: monospace;
         }
 
-        h1 {
-          font-weight: 900;
-          color: #9D0042;
+        h1, h2, h3, blockquote, p {
+          margin-bottom: 20px;
         }
 
-        main {
-          max-width: 600px;
-          margin: 0 auto;
-        }
-
-        .box {
-          background: #FFF;
-          padding: 30px;
-          color: #222;
-          text-align: left;
-          border-radius: 4px;
-          margin: 40px 0;
-          overflow: auto;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .box.red {
-          background: #9D0042;
-          color: #FFF;
-        }
-
-        .box:last-child {
+        h1:last-child, h2:last-child, h3:last-child, blockquote:last-child,
+        p:last-child {
           margin-bottom: 0;
+        }
+
+        ol, ul {
+          padding-left: 20px;
         }
 
         small {
           display: block;
           padding-top: 5px;
-          color: #AAA;
+          color: #666;
         }
 
-        .box.red small {
-          color: #FF9FC7;
-        }
-
-        @media screen and (min-width: 500px) {
-          body {
-            padding: 40px;
-          }
+        blockquote {
+          padding: 16px;
+          background: #EEE;
+          border-radius: 4px;
         }
       </style>
     {% endblock %}

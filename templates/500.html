@@ -2,53 +2,33 @@
 
 {% extends '_tempest.html' %}
 
-{% block css %}
-  {{ parent() }}
-
-  <style>
-    .trace {
-      list-style: none;
-    }
-
-    .trace li + li {
-      border-top: 1px dotted #EEE;
-      padding-top: 20px;
-      margin-top: 20px;
-    }
-  </style>
-{% endblock %}
-
 {% block box %}
   <h1>Exception</h1>
 
   {% if app.dev %}
-    <section class="box red">
-      <p><strong>{{ exception.message }}</strong></p>
-      <p><small>{{ exception.file }} at line {{ exception.line }}</small></p>
-    </section>
+    <blockquote>
+      <strong>{{ exception.getMessage() }}</strong><br>
+      <small>{{ exception.getFile() }} at L{{ exception.getLine() }}</small>
+    </blockquote>
 
     <h2>Trace</h2>
 
-    <section class="box">
-      <ul class="trace">
-        {% for trace in exception.trace %}
-          <li>
-            {% if trace.class %}
-              <p><code title="{{ trace.class }}::{{ trace.function }}()">{{ trace.short }}::{{ trace.function }}()</code></p>
-            {% else %}
-              <p><code>{{ trace.function }}</code></p>
-            {% endif %}
+    <ul>
+      {% for trace in exception.getTrace() %}
+        <li>
+          {% if trace.class %}
+            <code>{{ trace.class }}{{ trace.type }}{{ trace.function }}()</code>
+          {% else %}
+            <code>{{ trace.function }}</code>
+          {% endif %}
 
-            {% if trace.file and trace.line %}
-              <p><small>{{ trace.file }} at line {{ trace.line }}</small></p>
-            {% endif %}
-          </li>
-        {% endfor %}
-      </ul>
-    </section>
+          {% if trace.file and trace.line %}
+            <br><small>{{ trace.file }} at L{{ trace.line }}</small>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
   {% else %}
-    <section class="box">
-      <p>The application threw an exception. You can view the details of this exception by placing your application into development mode.</p>
-    </section>
+    <p>The application threw an exception. You can view the details of this exception by placing your application into development mode.</p>
   {% endif %}
 {% endblock %}

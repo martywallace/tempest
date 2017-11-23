@@ -5,6 +5,7 @@ use Exception;
 use Tempest\App;
 use Tempest\Kernel\Kernel;
 use Tempest\Kernel\Input;
+use Tempest\Kernel\Output;
 use Tempest\Events\ExceptionEvent;
 use Tempest\Data\RenderableException;
 use Tempest\Http\Session\BaseSessionHandler;
@@ -97,10 +98,23 @@ class Http extends Kernel {
 			else if ($info[0] === Dispatcher::METHOD_NOT_ALLOWED) $this->methodNotAllowed($request, $response, $info[1]);
 		} catch (Exception $exception) {
 			$this->dispatch(ExceptionEvent::EXCEPTION, new ExceptionEvent($exception));
-			$this->exception($response, $exception);
+			$this->handleException($request, $response, $exception);
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Handle an exception occurring during the request handling.
+	 *
+	 * @param Input|Request $request The request made.
+	 * @param Output|Response $response The response to be sent.
+	 * @param Exception $exception The exception.
+	 */
+	protected function handleException(Input $request, Output $response, Exception $exception) {
+		$response->setStatus(Status::INTERNAL_SERVER_ERROR)->render('500.html', [
+			'exception' => $exception
+		]);
 	}
 
 	/**
@@ -340,17 +354,6 @@ class Http extends Kernel {
 	}
 
 	/**
-	 * Handle an exception occurring during the request handling.
-	 *
-	 * @param Response $response The response to be sent.
-	 * @param Exception $exception The exception.
-	 */
-	protected function exception(Response $response, Exception $exception) {
-		$response->setStatus(Status::INTERNAL_SERVER_ERROR)
-			->render('500.html', ['exception' => new RenderableException($exception)]);
-	}
-
-	/**
 	 * Recursively bind all input closures with a pointer to the next one in line, then return the first closure.
 	 *
 	 * @param Closure[] $pipeline THe closure pipeline.
@@ -360,7 +363,7 @@ class Http extends Kernel {
 	 *
 	 * @return Closure
 	 */
-	protected function bindNext(array $pipeline, Request $request, Response $response, $index = 0) {
+	private function bindNext(array $pipeline, Request $request, Response $response, $index = 0) {
 		$closure = $pipeline[$index];
 
 		if ($index === count($pipeline) - 1) {
