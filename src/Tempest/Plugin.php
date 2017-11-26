@@ -12,14 +12,26 @@ abstract class Plugin extends Container {
 	 *
 	 * @return string
 	 */
-	abstract public function getName();
+	abstract static public function getName();
 
 	/**
 	 * The plugin version.
 	 *
 	 * @return string
 	 */
-	abstract public function getVersion();
+	abstract static public function getVersion();
+
+	/**
+	 * Gets the handle through which the plugin will be referenced, based on its {@link getName() name}.
+	 *
+	 * @return string
+	 */
+	public static function getHandle() {
+		$base = Utility::kebab(static::getName());
+		$base = ucwords(str_replace('-', ' ', $base));
+
+		return lcfirst(str_replace(' ', '', $base));
+	}
 
 	/**
 	 * Boot the plugin.
@@ -27,17 +39,5 @@ abstract class Plugin extends Container {
 	 * @return mixed
 	 */
 	abstract public function setup();
-
-	/**
-	 * Gets the handle through which the plugin will be referenced, based on its {@link getName() name}.
-	 *
-	 * @return string
-	 */
-	public function getHandle() {
-		$base = Utility::kebab($this->getName());
-		$base = ucwords(str_replace('-', ' ', $base));
-
-		return lcfirst(str_replace(' ', '', $base));
-	}
 
 }
