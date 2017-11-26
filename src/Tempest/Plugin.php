@@ -1,56 +1,43 @@
 <?php namespace Tempest;
 
-use Tempest\Http\{Http, Route, Group};
-
 /**
- * An application plugin, providing an entire suite of additional functionality with its own services, HTTP routes,
- * templates and so on.
+ * An application plugin, providing an entire suite of additional functionality.
  *
  * @author Marty Wallace
  */
-abstract class Plugin {
+abstract class Plugin extends Container {
 
 	/**
-	 * The plugin developer.
+	 * The plugin name.
 	 *
 	 * @return string
 	 */
-	abstract public function developer();
+	abstract public function getName();
 
 	/**
 	 * The plugin version.
 	 *
 	 * @return string
 	 */
-	abstract public function version();
+	abstract public function getVersion();
 
 	/**
-	 * General plugin setup.
+	 * Boot the plugin.
 	 *
 	 * @return mixed
 	 */
-	abstract protected function setup();
+	abstract public function setup();
 
 	/**
-	 * Plugin configuration.
+	 * Gets the handle through which the plugin will be referenced, based on its {@link getName() name}.
 	 *
-	 * @param Environment $env The application environment.
-	 *
-	 * @return array
+	 * @return string
 	 */
-	protected function config(Environment $env) {
-		return [];
-	}
+	public function getHandle() {
+		$base = Utility::kebab($this->getName());
+		$base = ucwords(str_replace('-', ' ', $base));
 
-	/**
-	 * Attaches plugin routes and middleware to the application in the case of the HTTP kernel being used.
-	 *
-	 * @param Http $http The HTTP kernel.
-	 *
-	 * @return Route[]|Group[]
-	 */
-	protected function http(Http $http) {
-		return [];
+		return lcfirst(str_replace(' ', '', $base));
 	}
 
 }

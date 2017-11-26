@@ -1,8 +1,8 @@
 <?php namespace Tempest;
 
 use Exception;
-use Tempest\Events\ServiceEvent;
 use Tempest\Services\Service;
+use Tempest\Events\ServiceEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -141,5 +141,23 @@ abstract class Container extends EventDispatcher {
 	 * @return string[]
 	 */
 	abstract protected function services();
+
+	/**
+	 * Get a list of service classes attached to this container.
+	 *
+	 * @return string[]
+	 */
+	public function getServices() {
+		return $this->_services;
+	}
+
+	/**
+	 * Get a list of all services that have been booted.
+	 *
+	 * @return Service[]
+	 */
+	public function getBootedServices() {
+		return $this->_serviceInstances;
+	}
 
 }
