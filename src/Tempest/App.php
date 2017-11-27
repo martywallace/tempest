@@ -9,6 +9,7 @@ use Tempest\Events\KernelEvent;
 use Tempest\Kernel\Kernel;
 use Tempest\Kernel\Input;
 use Tempest\Kernel\Output;
+use Tempest\Services\Cache;
 use Tempest\Services\Database;
 use Tempest\Services\Markdown;
 use Tempest\Services\Twig;
@@ -25,6 +26,7 @@ use Tempest\Services\Log;
  * is not defined, NULL is returned. Always without a trailing slash.
  * @property-read bool $dev Whether or not the application is in development mode.
  *
+ * @property-read Cache $cache The inbuilt caching service.
  * @property-read Database $db The inbuilt database service.
  * @property-read Twig $twig The inbuilt Twig service, used to render Twig templates.
  * @property-read Session $session The inbuilt session handling service.
@@ -110,6 +112,7 @@ abstract class App extends Container {
 
 	protected function __construct() {
 		$this->addServices([
+			'cache' => Cache::class,
 			'db' => Database::class,
 			'twig' => Twig::class,
 			'session' => Session::class,
