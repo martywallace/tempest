@@ -1,6 +1,6 @@
 <?php namespace Tempest\Http\Session;
 
-use Tempest\Data\Enum;
+use Tempest\Enums\Enum;
 
 /**
  * Session initialization directives.

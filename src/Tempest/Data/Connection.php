@@ -5,11 +5,6 @@ use Exception;
 /**
  * A connection, typically for a database.
  *
- * @property-read string $host The connection host.
- * @property-read string $username The connection username.
- * @property-read string $password The connection password.
- * @property-read string $resource The connection resource.
- *
  * @author Marty Wallace
  */
 class Connection {
@@ -53,17 +48,32 @@ class Connection {
 		$this->_resource = $resource;
 	}
 
-	public function __get($prop) {
-		if ($prop === 'host') return $this->_host;
-		if ($prop === 'username') return $this->_username;
-		if ($prop === 'password') return $this->_password;
-		if ($prop === 'resource') return $this->_resource;
-
-		return null;
+	/**
+	 * @return string
+	 */
+	public function getHost() {
+		return $this->_host;
 	}
 
-	public function __isset($prop) {
-		return $this->{$prop} !== null;
+	/**
+	 * @return string
+	 */
+	public function getUsername() {
+		return $this->_username;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPassword() {
+		return $this->_password;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getResource() {
+		return $this->_resource;
 	}
 
 }

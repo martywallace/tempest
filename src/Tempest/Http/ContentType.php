@@ -1,6 +1,6 @@
 <?php namespace Tempest\Http;
 
-use Tempest\Data\Enum;
+use Tempest\Enums\Enum;
 
 /**
  * Common HTTP content-types.

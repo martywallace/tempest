@@ -2,6 +2,7 @@
 
 use Closure;
 use Exception;
+use Tempest\Enums\Config;
 use Throwable;
 use Tempest\Events\AppEvent;
 use Tempest\Events\ExceptionEvent;
@@ -166,7 +167,7 @@ abstract class App extends Container {
 			}
 		});
 
-		date_default_timezone_set($this->config('timezone', 'UTC'));
+		date_default_timezone_set($this->config(Config::TIMEZONE, 'UTC'));
 
 		// Setup plugins.
 		foreach ($this->plugins() as $plugin) {
@@ -183,8 +184,8 @@ abstract class App extends Container {
 
 	public function __get($prop) {
 		if ($prop === 'root') return $this->_root;
-		if ($prop === 'storage') return $this->config('storage') ? $this->_root . '/' . trim($this->config('storage'), '/') : null;
-		if ($prop === 'dev') return $this->config('dev', false);
+		if ($prop === 'storage') return $this->config(Config::STORAGE) ? $this->_root . '/' . trim($this->config(Config::STORAGE), '/') : null;
+		if ($prop === 'dev') return $this->config(Config::DEV, false);
 
 		if (array_key_exists($prop, $this->_plugins)) {
 			return $this->_plugins[$prop];
@@ -243,7 +244,9 @@ abstract class App extends Container {
 	 * @throws Exception If the plugin does not exist.
 	 */
 	public function getPlugin($name) {
-		if (!$this->hasPlugin($name)) throw new Exception('Plugin "' . $name . '" does not exist.');
+		if (!$this->hasPlugin($name)) {
+			throw new Exception('Plugin "' . $name . '" does not exist.');
+		}
 
 		return $this->_plugins[$name];
 	}

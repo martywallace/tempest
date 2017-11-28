@@ -1,6 +1,6 @@
 <?php namespace Tempest\Http;
 
-use Tempest\Data\Enum;
+use Tempest\Enums\Enum;
 
 /**
  * Stores common HTTP status codes and provides some utility methods related to status codes.

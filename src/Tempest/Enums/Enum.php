@@ -1,4 +1,4 @@
-<?php namespace Tempest\Data;
+<?php namespace Tempest\Enums;
 
 use ReflectionClass;
 

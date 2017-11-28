@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Tempest\App;
+use Tempest\Enums\Config;
 use Tempest\Utility;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
@@ -47,7 +48,7 @@ class Twig extends Twig_Environment implements Service {
 	 */
 	protected function getTemplatePaths() {
 		$inbuilt = [realpath(__DIR__ . '/../../../templates')];
-		$custom = App::get()->config('templates', ['templates']);
+		$custom = App::get()->config(Config::TEMPLATES, ['templates']);
 
 		if (!is_array($custom)) {
 			$custom = [$custom];
