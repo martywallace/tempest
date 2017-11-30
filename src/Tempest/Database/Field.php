@@ -88,7 +88,7 @@ class Field extends SealedField {
 	 */
 	public static function enum(array $set) {
 		$field = new static(static::ENUM);
-		$field->setSet($set);
+		$field->setEnumerable($set);
 
 		return $field;
 	}
@@ -100,6 +100,7 @@ class Field extends SealedField {
 	 */
 	protected function __construct($type) {
 		$this->setType($type);
+
 		parent::__construct($this->getName(), $this);
 	}
 
@@ -110,10 +111,8 @@ class Field extends SealedField {
 	 *
 	 * @return $this
 	 */
-	public function default($value) {
-		$this->setDefault($value);
-
-		return $this;
+	public function setDefault($value) {
+		return $this->setDefaultInternally($value);
 	}
 
 	/**
@@ -121,9 +120,8 @@ class Field extends SealedField {
 	 *
 	 * @return $this
 	 */
-	public function primary() {
-		$this->addIndex(Index::PRIMARY);
-		return $this;
+	public function setPrimary() {
+		return $this->addIndexInternally(Index::PRIMARY)->setNotNullable();
 	}
 
 	/**
@@ -133,9 +131,8 @@ class Field extends SealedField {
 	 *
 	 * @return $this
 	 */
-	public function unique($name = null) {
-		$this->addIndex(Index::UNIQUE, $name);
-		return $this;
+	public function addUniqueKey($name = null) {
+		return $this->addIndexInternally(Index::UNIQUE, $name);
 	}
 
 	/**
@@ -145,9 +142,8 @@ class Field extends SealedField {
 	 *
 	 * @return $this
 	 */
-	public function index($name = null) {
-		$this->addIndex(Index::INDEX, $name);
-		return $this;
+	public function addIndex($name = null) {
+		return $this->addIndexInternally(Index::INDEX, $name);
 	}
 
 	/**
@@ -155,11 +151,8 @@ class Field extends SealedField {
 	 *
 	 * @return $this
 	 */
-	public function increments() {
-		$this->setAutoIncrement(true);
-		$this->addIndex(Index::PRIMARY);
-
-		return $this;
+	public function setAutoIncrements() {
+		return $this->setAutoIncrementsInternally()->setPrimary();
 	}
 
 	/**
@@ -167,9 +160,8 @@ class Field extends SealedField {
 	 *
 	 * @return $this
 	 */
-	public function notNullable() {
-		$this->setNullable(false);
-		return $this;
+	public function setNotNullable() {
+		return $this->setNullableInternally(false);
 	}
 
 	/**

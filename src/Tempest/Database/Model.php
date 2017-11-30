@@ -6,6 +6,7 @@ use JsonSerializable;
 use Tempest\App;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Doctrine\Common\Inflector\Inflector;
+use Tempest\Events\ModelEvent;
 
 /**
  * A database model, derived from a {@link Row}.
@@ -24,6 +25,34 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	 */
 	public static function getTable() {
 		return static::table();
+	}
+
+	/**
+	 * Gets a generated CREATE TABLE query for this model.
+	 *
+	 * @return string
+	 */
+	public static function getCreateTableQuery() {
+		$content = [];
+
+		foreach (static::getFields() as $field) {
+			$content[] = trim(implode(' ', [
+				'`' . $field->getName() . '`',
+				$field->getColumnType(),
+				$field->getNullable() ? 'DEFAULT NULL' : 'NOT NULL',
+				$field->getAutoIncrements() ? 'AUTO_INCREMENT' : ''
+			]));
+		}
+
+		if (!empty(static::getPrimaryFields())) {
+			$names = array_map(function(SealedField $field) {
+				return '`' . $field->getName() . '`';
+			}, static::getPrimaryFields());
+
+			$content[] = 'PRIMARY KEY(' . implode(', ', $names) . ')';
+		}
+
+		return 'CREATE TABLE `' . static::getTable() . '` (' . PHP_EOL . '  ' . implode(',' . PHP_EOL . '  ', $content) . PHP_EOL . ');';
 	}
 
 	/**
@@ -107,7 +136,7 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	 */
 	public static function getIncrementingField() {
 		foreach (static::getFields() as $field) {
-			if ($field->getAutoIncrement()) return $field;
+			if ($field->getAutoIncrements()) return $field;
 		}
 
 		return null;
@@ -307,6 +336,8 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 			$this->setFieldValue($name, $field->getDefault());
 		}
 
+		$this->dispatch(ModelEvent::RESET, new ModelEvent($this));
+
 		return $this;
 	}
 
@@ -431,6 +462,8 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	 * @param bool $updateOnDuplicate Whether or not to update a matching duplicate record if one was found.
 	 */
 	public function save($updateOnDuplicate = true) {
+		$this->dispatch(ModelEvent::BEFORE_SAVE, new ModelEvent($this));
+
 		$query = static::insert($this->_data);
 
 		if ($updateOnDuplicate) {
@@ -448,6 +481,8 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 				$this->setFieldValue($incrementing->getName(), App::get()->db->getLastInsertId());
 			}
 		}
+
+		$this->dispatch(ModelEvent::AFTER_SAVE, new ModelEvent($this));
 	}
 
 	public function jsonSerialize() {

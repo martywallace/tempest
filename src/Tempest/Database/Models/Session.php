@@ -18,11 +18,11 @@ class Session extends Model {
 
 	protected static function fields() {
 		return [
-			'id' => Field::string()->primary(),
-			'created' => Field::dateTime()->default('now'),
-			'updated' => Field::dateTime()->default('now'),
+			'id' => Field::string()->setAutoIncrements(),
+			'created' => Field::dateTime()->setDefault('now'),
+			'updated' => Field::dateTime()->setDefault('now'),
 			'ip' => Field::string(),
-			'data' => Field::text()
+			'data' => Field::text()->setNotNullable()
 		];
 	}
 
