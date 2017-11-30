@@ -10,6 +10,7 @@ use Tempest\Database\Model;
  * @property int $id The session ID.
  * @property Carbon $created The time that the session was created.
  * @property Carbon $updated The time that the session was last updated.
+ * @property string $ip The IP address of the session creator.
  * @property mixed $data The data stored in the session.
  *
  * @author Marty Wallace

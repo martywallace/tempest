@@ -254,6 +254,17 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	}
 
 	/**
+	 * Retrieve all fields with no index associated with it.
+	 *
+	 * @return SealedField[]
+	 */
+	public static function getNonIndexedFields() {
+		return array_filter(static::getFields(), function(SealedField $field) {
+			return count($field->getIndexes()) === 0;
+		});
+	}
+
+	/**
 	 * Retrieve the auto-incrementing field,  if this model declared one.
 	 *
 	 * @return SealedField
