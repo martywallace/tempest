@@ -116,7 +116,7 @@ class Field extends SealedField {
 	}
 
 	/**
-	 * Adds a primary key index to this field.
+	 * Adds a primary key index to this field and {@link setNotNullable marks it non-nullable}.
 	 *
 	 * @return $this
 	 */

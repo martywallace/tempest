@@ -1,4 +1,6 @@
 <?php namespace Tempest\Database;
+
+use JsonSerializable;
 use Carbon\Carbon;
 
 /**
@@ -6,7 +8,7 @@ use Carbon\Carbon;
  *
  * @author Marty Wallace
  */
-class SealedField {
+class SealedField implements JsonSerializable {
 
 	/** @var string */
 	private $_name;
@@ -35,8 +37,12 @@ class SealedField {
 		$this->_autoIncrements = $field->getAutoIncrements();
 		$this->_default = $field->getDefault();
 		$this->_nullable = $field->getNullable();
-		$this->_indexes = $field->getIndexes();
 		$this->_enumerable = $field->getEnumerable();
+
+		foreach ($field->getIndexes() as $index) {
+			// Clone indexes with new sealed field reference.
+			$this->_indexes[] = new Index($index->getType(), [$this], $index->getName());
+		}
 	}
 
 	/**
@@ -294,11 +300,11 @@ class SealedField {
 	 */
 	protected function addIndexInternally($type, $name = null) {
 		if ($type === Index::PRIMARY && $this->hasPrimaryIndex()) {
-			// Only one primary key.
+			// Only one primary key allowed - ignore repeat attempts.
 			return $this;
 		}
 
-		$this->_indexes[] = new Index($type, $name);
+		$this->_indexes[] = new Index($type, [$this], $name);
 
 		return $this;
 	}
@@ -398,6 +404,16 @@ class SealedField {
 				return 'ENUM(' . implode(', ', $enumerable) . ')';
 			break;
 		}
+	}
+
+	public function jsonSerialize() {
+		return [
+			'name' => $this->_name,
+			'type' => $this->_type,
+			'autoIncrements' => $this->_autoIncrements,
+			'default' => $this->_default,
+			'nullable' => $this->_nullable
+		];
 	}
 
 }

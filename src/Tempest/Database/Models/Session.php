@@ -21,7 +21,7 @@ class Session extends Model {
 			'id' => Field::string()->setAutoIncrements(),
 			'created' => Field::dateTime()->setDefault('now'),
 			'updated' => Field::dateTime()->setDefault('now'),
-			'ip' => Field::string(),
+			'ip' => Field::string()->addIndex(),
 			'data' => Field::text()->setNotNullable()
 		];
 	}

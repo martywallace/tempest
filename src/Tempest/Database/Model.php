@@ -18,6 +18,9 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	/** @var SealedField[] */
 	protected static $_fields = null;
 
+	/** @var Index[] */
+	protected static $_indexes = null;
+
 	/**
 	 * Get the table name associated with this model.
 	 *
@@ -97,14 +100,124 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	}
 
 	/**
+	 * Get all indexes attached to this model, as declared by its {@link fields}. This does not return a flat tree of
+	 * indexes as defined by each field, but will merge indexes with matching names and a list of all the associated
+	 * fields.
+	 *
+	 * @return Index[]
+	 *
+	 * @throws Exception If the index tree could not be properly merged.
+	 */
+	public static function getIndexes() {
+		if (empty(static::$_indexes)) {
+			/** @var Index[] $indexes */
+			$indexes = [];
+
+			foreach (static::getFields() as $field) {
+				foreach ($field->getIndexes() as $index) {
+					if (!empty($index->getName()) || $index->getType() === Index::PRIMARY) {
+						foreach ($indexes as $known) {
+							// Merge keys that are both PRIMARY or whose names match.
+							$shouldMerge = $known->getName() === $index->getName()
+								|| ($known->getType() === Index::PRIMARY && $index->getType() === Index::PRIMARY);
+
+							if ($shouldMerge) {
+								if ($known->getType() !== $index->getType()) {
+									throw new Exception('Indexes for "' . static::class . '" sharing a name must also share their type.');
+								}
+
+								$known->merge($index);
+
+								continue 2;
+							}
+						}
+
+						$indexes[] = $index->copy();
+					} else {
+						$indexes[] = $index->copy();
+					}
+				}
+			}
+
+			static::$_indexes = $indexes;
+		}
+
+		return static::$_indexes;
+	}
+
+	/**
+	 * Retrieve an index using its name.
+	 *
+	 * @param string $name The index name as declared by this model.
+	 *
+	 * @return Index
+	 */
+	public static function getIndexByName($name) {
+		foreach (static::getIndexes() as $index) {
+			if ($index->getName() === $name) {
+				return $index;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gets the PRIMARY index if this model declares one.
+	 *
+	 * @return Index
+	 */
+	public static function getPrimaryIndex() {
+		foreach (static::getIndexes() as $index) {
+			if ($index->getType() === Index::PRIMARY) {
+				return $index;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gets all PRIMARY or UNIQUE indexes declared by this model.
+	 *
+	 * @return Index[]
+	 */
+	public static function getUniqueIndexes() {
+		return array_filter(static::getIndexes(), function(Index $index) {
+			return $index->getType() === Index::PRIMARY
+				|| $index->getType() === INDEX::UNIQUE;
+		});
+	}
+
+	/**
+	 * Get all INDEX (non PRIMARY or UNIQUE) indexes declared by this model.
+	 *
+	 * @return Index[]
+	 */
+	public static function getNonUniqueIndexes() {
+		return array_filter(static::getIndexes(), function(Index $index) {
+			return $index->getType() === Index::INDEX;
+		});
+	}
+
+	/**
+	 * Get all non PRIMARY indexes declared by this model.
+	 *
+	 * @return Index[]
+	 */
+	public static function getNonPrimaryIndexes() {
+		return array_filter(static::getIndexes(), function(Index $index) {
+			return $index->getType() !== Index::PRIMARY;
+		});
+	}
+
+	/**
 	 * Retrieve all fields that are PRIMARY keyed.
 	 *
 	 * @return SealedField[]
 	 */
 	public static function getPrimaryFields() {
-		return array_filter(static::getFields(), function(SealedField $field) {
-			return $field->hasPrimaryIndex();
-		});
+		return static::getPrimaryIndex()->getFields();
 	}
 
 	/**
@@ -126,6 +239,17 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	public static function getNonUniqueFields() {
 		return array_filter(static::getFields(), function(SealedField $field) {
 			return !$field->hasUniqueIndex();
+		});
+	}
+
+	/**
+	 * Retrieve all fields that are not PRIMARY keyed.
+	 *
+	 * @return SealedField[]
+	 */
+	public static function getNonPrimaryFields() {
+		return array_filter(static::getFields(), function(SealedField $field) {
+			return !$field->hasPrimaryIndex();
 		});
 	}
 
