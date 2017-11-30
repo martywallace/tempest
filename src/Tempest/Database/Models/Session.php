@@ -19,7 +19,7 @@ class Session extends Model {
 
 	protected static function fields() {
 		return [
-			'id' => Field::string()->setAutoIncrements(),
+			'id' => Field::string()->setPrimary(),
 			'created' => Field::dateTime()->setDefault('now'),
 			'updated' => Field::dateTime()->setDefault('now'),
 			'ip' => Field::string()->addIndex(),

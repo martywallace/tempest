@@ -47,12 +47,19 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 			]));
 		}
 
-		if (!empty(static::getPrimaryFields())) {
-			$names = array_map(function(SealedField $field) {
+		foreach (static::getIndexes() as $index) {
+			$fieldNames = array_map(function(SealedField $field) {
 				return '`' . $field->getName() . '`';
-			}, static::getPrimaryFields());
+			}, $index->getFields());
 
-			$content[] = 'PRIMARY KEY(' . implode(', ', $names) . ')';
+			if ($index->getType() === Index::PRIMARY) $key = 'PRIMARY KEY';
+			else if ($index->getType() === Index::UNIQUE) $key = 'UNIQUE KEY';
+			else $key = 'KEY';
+
+			$content[] = trim(implode(' ', [
+				$key . ($index->getName() ? '`' . $index->getName() . '`' : ''),
+				'(' . implode(', ', $fieldNames) . ')'
+			]));
 		}
 
 		return 'CREATE TABLE `' . static::getTable() . '` (' . PHP_EOL . '  ' . implode(',' . PHP_EOL . '  ', $content) . PHP_EOL . ');';
