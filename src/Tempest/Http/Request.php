@@ -8,6 +8,7 @@ use Negotiation\EncodingNegotiator;
 use Tempest\Kernel\Input;
 use Tempest\Services\Session;
 use Tempest\Utility;
+use Tempest\Database\Models\User;
 use Negotiation\Negotiator;
 use Negotiation\LanguageNegotiator;
 use Negotiation\Accept;
@@ -98,6 +99,9 @@ class Request extends Message implements Input {
 
 	/** @var Negotiator[] */
 	private $_negotiators = [];
+
+	/** @var User */
+	private $_user;
 
 	/**
 	 * Request constructor.
@@ -435,6 +439,24 @@ class Request extends Message implements Input {
 		}
 
 		return $this->_negotiators[$class];
+	}
+
+	/**
+	 * Attaches a user model to the request.
+	 *
+	 * @param User $user The user to attach.
+	 */
+	public function attachUser(User $user) {
+		$this->_user = $user;
+	}
+
+	/**
+	 * Gets the user making the request, if one was attached.
+	 *
+	 * @return User
+	 */
+	public function getUser() {
+		return $this->_user;
 	}
 
 }

@@ -96,6 +96,8 @@ class Header extends Enum {
 	const X_UA_COMPATIBLE = 'X-UA-Compatible';
 	const X_XSS_PROTECTION = 'X-XSS-Protection';
 
+	const X_USER_TOKEN = 'X-User-Token';
+
 	/** @var string */
 	private $_name;
 

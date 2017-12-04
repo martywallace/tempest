@@ -2,14 +2,19 @@
 
 use Exception;
 use Closure;
-use Tempest\Http\{Handler, Request, Response, Header, ContentType, Status};
+use Tempest\Http\Middleware;
+use Tempest\Http\Request;
+use Tempest\Http\Response;
+use Tempest\Http\Header;
+use Tempest\Http\ContentType;
+use Tempest\Http\Status;
 
 /**
  * Inbuilt body parser for populating data contained in request bodies.
  *
  * @author Marty Wallace
  */
-class BodyParsing extends Handler {
+class BodyParsing extends Middleware {
 
 	const OPTION_TRIM = 'trim';
 

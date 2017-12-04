@@ -16,10 +16,10 @@ use Tempest\Events\ModelEvent;
 abstract class Model extends EventDispatcher implements JsonSerializable {
 
 	/** @var SealedField[] */
-	protected static $_fields = null;
+	private static $_fields = [];
 
 	/** @var Index[] */
-	protected static $_indexes = null;
+	private static $_indexes = [];
 
 	/**
 	 * Get the table name associated with this model.
@@ -71,17 +71,17 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	 * @return SealedField[]
 	 */
 	public static function getFields() {
-		if (empty(static::$_fields)) {
+		if (!array_key_exists(static::class, self::$_fields)) {
 			$sealed = [];
 
 			foreach (static::fields() as $name => $field) {
 				$sealed[$name] = $field->seal($name);
 			}
 
-			return $sealed;
+			self::$_fields[static::class] = $sealed;
 		}
 
-		return static::$_fields;
+		return self::$_fields[static::class];
 	}
 
 	/**
@@ -116,7 +116,7 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	 * @throws Exception If the index tree could not be properly merged.
 	 */
 	public static function getIndexes() {
-		if (empty(static::$_indexes)) {
+		if (!array_key_exists(static::class, self::$_indexes)) {
 			/** @var Index[] $indexes */
 			$indexes = [];
 
@@ -146,10 +146,10 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 				}
 			}
 
-			static::$_indexes = $indexes;
+			self::$_indexes[static::class] = $indexes;
 		}
 
-		return static::$_indexes;
+		return self::$_indexes[static::class];
 	}
 
 	/**

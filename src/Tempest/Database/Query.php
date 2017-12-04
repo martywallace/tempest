@@ -560,7 +560,7 @@ class Query {
 	 * Execute the query and return all models or rows it fetches. If this query has been set to
 	 * {@link produces() produce} a specific type of model, instances of that model are returned.
 	 *
-	 * @return Row[]|Model[]
+	 * @return Row[]|Model[]|mixed[]
 	 */
 	public function all() {
 		$rows = App::get()->db->all($this->getQuery(), $this->getBindings());
@@ -572,7 +572,7 @@ class Query {
 	 * Execute the query and return the first model or row it fetches. If this query has been set to
 	 * {@link produces() produce} a specific type of model, an instance of that model is returned.
 	 *
-	 * @return Row|Model
+	 * @return Row|Model|mixed
 	 */
 	public function first() {
 		$all = $this->all();

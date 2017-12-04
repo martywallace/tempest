@@ -3,14 +3,18 @@
 use Closure;
 use Exception;
 use Tempest\App;
-use Tempest\Http\{Handler, Request, Response, Header, Status};
+use Tempest\Http\Middleware;
+use Tempest\Http\Request;
+use Tempest\Http\Response;
+use Tempest\Http\Header;
+use Tempest\Http\Status;
 
 /**
  * Basic protective middleware.
  *
  * @author Marty Wallace
  */
-class Security extends Handler {
+class Security extends Middleware {
 
 	const OPTION_NOSNIFF = 'nosniff';
 	const OPTION_DENY_FRAMES = 'denyFrames';
