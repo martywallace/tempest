@@ -9,7 +9,7 @@ use Tempest\Database\Models\User;
  *
  * @author Marty Wallace
  */
-class Session implements Service {
+class SessionService implements Service {
 
 	const CSRF_TOKEN_NAME = 'CSRFToken';
 	const USER_ID_NAME = 'UserID';

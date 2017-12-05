@@ -9,7 +9,7 @@ use Tempest\App;
  *
  * @author Marty Wallace
  */
-class Cache extends ChainCache implements Service {
+class CacheService extends ChainCache implements Service {
 
 	public function __construct() {
 		$fs = new FilesystemCache(App::get()->storage . '/cache');

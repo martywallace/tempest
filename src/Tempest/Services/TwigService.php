@@ -15,7 +15,7 @@ use Twig_SimpleFunction;
  *
  * @author Marty Wallace
  */
-class Twig extends Twig_Environment implements Service {
+class TwigService extends Twig_Environment implements Service {
 
 	public function __construct() {
 		$loader = new Twig_Loader_Filesystem();

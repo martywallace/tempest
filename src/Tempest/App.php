@@ -10,12 +10,12 @@ use Tempest\Events\KernelEvent;
 use Tempest\Kernel\Kernel;
 use Tempest\Kernel\Input;
 use Tempest\Kernel\Output;
-use Tempest\Services\Cache;
-use Tempest\Services\Database;
-use Tempest\Services\Markdown;
-use Tempest\Services\Twig;
-use Tempest\Services\Session;
-use Tempest\Services\Log;
+use Tempest\Services\CacheService;
+use Tempest\Services\DatabaseService;
+use Tempest\Services\MarkdownService;
+use Tempest\Services\TwigService;
+use Tempest\Services\SessionService;
+use Tempest\Services\LogService;
 
 /**
  * The core application class, from which your own core application class extends. The App class is responsible for
@@ -27,12 +27,12 @@ use Tempest\Services\Log;
  * is not defined, NULL is returned. Always without a trailing slash.
  * @property-read bool $dev Whether or not the application is in development mode.
  *
- * @property-read Cache $cache The inbuilt caching service.
- * @property-read Database $db The inbuilt database service.
- * @property-read Twig $twig The inbuilt Twig service, used to render Twig templates.
- * @property-read Session $session The inbuilt session handling service.
- * @property-read Markdown $markdown The inbuilt service for rendering markdown.
- * @property-read Log $log The inbuilt service for logging.
+ * @property-read CacheService $cache The inbuilt caching service.
+ * @property-read DatabaseService $db The inbuilt database service.
+ * @property-read TwigService $twig The inbuilt Twig service, used to render Twig templates.
+ * @property-read SessionService $session The inbuilt session handling service.
+ * @property-read MarkdownService $markdown The inbuilt service for rendering markdown.
+ * @property-read LogService $log The inbuilt service for logging.
  *
  * @author Marty Wallace
  */
@@ -113,12 +113,12 @@ abstract class App extends Container {
 
 	protected function __construct() {
 		$this->addServices([
-			'cache' => Cache::class,
-			'db' => Database::class,
-			'twig' => Twig::class,
-			'session' => Session::class,
-			'markdown' => Markdown::class,
-			'log' => Log::class
+			'cache' => CacheService::class,
+			'db' => DatabaseService::class,
+			'twig' => TwigService::class,
+			'session' => SessionService::class,
+			'markdown' => MarkdownService::class,
+			'log' => LogService::class
 		]);
 
 		parent::__construct();

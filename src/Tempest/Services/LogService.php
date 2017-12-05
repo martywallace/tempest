@@ -9,7 +9,7 @@ use Monolog\Handler\RotatingFileHandler;
  *
  * @author Marty Wallace
  */
-class Log extends Logger implements Service {
+class LogService extends Logger implements Service {
 
 	public function __construct() {
 		parent::__construct('app');

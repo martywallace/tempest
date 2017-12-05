@@ -1,7 +1,7 @@
 <?php namespace Tempest\Http;
 
 use Tempest\Kernel\Input;
-use Tempest\Services\Session;
+use Tempest\Services\SessionService;
 use Tempest\Utility;
 use Tempest\Database\Models\User;
 use Negotiation\AcceptCharset;
@@ -411,7 +411,7 @@ class Request extends Message implements Input {
 			return $this->getHeader(Header::X_CSRF_TOKEN);
 		}
 
-		return Utility::evaluate($this->data(), Session::CSRF_TOKEN_NAME);
+		return Utility::evaluate($this->data(), SessionService::CSRF_TOKEN_NAME);
 	}
 
 	/**

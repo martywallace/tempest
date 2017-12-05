@@ -12,7 +12,7 @@ use Tempest\Database\Row;
  *
  * @author Marty Wallace
  */
-class Database implements Service {
+class DatabaseService implements Service {
 
 	/** @var PDO */
 	private $_pdo;

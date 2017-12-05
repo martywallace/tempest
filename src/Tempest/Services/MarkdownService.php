@@ -7,4 +7,4 @@ use Parsedown;
  *
  * @author Marty Wallace
  */
-class Markdown extends Parsedown implements Service { }
+class MarkdownService extends Parsedown implements Service { }
