@@ -442,20 +442,17 @@ class Request extends Message implements Input {
 	}
 
 	/**
-	 * Attaches a user model to the request.
-	 *
-	 * @param User $user The user to attach.
-	 */
-	public function attachUser(User $user) {
-		$this->_user = $user;
-	}
-
-	/**
-	 * Gets the user making the request, if one was attached.
+	 * Gets a user attached to this request via the {@link Header::X_USER_TOKEN X-User-Token} header.
 	 *
 	 * @return User
 	 */
 	public function getUser() {
+		if (empty($this->_user)) {
+			if ($this->hasHeader(Header::X_USER_TOKEN)) {
+				$this->_user = User::findByToken($this->getHeader(Header::X_USER_TOKEN)->getValue());
+			}
+		}
+
 		return $this->_user;
 	}
 

@@ -23,8 +23,7 @@ class Authentication extends Middleware {
 	 * @param Response $response
 	 * @param Closure $next
 	 */
-	public function resolveUser(Request $request, Response $response, Closure $next) {
-		// Look at specifically requested user via X-User-Token header.
+	public function requireUser(Request $request, Response $response, Closure $next) {
 		if ($request->hasHeader(Header::X_USER_TOKEN)) {
 			$user = User::findByToken($request->getHeader(Header::X_USER_TOKEN)->getValue());
 
@@ -34,11 +33,11 @@ class Authentication extends Middleware {
 			} else {
 				$response->setStatus(Status::UNAUTHORIZED);
 			}
-		}
-
-		// Look at the active session for a user.
-		if (App::get()->session->has('UserID')) {
-			//
+		} else if (!empty(App::get()->session->getUser())) {
+			$request->attachUser(App::get()->session->getUser());
+			$next();
+		} else {
+			$response->setStatus(Status::UNAUTHORIZED);
 		}
 	}
 
