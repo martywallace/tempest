@@ -46,7 +46,10 @@ class User extends Model {
 		preg_match('/^(?<email>.+?)\:(?<password>.*)$/', base64_decode($token), $credentials);
 
 		if (!empty($credentials)) {
-			return static::findByCredentials($credentials['email'], $credentials['password']);
+			return static::findByCredentials(
+				$credentials['email'],
+				$credentials['password']
+			);
 		}
 
 		return null;
@@ -59,6 +62,15 @@ class User extends Model {
 			'email' => Field::string()->addUniqueKey()->setNotNullable(),
 			'password' => Field::string()->setNotNullable()
 		];
+	}
+
+	/**
+	 * A token unique to this user's credentials. If the user's credentials change, the token will also change.
+	 *
+	 * @return string
+	 */
+	public function getToken() {
+		return sha1($this->email . '' . $this->password);
 	}
 
 }

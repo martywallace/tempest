@@ -109,6 +109,10 @@ class Header extends Enum {
 		$this->_value = $value;
 	}
 
+	public function __toString() {
+		return $this->_value;
+	}
+
 	/**
 	 * The header name.
 	 *

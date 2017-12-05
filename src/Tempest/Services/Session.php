@@ -2,6 +2,7 @@
 
 use Exception;
 use Tempest\Utility;
+use Tempest\Database\Models\User;
 
 /**
  * Manages application session.
@@ -11,6 +12,11 @@ use Tempest\Utility;
 class Session implements Service {
 
 	const CSRF_TOKEN_NAME = 'CSRFToken';
+	const USER_ID_NAME = 'UserID';
+	const USER_TOKEN_NAME = 'UserToken';
+
+	/** @var User */
+	private $_user;
 
 	/**
 	 * Determine whether there is an active session.
@@ -132,6 +138,61 @@ class Session implements Service {
 		$this->add(self::CSRF_TOKEN_NAME, $token);
 
 		return $token;
+	}
+
+	/**
+	 * Attempt to associate a {@link User user} with the current session. If there is a user currently associated with
+	 * the session, they are first logged out regardless of the validity of the provided credentials.
+	 *
+	 * @param string $email The user's email address.
+	 * @param string $password The user's password.
+	 *
+	 * @return bool Whether or not the login was successful.
+	 */
+	public function login($email, $password) {
+		$this->logout();
+
+		$user = User::findByCredentials($email, $password);
+
+		if (!empty($user)) {
+			$this->add(self::USER_ID_NAME, $user->id);
+			$this->add(self::USER_TOKEN_NAME, $user->getToken());
+
+			$this->_user = $user;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Remove association with a {@link User user} from the current session.
+	 */
+	public function logout() {
+		$this->_user = null;
+
+		$this->remove(self::USER_ID_NAME);
+		$this->remove(self::USER_TOKEN_NAME);
+	}
+
+	/**
+	 * Get a user associated with the current session.
+	 *
+	 * @return User
+	 */
+	public function getUser() {
+		if (empty($this->_user)) {
+			if ($this->has(self::USER_ID_NAME) && $this->has(self::USER_TOKEN_NAME)) {
+				$user = User::find($this->get(self::USER_ID_NAME));
+
+				if (!empty($user) && hash_equals($user->getToken(), $this->get(self::USER_TOKEN_NAME))) {
+					$this->_user = $user;
+				}
+			}
+		}
+
+		return $this->_user;
 	}
 
 }
