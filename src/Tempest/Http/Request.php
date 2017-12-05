@@ -1,14 +1,14 @@
 <?php namespace Tempest\Http;
 
+use Tempest\Kernel\Input;
+use Tempest\Services\Session;
+use Tempest\Utility;
+use Tempest\Database\Models\User;
 use Negotiation\AcceptCharset;
 use Negotiation\AcceptEncoding;
 use Negotiation\AcceptHeader;
 use Negotiation\CharsetNegotiator;
 use Negotiation\EncodingNegotiator;
-use Tempest\Kernel\Input;
-use Tempest\Services\Session;
-use Tempest\Utility;
-use Tempest\Database\Models\User;
 use Negotiation\Negotiator;
 use Negotiation\LanguageNegotiator;
 use Negotiation\Accept;

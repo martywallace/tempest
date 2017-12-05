@@ -583,6 +583,21 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 	}
 
 	/**
+	 * Get all raw values from non-primary fields.
+	 *
+	 * @return array
+	 */
+	public function getNonPrimaryRaw() {
+		$result = [];
+
+		foreach (static::getNonPrimaryFields() as $field) {
+			$result[$field->getName()] = $this->getRaw($field->getName());
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Gets the primary key value in the case where this model has a single primary key.
 	 *
 	 * @return mixed
@@ -609,7 +624,7 @@ abstract class Model extends EventDispatcher implements JsonSerializable {
 		$query = static::insert($this->_data);
 
 		if ($updateOnDuplicate) {
-			$query = $query->onDuplicateKeyUpdate($this->getNonUniqueRaw());
+			$query = $query->onDuplicateKeyUpdate($this->getNonPrimaryRaw());
 		}
 
 		$query->execute();
