@@ -33,7 +33,8 @@
 		"doctrine/inflector": "^1.2",
 		"willdurand/negotiation": "^2.3",
 		"monolog/monolog": "^1.23",
-		"doctrine/cache": "^1.7"
+		"doctrine/cache": "^1.7",
+		"vlucas/valitron": "^1.4"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "6.3"

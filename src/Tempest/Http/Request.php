@@ -1,9 +1,11 @@
 <?php namespace Tempest\Http;
 
+use Closure;
 use Tempest\Kernel\Input;
 use Tempest\Services\SessionService;
 use Tempest\Utility;
 use Tempest\Database\Models\User;
+use Tempest\Validation\Validator;
 use Negotiation\AcceptCharset;
 use Negotiation\AcceptEncoding;
 use Negotiation\AcceptHeader;
@@ -331,6 +333,17 @@ class Request extends Message implements Input {
 	}
 
 	/**
+	 * Validates the contents of the URL params attached to this request.
+	 *
+	 * @param Closure $validation A function accepting a {@link Validator validator} as its only argument.
+	 */
+	public function validateParams(Closure $validation) {
+		$validator = new Validator($this->_params);
+		$validation($validator);
+		$validator->validate();
+	}
+
+	/**
 	 * Attaches {@link Request::data() data} to this request.
 	 *
 	 * @param string $property The property to create.
@@ -365,6 +378,17 @@ class Request extends Message implements Input {
 	}
 
 	/**
+	 * Validates the contents of the body data attached to this request.
+	 *
+	 * @param Closure $validation A function accepting a {@link Validator validator} as its only argument.
+	 */
+	public function validateData(Closure $validation) {
+		$validator = new Validator($this->_data);
+		$validation($validator);
+		$validator->validate();
+	}
+
+	/**
 	 * Determine whether a field exists in the request querystring.
 	 *
 	 * @param string $property The property to check for.
@@ -386,6 +410,17 @@ class Request extends Message implements Input {
 	public function query($property = null, $fallback = null) {
 		if (empty($property)) return $this->_query;
 		return array_key_exists($property, $this->_query) ? $this->_query[$property] : $fallback;
+	}
+
+	/**
+	 * Validates the contents of the querystring attached to this request.
+	 *
+	 * @param Closure $validation A function accepting a {@link Validator validator} as its only argument.
+	 */
+	public function validateQuery(Closure $validation) {
+		$validator = new Validator($this->_query);
+		$validation($validator);
+		$validator->validate();
 	}
 
 	/**
