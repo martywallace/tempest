@@ -338,9 +338,7 @@ class Request extends Message implements Input {
 	 * @param Closure $validation A function accepting a {@link Validator validator} as its only argument.
 	 */
 	public function validateParams(Closure $validation) {
-		$validator = new Validator($this->_params);
-		$validation($validator);
-		$validator->validate();
+		Validator::create($this->_params)->rules($validation)->validate();
 	}
 
 	/**
@@ -383,9 +381,7 @@ class Request extends Message implements Input {
 	 * @param Closure $validation A function accepting a {@link Validator validator} as its only argument.
 	 */
 	public function validateData(Closure $validation) {
-		$validator = new Validator($this->_data);
-		$validation($validator);
-		$validator->validate();
+		Validator::create($this->_data)->rules($validation)->validate();
 	}
 
 	/**
@@ -418,9 +414,7 @@ class Request extends Message implements Input {
 	 * @param Closure $validation A function accepting a {@link Validator validator} as its only argument.
 	 */
 	public function validateQuery(Closure $validation) {
-		$validator = new Validator($this->_query);
-		$validation($validator);
-		$validator->validate();
+		Validator::create($this->_query)->rules($validation)->validate();
 	}
 
 	/**
