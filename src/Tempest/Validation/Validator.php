@@ -52,14 +52,14 @@ class Validator extends BaseValidator {
 	}
 
 	/**
-	 * Mark a field as required.
+	 * Creates a validator specific to a single field within the data provided to this validator.
 	 *
-	 * @param string $field The field to mark required.
+	 * @param string $field The field to validate.
 	 *
-	 * @return $this
+	 * @return FieldValidator
 	 */
-	public function required($field) {
-		return $this->rule('required', $field);
+	public function field($field) {
+		return new FieldValidator($this, $field);
 	}
 
 }
