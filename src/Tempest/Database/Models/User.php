@@ -55,6 +55,18 @@ class User extends Model {
 		return null;
 	}
 
+	/**
+	 * Creates a value appropriate for the X-User-Token header.
+	 *
+	 * @param string $email The user's email address.
+	 * @param string $password The user's unhashed password.
+	 *
+	 * @return string
+	 */
+	public static function createXUserToken($email, $password) {
+		return base64_encode($email . ':' . $password);
+	}
+
 	protected static function fields() {
 		return [
 			'id' => Field::int()->setAutoIncrements(),
@@ -65,11 +77,11 @@ class User extends Model {
 	}
 
 	/**
-	 * A token unique to this user's credentials. If the user's credentials change, the token will also change.
+	 * A hash unique to this user's credentials. If the user's credentials change, the token will also change.
 	 *
 	 * @return string
 	 */
-	public function getToken() {
+	public function getHash() {
 		return sha1($this->email . '' . $this->password);
 	}
 

@@ -13,7 +13,7 @@ class SessionService implements Service {
 
 	const CSRF_TOKEN_NAME = 'CSRFToken';
 	const USER_ID_NAME = 'UserID';
-	const USER_TOKEN_NAME = 'UserToken';
+	const USER_HASH_NAME = 'UserHash';
 
 	/** @var User */
 	private $_user;
@@ -156,7 +156,7 @@ class SessionService implements Service {
 
 		if (!empty($user)) {
 			$this->add(self::USER_ID_NAME, $user->id);
-			$this->add(self::USER_TOKEN_NAME, $user->getToken());
+			$this->add(self::USER_HASH_NAME, $user->getHash());
 
 			$this->_user = $user;
 
@@ -173,7 +173,7 @@ class SessionService implements Service {
 		$this->_user = null;
 
 		$this->remove(self::USER_ID_NAME);
-		$this->remove(self::USER_TOKEN_NAME);
+		$this->remove(self::USER_HASH_NAME);
 	}
 
 	/**
@@ -183,10 +183,10 @@ class SessionService implements Service {
 	 */
 	public function getUser() {
 		if (empty($this->_user)) {
-			if ($this->has(self::USER_ID_NAME) && $this->has(self::USER_TOKEN_NAME)) {
+			if ($this->has(self::USER_ID_NAME) && $this->has(self::USER_HASH_NAME)) {
 				$user = User::find($this->get(self::USER_ID_NAME));
 
-				if (!empty($user) && hash_equals($user->getToken(), $this->get(self::USER_TOKEN_NAME))) {
+				if (!empty($user) && hash_equals($user->getHash(), $this->get(self::USER_HASH_NAME))) {
 					$this->_user = $user;
 				}
 			}
