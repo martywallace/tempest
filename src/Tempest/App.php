@@ -108,9 +108,6 @@ abstract class App extends Container {
 	/** @var Kernel */
 	private $_kernel;
 
-	/** @var Plugin[] */
-	private $_plugins = [];
-
 	protected function __construct() {
 		$this->addServices([
 			'cache' => CacheService::class,
@@ -169,15 +166,6 @@ abstract class App extends Container {
 
 		date_default_timezone_set($this->config(Config::TIMEZONE, 'UTC'));
 
-		// Setup plugins.
-		foreach ($this->plugins() as $plugin) {
-			if ($this->hasPlugin($plugin->getHandle())) {
-				throw new Exception('Conflicting plugin name "' . $plugin->getHandle() . '".');
-			}
-
-			$this->_plugins[$plugin->getHandle()] = $plugin;
-		}
-
 		$this->dispatch(AppEvent::SETUP);
 		$this->setup();
 	}
@@ -186,10 +174,6 @@ abstract class App extends Container {
 		if ($prop === 'root') return $this->_root;
 		if ($prop === 'storage') return $this->config(Config::STORAGE) ? $this->_root . '/' . trim($this->config(Config::STORAGE), '/') : null;
 		if ($prop === 'dev') return $this->config(Config::DEV, false);
-
-		if (array_key_exists($prop, $this->_plugins)) {
-			return $this->_plugins[$prop];
-		}
 
 		return parent::__get($prop);
 	}
@@ -235,48 +219,11 @@ abstract class App extends Container {
 	}
 
 	/**
-	 * Get an attached plugin.
-	 *
-	 * @param string $name The plugin name.
-	 *
-	 * @return Plugin
-	 *
-	 * @throws Exception If the plugin does not exist.
-	 */
-	public function getPlugin($name) {
-		if (!$this->hasPlugin($name)) {
-			throw new Exception('Plugin "' . $name . '" does not exist.');
-		}
-
-		return $this->_plugins[$name];
-	}
-
-	/**
-	 * Determine whether this application has the specified plugin attached.
-	 *
-	 * @param string $name The plugin name as provided when {@link plugins declaring} the attached plugins.
-	 *
-	 * @return bool
-	 */
-	public function hasPlugin($name) {
-		return array_key_exists($name, $this->_plugins);
-	}
-
-	/**
 	 * Called after all services are bound to the application.
 	 *
 	 * @return mixed
 	 */
 	abstract protected function setup();
-
-	/**
-	 * Declares plugins to be bound to the application.
-	 *
-	 * @return Plugin[]
-	 */
-	protected function plugins() {
-		return [];
-	}
 
 	/**
 	 * Handle input and generate output through a kernel.
@@ -339,15 +286,6 @@ abstract class App extends Container {
 
 		// No turning back.
 		exit($output);
-	}
-
-	/**
-	 * Get all installed plugins.
-	 *
-	 * @return Plugin[]
-	 */
-	public function getPlugins() {
-		return $this->_plugins;
 	}
 
 }
