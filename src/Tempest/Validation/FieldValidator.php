@@ -187,7 +187,7 @@ class FieldValidator {
 	 * @return $this
 	 */
 	public function in(array $list) {
-		return $this->rule('in', $list);
+		return $this->rule('in', array_values($list));
 	}
 
 	/**
@@ -198,7 +198,7 @@ class FieldValidator {
 	 * @return $this
 	 */
 	public function notIn(array $list) {
-		return $this->rule('notIn', $list);
+		return $this->rule('notIn', array_values($list));
 	}
 
 	/**
