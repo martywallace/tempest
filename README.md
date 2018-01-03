@@ -22,4 +22,4 @@ However for new projects it is recommended to use the [`tempest-app`](https://gi
 boilerplate project with Composer's `create-project`. This will scaffold a new project using the ideal structure for
 building an application with Tempest:
 
-    $ composer create-project ascensionwd/tempest-app my-app -s dev
+    $ composer create-project ascensionwd/tempest-app my-app
