@@ -560,7 +560,7 @@ class Query {
 	 * Execute the query and return all models or rows it fetches. If this query has been set to
 	 * {@link produces() produce} a specific type of model, instances of that model are returned.
 	 *
-	 * @return Row[]|Model[]|mixed[]
+	 * @return Row[]|Model[]|array
 	 */
 	public function all() {
 		$rows = App::get()->db->all($this->getQuery(), $this->getBindings());
