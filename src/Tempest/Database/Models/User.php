@@ -15,6 +15,17 @@ use Tempest\Database\Model;
 class User extends Model {
 
 	/**
+	 * Find a user using their email address.
+	 *
+	 * @param string $email The user's email address.
+	 *
+	 * @return static
+	 */
+	public static function findByEmail($email) {
+		return static::select()->where('email', strtolower($email))->first();
+	}
+
+	/**
 	 * Find a user using their email and password.
 	 *
 	 * @param string $email The user's email address.

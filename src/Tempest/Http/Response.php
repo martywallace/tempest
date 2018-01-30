@@ -83,10 +83,11 @@ class Response extends Message implements Output {
 	 * Convenience method to send JSON encoded representation of an array or object.
 	 *
 	 * @param mixed $data The data to be encoded.
+	 * @param callable
 	 *
 	 * @return $this
 	 */
-	public function json($data) {
+	public function json($data, $transformer = null) {
 		return $this->setType(ContentType::APPLICATION_JSON)
 			->setBody(json_encode($data));
 	}
