@@ -151,6 +151,28 @@ class Query {
 	}
 
 	/**
+	 * Appends a WHERE [column] IS NULL statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 *
+	 * @return Query
+	 */
+	public function whereIsNull($column) {
+		return $this->raw('WHERE ' . $column . ' IS NULL');
+	}
+
+	/**
+	 * Appends a WHERE [column] IS NOT NULL statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 *
+	 * @return Query
+	 */
+	public function whereIsNotNull($column) {
+		return $this->raw('WHERE ' . $column . ' IS NOT NULL');
+	}
+
+	/**
 	 * Appends a WHERE [column] != [value] statement to the query for an equal match.
 	 *
 	 * @param string $column The subject column.
@@ -298,6 +320,28 @@ class Query {
 	}
 
 	/**
+	 * Appends an AND [column] IS NULL statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 *
+	 * @return Query
+	 */
+	public function andIsNull($column) {
+		return $this->raw('AND ' . $column . ' IS NULL');
+	}
+
+	/**
+	 * Appends an AND [column] IS NOT NULL statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 *
+	 * @return Query
+	 */
+	public function andIsNotNull($column) {
+		return $this->raw('AND ' . $column . ' IS NOT NULL');
+	}
+
+	/**
 	 * Appends an AND [column] != [value] statement to the query.
 	 *
 	 * @param string $column The subject field.
@@ -403,6 +447,28 @@ class Query {
 	 */
 	public function or($column, $value) {
 		return $this->raw('OR ' . $column . ' = ?', $value);
+	}
+
+	/**
+	 * Appends an OR [column] IS NULL statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 *
+	 * @return Query
+	 */
+	public function orIsNull($column) {
+		return $this->raw('OR ' . $column . ' IS NULL');
+	}
+
+	/**
+	 * Appends an OR [column] IS NOT NULL statement to the query.
+	 *
+	 * @param string $column The subject column.
+	 *
+	 * @return Query
+	 */
+	public function orIsNotNull($column) {
+		return $this->raw('OR ' . $column . ' IS NOT NULL');
 	}
 
 	/**
