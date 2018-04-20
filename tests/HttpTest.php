@@ -4,7 +4,7 @@ use Closure;
 use Tempest\Http\ContentType;
 use Tempest\Http\Header;
 use Tempest\Http\Http;
-use Tempest\Http\Middleware\BodyParsing;
+use Tempest\Http\Middleware\BodyParsingMiddleware;
 use Tempest\Http\Request;
 use Tempest\Http\Response;
 use Tempest\Http\Status;
@@ -42,7 +42,7 @@ class HttpTest extends TestCase {
 
 		$this->assertCount(3, $http->getRoutes());
 		$this->assertEquals('/', $http->getRoutes()[0]->getUri());
-		$this->assertEquals('GET', $http->getRoutes()[1]->getMethod()[0]);
+		$this->assertEquals('GET', $http->getRoutes()[1]->getMethods()[0]);
 
 		return $provider;
 	}
@@ -68,7 +68,7 @@ class HttpTest extends TestCase {
 		$http = new Http($provider);
 
 		$uris = array_values(array_map(function(Route $route) {
-			return [$route->getUri(), $route->getMethod()];
+			return [$route->getUri(), $route->getMethods()];
 		}, $http->getRoutes()));
 
 		$this->assertCount(6, $http->getRoutes());
@@ -88,7 +88,7 @@ class HttpTest extends TestCase {
 	 */
 	public function testParseJsonBody(App $app) {
 		$provider = function(Http $http) {
-			$http->middleware(BodyParsing::bind('parse'));
+			$http->addMiddleware(BodyParsingMiddleware::bind('parse'));
 
 			return [
 				$http->post('/')->controller(ExampleController::bind('convertJson'))

@@ -2,7 +2,6 @@
 
 use Exception;
 use Closure;
-use Tempest\Http\Middleware;
 use Tempest\Http\Request;
 use Tempest\Http\Response;
 use Tempest\Http\Header;
@@ -14,14 +13,14 @@ use Tempest\Http\Status;
  *
  * @author Marty Wallace
  */
-class BodyParsing extends Middleware {
+class BodyParsingMiddleware extends Middleware {
 
 	const OPTION_TRIM = 'trim';
 
 	/**
 	 * Parse the request and attach data based on its body.
 	 *
-	 * @see BodyParsing::OPTION_TRIM
+	 * @see BodyParsingMiddleware::OPTION_TRIM
 	 *
 	 * @param Request $request
 	 * @param Response $response

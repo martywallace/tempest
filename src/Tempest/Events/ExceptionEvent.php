@@ -1,6 +1,6 @@
 <?php namespace Tempest\Events;
 
-use Exception;
+use Throwable;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -12,15 +12,15 @@ class ExceptionEvent extends Event {
 
 	const EXCEPTION = 'exception';
 
-	/** @var Exception */
+	/** @var Throwable */
 	private $_exception;
 
-	public function __construct(Exception $exception) {
+	public function __construct(Throwable $exception) {
 		$this->_exception = $exception;
 	}
 
 	/**
-	 * @return Exception
+	 * @return Throwable
 	 */
 	public function getException() {
 		return $this->_exception;

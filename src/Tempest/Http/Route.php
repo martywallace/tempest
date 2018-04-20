@@ -1,6 +1,10 @@
 <?php namespace Tempest\Http;
 
 use Exception;
+use Tempest\Http\Modes\RouteMode;
+use Tempest\Http\Modes\ActionMode;
+use Tempest\Http\Modes\RedirectMode;
+use Tempest\Http\Modes\RenderMode;
 
 /**
  * A route to be handled by the HTTP kernel.
@@ -9,107 +13,104 @@ use Exception;
  */
 class Route extends Resource {
 
-	const MODE_UNDETERMINED = 0;
-	const MODE_TEMPLATE = 1;
-	const MODE_CONTROLLER = 2;
+	/** @var RouteMode */
+	private $mode;
 
-	/** @var string|string[] */
-	private $_method;
-
-	/** @var string */
-	private $_template;
-
-	/** @var mixed[] */
-	private $_controller;
+	/** @var string[] */
+	private $methods;
 
 	/**
 	 * Route constructor.
 	 *
-	 * @param string|string[] $method
+	 * @param string[] $methods
 	 * @param string $uri
 	 */
-	public function __construct($method, $uri) {
+	public function __construct(array $methods, string $uri) {
 		parent::__construct($uri);
-		$this->_method = $method;
+
+		$this->methods = $methods;
 	}
 
 	/**
 	 * Get the HTTP methods that triggers this route.
 	 *
-	 * @return string|string[]
+	 * @return string[]
 	 */
-	public function getMethod() {
-		return $this->_method;
+	public function getMethods(): array {
+		return $this->methods;
 	}
 
 	/**
 	 * Get the route mode (e.g. whether this route renders a template, calls a controller, etc).
 	 *
 	 * @see Route::MODE_UNDETERMINED
-	 * @see Route::MODE_TEMPLATE
+	 * @see Route::MODE_RENDER
 	 * @see Route::MODE_CONTROLLER
+	 * @see Route::MODE_REDIRECT
 	 *
-	 * @return int
+	 * @return RouteMode
 	 */
-	public function getMode() {
-		if (!empty($this->_template)) return self::MODE_TEMPLATE;
-		else if (!empty($this->_controller)) return self::MODE_CONTROLLER;
-
-		return self::MODE_UNDETERMINED;
-	}
-
-	/**
-	 * Get the template attached to this route.
-	 *
-	 * @return string
-	 */
-	public function getTemplate() {
-		return $this->_template;
-	}
-
-	/**
-	 * Get the controller attached to this route.
-	 *
-	 * @return mixed[]
-	 */
-	public function getController() {
-		return $this->_controller;
+	public function getMode(): RouteMode {
+		return $this->mode;
 	}
 
 	/**
 	 * Attach a template to render when this route is matched.
 	 *
-	 * @param string $name The name of the template to render.
+	 * @param string $template The name of the template to render.
+	 * @param mixed[] $context Context to optionally provide to the template.
 	 *
-	 * @return $this
+	 * @return self
 	 *
-	 * @throws Exception If the route already handles a controller.
-	 * @throws Exception If the route already handles a template.
+	 * @throws Exception If the route already has a behaviour mode set.
 	 */
-	public function render($name) {
-		if (!empty($this->_template)) throw new Exception('This route already triggers a template.');
-		if (!empty($this->_controller)) throw new Exception('A route cannot trigger both a template and a controller.');
+	public function render(string $template, array $context = []): self {
+		if ($this->mode) {
+			throw new Exception('This route already has a mode set.');
+		}
 
-		$this->_template = $name;
+		$this->mode = new RenderMode($template, $context);
 
 		return $this;
 	}
 
 	/**
-	 * Attach a controller method to call when this route is matched.
+	 * Attach a controller action to call when this route is matched.
 	 *
-	 * @param array $action The action to perform provided by your controller class.
+	 * @param string $controller The controller class to instantiate.
+	 * @param string $method The method within the controller class to call.
+	 * @param array $options User defined data to provide to the controller class.
 	 *
-	 * @return $this
+	 * @return self
 	 *
-	 * @throws Exception I the route already handles a controller.
-	 * @throws Exception If the route already handles a template.
+	 * @throws Exception If the route already has a behaviour mode set.
 	 */
-	public function controller(array $action) {
-		if (!empty($this->_controller)) throw new Exception('This route already triggers a controller.');
-		if (!empty($this->_template)) throw new Exception('A route cannot trigger both a template and a controller.');
+	public function action(string $controller, string $method = 'index', array $options = []): self {
+		if ($this->mode) {
+			throw new Exception('This route already has a mode set.');
+		}
 
-		$this->_controller = $action;
+		$this->mode = new ActionMode($controller, $method, $options);
+
+		return $this;
+	}
+
+	/**
+	 * Redirect this route to a new location.
+	 *
+	 * @param string $location The URL to redirect to.
+	 * @param bool $permanent Whether or not the redirect is {@link Status::PERMANENT_REDIRECT permanent} or not.
+	 *
+	 * @return self
+	 *
+	 * @throws Exception If the route already has a behaviour mode set.
+	 */
+	public function redirect(string $location, bool $permanent = false): self {
+		if ($this->mode) {
+			throw new Exception('This route already has a mode set.');
+		}
+
+		$this->mode = new RedirectMode($location, $permanent);
 
 		return $this;
 	}

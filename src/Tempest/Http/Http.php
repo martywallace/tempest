@@ -1,40 +1,45 @@
 <?php namespace Tempest\Http;
 
 use Closure;
-use Exception;
+use Throwable;
 use Tempest\App;
+use Tempest\Exceptions\HttpException;
+use Tempest\Http\Modes\ActionMode;
+use Tempest\Http\Modes\RenderMode;
 use Tempest\Kernel\Kernel;
 use Tempest\Kernel\Input;
 use Tempest\Events\ExceptionEvent;
 use Tempest\Http\Session\BaseSessionHandler;
-use Tempest\Http\Session\Directive;
+use Tempest\Http\Session\SessionDirective;
+use Tempest\Http\Middleware\MiddlewarePointer;
 use Tempest\Validation\ValidationException;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 
 /**
- * The HTTP kernel deals with interpreting a HTTP {@link Request request} and generating a {@link Response response}.
+ * The HTTP kernel deals with interpreting a HTTP {@link Request request} and
+ * generating a {@link Response response}.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
-class Http extends Kernel {
+class Http extends Kernel implements HasMiddleware {
 
 	/** @var Route[] */
-	private $_routes;
+	private $routes;
 
-	/** @var mixed[][] */
-	private $_middleware = [];
+	/** @var MiddlewarePointer[] */
+	private $middleware = [];
 
 	/** @var BaseSessionHandler */
-	private $_sessionHandler;
+	private $sessionHandler;
 
 	/**
 	 * Http constructor.
 	 *
-	 * @param callable|string $routes Known routes to match the request against. Can either be a function accepting this
-	 * HTTP instance or a string pointing to a PHP file that returns a function accepting this HTTP instance.
-	 *
-	 * @throws Exception
+	 * @param callable|string $routes Known routes to match the request against.
+	 * Can either be a function accepting this HTTP instance or a string
+	 * pointing to a PHP file that returns a function accepting this HTTP
+	 * instance.
 	 */
 	public function __construct($routes) {
 		parent::__construct($routes);
@@ -46,7 +51,7 @@ class Http extends Kernel {
 			$root->add($this->getConfig());
 		}
 
-		$this->_routes = $root->flatten();
+		$this->routes = $root->flatten();
 	}
 
 	/**
@@ -56,23 +61,27 @@ class Http extends Kernel {
 	 * @param string $format The debugging format.
 	 *
 	 * @return Response
-	 *
-	 * @throws Exception If there is no active kernel to handle the dump.
 	 */
-	public function dump($data, $format = App::DUMP_FORMAT_PRINT_R) {
+	public function dump($data, $format = App::DUMP_FORMAT_PRINT_R): Response {
 		return Response::make()
-			->setHeader(Header::CONTENT_TYPE, $format === App::DUMP_FORMAT_JSON ? ContentType::APPLICATION_JSON : ContentType::TEXT_PLAIN)
+			->setHeader(
+				Header::CONTENT_TYPE,
+				$format === App::DUMP_FORMAT_JSON
+					? ContentType::APPLICATION_JSON
+					: ContentType::TEXT_PLAIN
+			)
 			->setBody(parent::dump($data, $format));
 	}
 
 	/**
-	 * Handle an incoming {@link Request HTTP request} and generate a {@link Response response} for sending.
+	 * Handle an incoming {@link Request HTTP request} and generate a
+	 * {@link Response response} for sending.
 	 *
 	 * @param Request|Input $request The request to handle.
 	 *
 	 * @return Response
 	 */
-	public function handle(Input $request) {
+	public function handle(Input $request): Response {
 		$response = Response::make();
 
 		// Bind the request and response to Twig.
@@ -80,15 +89,15 @@ class Http extends Kernel {
 		App::get()->twig->addGlobal('response', $response);
 
 		// If sessions are enabled, attach some information from the request to it.
-		if ($this->_sessionHandler) {
-			$this->_sessionHandler->attachRequest($request);
+		if ($this->sessionHandler) {
+			$this->sessionHandler->attachRequest($request);
 		}
 
 		try {
 			// Attempt to match a route.
 			$info = \FastRoute\simpleDispatcher(function (RouteCollector $collector) {
-				foreach ($this->_routes as $route) {
-					$collector->addRoute($route->getMethod(), $route->getUri(), $route);
+				foreach ($this->routes as $route) {
+					$collector->addRoute($route->getMethods(), $route->getUri(), $route);
 				}
 			})->dispatch($request->getMethod(), $request->getUri());
 
@@ -102,7 +111,7 @@ class Http extends Kernel {
 				'fields' => $exception->getErrors()
 			]);
 
-		} catch (Exception $exception) {
+		} catch (Throwable $exception) {
 			$this->dispatch(ExceptionEvent::EXCEPTION, new ExceptionEvent($exception));
 
 			$response->setStatus(Status::INTERNAL_SERVER_ERROR)->render('500.html', [
@@ -113,32 +122,32 @@ class Http extends Kernel {
 		return $response;
 	}
 
-	/**
-	 * Attach one or more middleware to be called before requests resolve to a controller or template.
-	 *
-	 * @param array[] ...$actions The middleware actions.
-	 *
-	 * @return $this
-	 */
-	public function middleware(...$actions) {
-		$this->_middleware = array_merge($this->_middleware, $actions);
+	public function addMiddleware(string $middleware, string $method = 'index', array $options = []) {
+		$this->middleware[] = new MiddlewarePointer($middleware, $method, $options);
+
 		return $this;
 	}
 
 	/**
 	 * Create a new {@link Route route}.
 	 *
-	 * @param string|string[] $method The HTTP method(s) to associate this route with.
+	 * @param string|string[] $methods The HTTP method(s) to associate this
+	 * route with.
 	 * @param string $uri The URI that will trigger this route.
 	 *
 	 * @return Route
 	 */
-	public function route($method, $uri) {
-		if (!is_array($method)) $method = [$method];
+	public function route(array $methods, string $uri): Route {
+		if (!is_array($methods)) {
+			$methods = [$methods];
+		}
 
-		$method = array_map(function($method) { return strtoupper($method); }, $method);
+		$methods = array_map(function($method) {
+			// Uppercase all method names.
+			return strtoupper($method);
+		}, $methods);
 
-		return new Route($method, $uri);
+		return new Route($methods, $uri);
 	}
 
 	/**
@@ -148,8 +157,8 @@ class Http extends Kernel {
 	 *
 	 * @return Route
 	 */
-	public function get($uri) {
-		return $this->route('GET', $uri);
+	public function get(string $uri): Route {
+		return $this->route([Method::GET], $uri);
 	}
 
 	/**
@@ -159,8 +168,8 @@ class Http extends Kernel {
 	 *
 	 * @return Route
 	 */
-	public function post($uri) {
-		return $this->route('POST', $uri);
+	public function post(string $uri): Route {
+		return $this->route([Method::POST], $uri);
 	}
 
 	/**
@@ -170,8 +179,8 @@ class Http extends Kernel {
 	 *
 	 * @return Route
 	 */
-	public function put($uri) {
-		return $this->route('PUT', $uri);
+	public function put(string $uri): Route {
+		return $this->route(Method::PUT, $uri);
 	}
 
 	/**
@@ -181,8 +190,8 @@ class Http extends Kernel {
 	 *
 	 * @return Route
 	 */
-	public function patch($uri) {
-		return $this->route('PATCH', $uri);
+	public function patch(string $uri): Route {
+		return $this->route([Method::PATCH], $uri);
 	}
 
 	/**
@@ -192,8 +201,8 @@ class Http extends Kernel {
 	 *
 	 * @return Route
 	 */
-	public function delete($uri) {
-		return $this->route('DELETE', $uri);
+	public function delete(string $uri): Route {
+		return $this->route([Method::DELETE], $uri);
 	}
 
 	/**
@@ -203,51 +212,70 @@ class Http extends Kernel {
 	 *
 	 * @return Route
 	 */
-	public function head($uri) {
-		return $this->route('HEAD', $uri);
+	public function head(string $uri): Route {
+		return $this->route([Method::HEAD], $uri);
 	}
 
 	/**
-	 * Create a new {@link Group group of routes} that will be {@link Group::flatten flattened down} recursively.
+	 * Create a new {@link Route route} with its method set to OPTIONS.
 	 *
-	 * @param string $uri The base URI that will be merged onto the head of each descendant route or group.
+	 * @param string $uri The URI that will trigger this route.
+	 *
+	 * @return Route
+	 */
+	public function options(string $uri): Route {
+		return $this->route([Method::OPTIONS], $uri);
+	}
+
+	/**
+	 * Create a new {@link Group group of routes} that will be
+	 * {@link Group::flatten flattened down} recursively.
+	 *
+	 * @param string $uri The base URI that will be merged onto the head of each
+	 * descendant route or group.
 	 * @param Route[]|Group[] $routes One or more child routes or groups.
 	 *
 	 * @return Group
 	 */
-	public function group($uri, array $routes) {
+	public function group(string $uri, array $routes): Group {
 		return new Group($uri, $routes);
 	}
 
 	/**
 	 * Enable HTTP sessions, beginning a new one if there is not one already.
 	 *
-	 * @param BaseSessionHandler $handler The handler responsible for managing the sessions.
-	 * @param array $directives The session {@link Directive directives}.
+	 * @param BaseSessionHandler $handler The handler responsible for managing
+	 * the sessions.
+	 * @param array $directives The session {@link SessionDirective directives}.
 	 *
-	 * @return $this
+	 * @return self
 	 *
-	 * @throws Exception If sessions are not enabled.
-	 * @throws Exception If there is already an active session.
-	 * @throws Exception If the session could not be successfully started.
+	 * @throws HttpException If sessions are not enabled.
+	 * @throws HttpException If there is already an active session.
+	 * @throws HttpException If the session could not be successfully started.
 	 */
-	public function enableSessions(BaseSessionHandler $handler, $directives = []) {
-		if (session_status() === PHP_SESSION_DISABLED) throw new Exception('Cannot start session - sessions are disabled.');
-		if (session_status() === PHP_SESSION_ACTIVE) throw new Exception('Cannot start session - there is already an active session.');
+	public function enableSessions(BaseSessionHandler $handler, array $directives = []): self {
+		if (session_status() === PHP_SESSION_DISABLED) {
+			throw new HttpException(HttpException::SESSION_DISABLED);
+		}
 
-		$this->_sessionHandler = $handler;
+		if (session_status() === PHP_SESSION_ACTIVE) {
+			throw new HttpException(HttpException::SESSION_ALREADY_STARTED);
+		}
+
+		$this->sessionHandler = $handler;
 
 		session_set_save_handler($handler, true);
 
 		$success = session_start(array_merge([
-			Directive::NAME => 'SessionID',
-			Directive::USE_COOKIES => true,
-			Directive::USE_ONLY_COOKIES => true,
-			Directive::COOKIE_HTTPONLY => true
+			SessionDirective::NAME => 'SessionID',
+			SessionDirective::USE_COOKIES => true,
+			SessionDirective::USE_ONLY_COOKIES => true,
+			SessionDirective::COOKIE_HTTPONLY => true
 		], $directives));
 
 		if (!$success) {
-			throw new Exception('Could not enable sessions.');
+			throw new HttpException(HttpException::SESSION_COULD_NOT_ENABLE);
 		}
 
 		return $this;
@@ -259,62 +287,69 @@ class Http extends Kernel {
 	 * @param Request $request The request being handled.
 	 * @param Response $response The response to be sent.
 	 * @param Route $route The route that was matched.
-	 * @param mixed[] $named Named arguments provided in the request, defined by the route.
+	 * @param mixed[] $named Named arguments provided in the request, defined by
+	 * the route.
 	 *
-	 * @throws Exception If the matched route does not perform any valid action.
+	 * @throws HttpException If the matched route does not perform any valid
+	 * action.
 	 */
-	protected function found(Request $request, Response $response, Route $route, array $named) {
+	protected function found(Request $request, Response $response, Route $route, array $named): void {
 		foreach ($named as $property => $value) {
 			// Attached all named route data.
 			$request->attachParam($property, $value);
 		}
 
-		if ($route->getMode() === Route::MODE_UNDETERMINED) {
-			throw new Exception('Route "' . $route->getUri() . '" does not perform a valid action');
+		$mode = $route->getMode();
+
+		if (empty($mode)) {
+			throw new HttpException(sprintf(HttpException::ROUTE_NO_MODE, $route->getUri()));
 		}
 
-		if ($route->getMode() === Route::MODE_TEMPLATE || $route->getMode() === Route::MODE_CONTROLLER) {
-			$resolution = function() use ($route, $request, $response) {
-				if ($route->getMode() === Route::MODE_TEMPLATE) {
-					$response->render($route->getTemplate());
+		if ($mode instanceof ActionMode || $mode instanceof RenderMode) {
+			// The request resolution (last function to be called in the pipeline).
+			$resolution = function() use ($mode, $request, $response) {
+				if ($mode instanceof RenderMode) {
+					$response->render($mode->getTemplate(), $mode->getContext());
 				}
 
-				if ($route->getMode() === Route::MODE_CONTROLLER) {
-					$action = $route->getController();
-
-					if (!class_exists($action[0])) {
-						throw new Exception('Controller class "' . $action[0] . '" does not exist.');
+				if ($mode instanceof ActionMode) {
+					if (!class_exists($mode->getController())) {
+						throw new HttpException(sprintf(HttpException::CONTROLLER_DOES_NOT_EXIST, $mode->getController()));
 					}
 
-					$controller = new $action[0]($action[2]);
+					$controllerClass = $mode->getController();
+					$controller = new $controllerClass($mode->getOptions());
 
-					if (!method_exists($controller, $action[1])) {
-						throw new Exception('Controller class "' . $action[0] . '" does not contain a method "' . $action[1] . '".');
+					if (!method_exists($controller, $mode->getMethod())) {
+						throw new HttpException(sprintf(HttpException::CONTROLLER_DOES_NOT_DEFINE_METHOD, $mode->getController(), $mode->getMethod()));
 					}
 
-					$controller->{$action[1]}($request, $response);
+					$controller->{$mode->getMethod()}($request, $response);
 				}
 			};
 
 			$pipeline = array_merge(
-				$this->_middleware,
+				$this->middleware,
 				$route->getMiddleware(),
 				[$resolution]
 			);
 
 			$pipeline = array_map(function($action) use ($request, $response, $resolution) {
 				if ($action !== $resolution) {
-					if (!class_exists($action[0])) {
-						throw new Exception('Middleware class "' . $action[0] . '" does not exist.');
+					if ($action instanceof MiddlewarePointer) {
+						if (!class_exists($action->getMiddleware())) {
+							throw new HttpException(sprintf(HttpException::MIDDLEWARE_DOES_NOT_EXIST, $action->getMiddleware()));
+						}
+
+						$middlewareClass = $action->getMiddleware();
+						$middleware = new $middlewareClass($action->getOptions());
+
+						if (!method_exists($middleware, $action->getMethod())) {
+							throw new HttpException(sprintf(HttpException::MIDDLEWARE_DOES_NOT_DEFINE_METHOD, $action->getMiddleware(), $action->getMethod()));
+						}
+
+						return Closure::fromCallable([$middleware, $action->getMethod()]);
 					}
-
-					$middleware = new $action[0]($action[2]);
-
-					if (!method_exists($middleware, $action[1])) {
-						throw new Exception('Middleware class "' . $action[0] . '" does not contain a method "' . $action[1] . '".');
-					}
-
-					return Closure::fromCallable([$middleware, $action[1]]);
 				}
 
 				return $action;
@@ -331,8 +366,9 @@ class Http extends Kernel {
 	 *
 	 * @param Response $response The response to be sent.
 	 */
-	protected function notFound(Response $response) {
-		$response->setStatus(Status::NOT_FOUND)
+	protected function notFound(Response $response): void {
+		$response
+			->setStatus(Status::NOT_FOUND)
 			->render('404.html');
 	}
 
@@ -343,10 +379,14 @@ class Http extends Kernel {
 	 * @param Response $response The response to be sent.
 	 * @param string[] $allowed The allowed methods.
 	 */
-	protected function methodNotAllowed(Request $request, Response $response, array $allowed) {
-		$response->setStatus(Status::METHOD_NOT_ALLOWED)
+	protected function methodNotAllowed(Request $request, Response $response, array $allowed): void {
+		$response
+			->setStatus(Status::METHOD_NOT_ALLOWED)
 			->setHeader(Header::ALLOW, implode(', ', $allowed))
-			->render('405.html', ['method' => $request->getMethod(), 'allowed' => $allowed]);
+			->render('405.html', [
+				'method' => $request->getMethod(),
+				'allowed' => $allowed
+			]);
 	}
 
 	/**
@@ -359,7 +399,7 @@ class Http extends Kernel {
 	 *
 	 * @return Closure
 	 */
-	private function bindNext(array $pipeline, Request $request, Response $response, $index = 0) {
+	private function bindNext(array $pipeline, Request $request, Response $response, $index = 0): Closure {
 		$closure = $pipeline[$index];
 
 		if ($index === count($pipeline) - 1) {
@@ -377,8 +417,8 @@ class Http extends Kernel {
 	 *
 	 * @return Route[]
 	 */
-	public function getRoutes() {
-		return $this->_routes;
+	public function getRoutes(): array {
+		return $this->routes;
 	}
 
 	/**
@@ -386,8 +426,8 @@ class Http extends Kernel {
 	 *
 	 * @return mixed[][]
 	 */
-	public function getMiddleware() {
-		return $this->_middleware;
+	public function getMiddleware(): array {
+		return $this->middleware;
 	}
 
 	/**
@@ -395,8 +435,8 @@ class Http extends Kernel {
 	 *
 	 * @return BaseSessionHandler
 	 */
-	public function getSessionHandler() {
-		return $this->_sessionHandler;
+	public function getSessionHandler(): BaseSessionHandler {
+		return $this->sessionHandler;
 	}
 
 }

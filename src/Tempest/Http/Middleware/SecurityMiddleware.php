@@ -3,7 +3,6 @@
 use Closure;
 use Exception;
 use Tempest\App;
-use Tempest\Http\Middleware;
 use Tempest\Http\Request;
 use Tempest\Http\Response;
 use Tempest\Http\Header;
@@ -14,7 +13,7 @@ use Tempest\Http\Status;
  *
  * @author Marty Wallace
  */
-class Security extends Middleware {
+class SecurityMiddleware extends Middleware {
 
 	const OPTION_NOSNIFF = 'nosniff';
 	const OPTION_DENY_FRAMES = 'denyFrames';
@@ -23,9 +22,9 @@ class Security extends Middleware {
 	/**
 	 * Adds some basic response headers that slightly improve application security.
 	 *
-	 * @see Security::OPTION_NOSNIFF
-	 * @see Security::OPTION_DENY_FRAMES
-	 * @see Security::OPTION_XSS_PROTECTION
+	 * @see SecurityMiddleware::OPTION_NOSNIFF
+	 * @see SecurityMiddleware::OPTION_DENY_FRAMES
+	 * @see SecurityMiddleware::OPTION_XSS_PROTECTION
 	 *
 	 * @param Request $request
 	 * @param Response $response

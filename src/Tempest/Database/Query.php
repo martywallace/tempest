@@ -646,6 +646,15 @@ class Query {
 	}
 
 	/**
+	 * Execute the query and return the value of the first column in the first record.
+	 *
+	 * @return mixed
+	 */
+	public function prop() {
+		return App::get()->db->prop($this->getQuery(), $this->getBindings());
+	}
+
+	/**
 	 * Execute the query.
 	 */
 	public function execute() {

@@ -1,25 +1,29 @@
-<?php namespace Tempest\Http;
+<?php
+
+namespace Tempest\Http;
+
+use Tempest\Http\Middleware\MiddlewarePointer;
 
 /**
  * A HTTP resource.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
-abstract class Resource {
+abstract class Resource implements HasMiddleware {
 
 	/** @var string */
-	private $_uri = '';
+	private $uri = '';
 
-	/** @var mixed[][] */
-	private $_middleware = [];
+	/** @var MiddlewarePointer[] */
+	private $middleware = [];
 
 	/**
 	 * Uri constructor.
 	 *
 	 * @param string $uri
 	 */
-	public function __construct($uri) {
-		$this->_uri = $uri;
+	public function __construct(string $uri) {
+		$this->uri = $uri;
 	}
 
 	/**
@@ -27,8 +31,8 @@ abstract class Resource {
 	 *
 	 * @return string
 	 */
-	public function getUri() {
-		return $this->_uri;
+	public function getUri(): string {
+		return $this->uri;
 	}
 
 	/**
@@ -36,10 +40,10 @@ abstract class Resource {
 	 *
 	 * @param string $value The value to prepend.
 	 *
-	 * @return $this
+	 * @return self
 	 */
-	public function prependUri($value) {
-		$this->_uri = '/' . trim(trim($value, '/\\') . $this->_uri, '/\\');
+	public function prependUri(string $value): self {
+		$this->uri = '/' . trim(trim($value, '/\\') . $this->uri, '/\\');
 		return $this;
 	}
 
@@ -48,29 +52,18 @@ abstract class Resource {
 	 *
 	 * @param array $action The middleware action to prepend.
 	 */
-	public function prependMiddleware($action) {
-		array_unshift($this->_middleware, $action);
+	public function prependMiddleware($action): void {
+		array_unshift($this->middleware, $action);
 	}
 
-	/**
-	 * Attach one or more middleware to this resources.
-	 *
-	 * @param array[] ...$actions The middleware actions.
-	 *
-	 * @return $this
-	 */
-	public function middleware(...$actions) {
-		$this->_middleware = array_merge($this->_middleware, $actions);
+	public function addMiddleware(string $middleware, string $method = 'index', array $options = []) {
+		$this->middleware[] = new MiddlewarePointer($middleware, $method, $options);
+
 		return $this;
 	}
 
-	/**
-	 * Get all registered middleware.
-	 *
-	 * @return mixed[][]
-	 */
-	public function getMiddleware() {
-		return $this->_middleware;
+	public function getMiddleware(): array {
+		return $this->middleware;
 	}
 
 }

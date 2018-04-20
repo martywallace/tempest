@@ -7,7 +7,7 @@ use Tempest\Enums\Enum;
  *
  * @author Marty Wallace
  */
-class Directive extends Enum {
+class SessionDirective extends Enum {
 
 	const SAVE_PATH = 'save_path';
 	const NAME = 'name';

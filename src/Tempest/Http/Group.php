@@ -36,7 +36,9 @@ class Group extends Resource {
 	 * @param Route|Group|Route[]|Group[] $children The child or children to add.
 	 */
 	public function add($children) {
-		if (!is_array($children)) $children = [$children];
+		if (!is_array($children)) {
+			$children = [$children];
+		}
 
 		$this->_children = array_merge($this->_children, $children);
 	}
