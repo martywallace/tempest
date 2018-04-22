@@ -3,6 +3,6 @@
 /**
  * A HTTP controller.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 abstract class Controller extends Handler { }

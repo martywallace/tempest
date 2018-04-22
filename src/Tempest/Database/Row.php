@@ -5,7 +5,7 @@ use JsonSerializable;
 /**
  * A single row from a database query.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Row implements JsonSerializable {
 

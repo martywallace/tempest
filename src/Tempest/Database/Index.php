@@ -5,7 +5,7 @@ use JsonSerializable;
 /**
  * An index on a field.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Index implements JsonSerializable {
 

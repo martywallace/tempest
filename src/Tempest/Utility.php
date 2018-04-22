@@ -5,7 +5,7 @@ use Closure;
 /**
  * General utilities.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Utility {
 

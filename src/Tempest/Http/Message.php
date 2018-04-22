@@ -5,7 +5,7 @@ use Tempest\Utility;
 /**
  * A HTTP message.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 abstract class Message {
 

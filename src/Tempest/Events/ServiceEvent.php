@@ -6,7 +6,7 @@ use Tempest\Services\Service;
 /**
  * An event related to application services.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class ServiceEvent extends Event {
 

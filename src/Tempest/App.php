@@ -34,7 +34,7 @@ use Tempest\Services\LogService;
  * @property-read MarkdownService $markdown The inbuilt service for rendering markdown.
  * @property-read LogService $log The inbuilt service for logging.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 abstract class App extends Container {
 

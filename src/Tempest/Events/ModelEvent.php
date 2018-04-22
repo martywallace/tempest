@@ -7,7 +7,7 @@ use Tempest\Database\Model;
 /**
  * An event dispatched by a model.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class ModelEvent extends Event {
 

@@ -3,7 +3,7 @@
 /**
  * A field for a model.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Field extends SealedField {
 

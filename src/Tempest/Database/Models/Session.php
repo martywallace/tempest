@@ -13,7 +13,7 @@ use Tempest\Database\Model;
  * @property string $ip The IP address of the session creator.
  * @property mixed $data The data stored in the session.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Session extends Model {
 

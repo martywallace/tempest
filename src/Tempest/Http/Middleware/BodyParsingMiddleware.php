@@ -11,7 +11,7 @@ use Tempest\Http\Status;
 /**
  * Inbuilt body parser for populating data contained in request bodies.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class BodyParsingMiddleware extends Middleware {
 

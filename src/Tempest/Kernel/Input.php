@@ -3,7 +3,7 @@
 /**
  * Input into an application {@link Kernel}.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 interface Input {
 

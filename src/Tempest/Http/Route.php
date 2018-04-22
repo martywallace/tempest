@@ -9,7 +9,7 @@ use Tempest\Http\Modes\RenderMode;
 /**
  * A route to be handled by the HTTP kernel.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Route extends Resource {
 

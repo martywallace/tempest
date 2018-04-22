@@ -6,7 +6,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 /**
  * Input entered into the terminal when executing a command.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Arguments extends ArgvInput implements Input {
 

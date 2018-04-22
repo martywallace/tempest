@@ -6,7 +6,7 @@ use Tempest\Http\Request;
 /**
  * The base class for all application session handling.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 abstract class BaseSessionHandler implements SessionHandlerInterface {
 

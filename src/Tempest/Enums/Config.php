@@ -3,7 +3,7 @@
 /**
  * Inbuilt configuration properties.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Config extends Enum {
 

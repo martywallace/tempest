@@ -7,7 +7,7 @@ use Symfony\Component\Console\Application;
 /**
  * The terminal kernel manages the console application entrypoint.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Terminal extends Kernel {
 

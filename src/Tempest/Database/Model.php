@@ -11,7 +11,7 @@ use Tempest\Events\ModelEvent;
 /**
  * A database model, derived from a {@link Row}.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 abstract class Model extends EventDispatcher implements JsonSerializable {
 

@@ -6,7 +6,7 @@ use Tempest\Utility;
 /**
  * A HTTP header.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Header extends Enum {
 

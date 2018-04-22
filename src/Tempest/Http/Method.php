@@ -7,7 +7,7 @@ use Tempest\Enums\Enum;
 /**
  * HTTP methods.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Method extends Enum {
 

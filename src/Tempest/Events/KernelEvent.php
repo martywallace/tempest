@@ -8,7 +8,7 @@ use Tempest\Kernel\Output;
 /**
  * Events related to the {@link Http HTTP Kernel}.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class KernelEvent extends Event {
 

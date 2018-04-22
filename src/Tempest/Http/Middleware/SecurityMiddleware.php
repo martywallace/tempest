@@ -11,7 +11,7 @@ use Tempest\Http\Status;
 /**
  * Basic protective middleware.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class SecurityMiddleware extends Middleware {
 

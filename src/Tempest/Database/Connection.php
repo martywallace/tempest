@@ -5,7 +5,7 @@ use Exception;
 /**
  * A connection, typically for a database.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Connection {
 

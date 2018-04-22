@@ -3,7 +3,7 @@
 /**
  * Provides a transformation layer for data to be sent to the client.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 abstract class Transformer {
 

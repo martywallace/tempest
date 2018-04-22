@@ -3,7 +3,7 @@
 /**
  * An application service, used to contain the bulk of your application logic and functionality.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 interface Service {
 

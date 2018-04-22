@@ -5,7 +5,7 @@ use Tempest\Enums\Enum;
 /**
  * Session initialization directives.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class SessionDirective extends Enum {
 

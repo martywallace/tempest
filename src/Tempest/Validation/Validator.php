@@ -6,7 +6,7 @@ use Valitron\Validator as BaseValidator;
 /**
  * Thin wrapper around Valitron's validator.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Validator extends BaseValidator {
 

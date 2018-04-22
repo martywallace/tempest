@@ -6,7 +6,7 @@ use Tempest\Utility;
 /**
  * A route handler - either in the form of middleware or a controller.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 abstract class Handler {
 

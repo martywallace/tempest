@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 /**
  * A service container, used as an instance that can provide zero or more of its own services.
  *
- * @author Marty Wallace.
+ * @author Ascension Web Development.
  */
 abstract class Container extends EventDispatcher {
 

@@ -6,7 +6,7 @@ use Symfony\Component\EventDispatcher\Event;
 /**
  * An event dispatched when an exception occurs.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class ExceptionEvent extends Event {
 

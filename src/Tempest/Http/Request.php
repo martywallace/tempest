@@ -19,7 +19,7 @@ use Negotiation\AcceptLanguage;
 /**
  * A request made to the HTTP kernel.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Request extends Message implements Input {
 

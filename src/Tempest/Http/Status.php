@@ -5,7 +5,7 @@ use Tempest\Enums\Enum;
 /**
  * Stores common HTTP status codes and provides some utility methods related to status codes.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Status extends Enum {
 

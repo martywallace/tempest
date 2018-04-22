@@ -7,7 +7,7 @@ use Tempest\Database\Models\User;
 /**
  * Manages application session.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class SessionService implements Service {
 

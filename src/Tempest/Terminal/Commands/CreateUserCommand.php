@@ -9,7 +9,7 @@ use Tempest\Database\Models\User;
 /**
  * Manages {@link User user} creation.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class CreateUserCommand extends Command {
 

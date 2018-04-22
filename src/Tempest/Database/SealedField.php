@@ -6,7 +6,7 @@ use Carbon\Carbon;
 /**
  * A real-only field declaration.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class SealedField implements JsonSerializable {
 

@@ -10,7 +10,7 @@ use Tempest\Database\Model;
  * @property string $email The user's email address.
  * @property string $password The user's hashed password.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class User extends Model {
 

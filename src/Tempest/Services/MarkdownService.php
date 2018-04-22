@@ -5,6 +5,6 @@ use Parsedown;
 /**
  * Provides the ability to render markdown.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class MarkdownService extends Parsedown implements Service { }

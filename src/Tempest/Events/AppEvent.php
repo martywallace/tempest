@@ -5,7 +5,7 @@ use Symfony\Component\EventDispatcher\Event;
 /**
  * Events specific to the core application.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class AppEvent extends Event {
 

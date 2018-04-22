@@ -8,7 +8,7 @@ use Monolog\Handler\SlackHandler;
 /**
  * Handles application logging.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class LogService extends Logger implements Service {
 

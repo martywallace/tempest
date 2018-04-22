@@ -3,7 +3,7 @@
 /**
  * A group of routes.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Group extends Resource {
 

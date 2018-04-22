@@ -5,7 +5,7 @@ use Tempest\Enums\Enum;
 /**
  * Common HTTP content-types.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class ContentType extends Enum {
 

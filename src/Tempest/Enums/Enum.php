@@ -5,7 +5,7 @@ use ReflectionClass;
 /**
  * A basic PHP enum implementation.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 abstract class Enum {
 

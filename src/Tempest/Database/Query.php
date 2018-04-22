@@ -7,7 +7,7 @@ use Tempest\App;
 /**
  * A query to perform on the database.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Query {
 

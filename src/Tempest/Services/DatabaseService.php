@@ -10,7 +10,7 @@ use Tempest\Database\Row;
 /**
  * Provides access to the application database.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class DatabaseService implements Service {
 

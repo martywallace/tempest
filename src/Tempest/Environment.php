@@ -5,7 +5,7 @@ use Dotenv\Dotenv;
 /**
  * Provides access to environment variables.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class Environment {
 

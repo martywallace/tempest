@@ -13,7 +13,7 @@ use Twig_SimpleFunction;
 /**
  * The Twig service exposes all of Twig's functionality.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class TwigService extends Twig_Environment implements Service {
 

@@ -4,7 +4,7 @@ use Carbon\Carbon;
 /**
  * Wraps a specific field within a set of data associated with a validator.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class FieldValidator {
 

@@ -6,7 +6,7 @@ use Tempest\App;
 /**
  * Manages session data in the filesystem.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class FileSessionHandler extends BaseSessionHandler {
 

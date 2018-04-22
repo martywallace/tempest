@@ -6,7 +6,7 @@ use Tempest\Database\Models\Session;
 /**
  * Manages storing and retrieving session data from the database.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class DbSessionHandler extends BaseSessionHandler {
 

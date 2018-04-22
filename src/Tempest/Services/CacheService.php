@@ -7,7 +7,7 @@ use Tempest\App;
 /**
  * Provides application data caching.
  *
- * @author Marty Wallace
+ * @author Ascension Web Development
  */
 class CacheService extends ChainCache implements Service {
 
