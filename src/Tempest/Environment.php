@@ -10,9 +10,9 @@ use Dotenv\Dotenv;
 class Environment {
 
 	public function __construct() {
-		if (file_exists(App::get()->root . DIRECTORY_SEPARATOR . '.env')) {
+		if (file_exists(App::get()->getRoot() . DIRECTORY_SEPARATOR . '.env')) {
 			// Load variables from a .env file in the application root.
-			$env = new Dotenv(App::get()->root);
+			$env = new Dotenv(App::get()->getRoot());
 			$env->load();
 		}
 	}

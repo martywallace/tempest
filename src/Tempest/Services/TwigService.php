@@ -26,15 +26,18 @@ class TwigService extends Twig_Environment implements Service {
 			$loader->prependPath($path);
 		}
 
+		$markdown = App::get()->getContainer()->get(MarkdownService::class);
+		$session = App::get()->getContainer()->get(SessionService::class);
+
 		$this->addGlobal('app', App::get());
 
 		$this->addFilter(new Twig_SimpleFilter('dig', [Utility::class, 'dig']));
 		$this->addFilter(new Twig_SimpleFilter('kebab', [Utility::class, 'kebab']));
-		$this->addFilter(new Twig_SimpleFilter('markdown', [App::get()->markdown, 'text'], ['is_safe' => ['html']]));
+		$this->addFilter(new Twig_SimpleFilter('markdown', [$markdown, 'text'], ['is_safe' => ['html']]));
 
 		$this->addFunction(new Twig_SimpleFunction('carbon', [Carbon::class, 'parse']));
 		$this->addFunction(new Twig_SimpleFunction('now', [Carbon::class, 'now']));
-		$this->addFunction(new Twig_SimpleFunction('getCsrfToken', [App::get()->session, 'getCsrfToken']));
+		$this->addFunction(new Twig_SimpleFunction('getCsrfToken', [$session, 'getCsrfToken']));
 
 		if (App::get()->isDevelopmentMode()) {
 			$this->addExtension(new Twig_Extension_Debug());
@@ -55,7 +58,7 @@ class TwigService extends Twig_Environment implements Service {
 		}
 
 		return array_merge($inbuilt, array_map(function($path) {
-			return App::get()->getRoot() . '/' . ltrim($path, '/\\');
+			return App::get()->getRoot() . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
 		}, $custom));
 	}
 

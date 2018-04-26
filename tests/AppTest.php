@@ -70,14 +70,14 @@ class AppTest extends TestCase {
 	 * @depends testBootApp
 	 */
 	public function testHasExampleService(App $app) {
-		$this->assertTrue($app->hasService('example'));
+		$this->assertTrue($app->has('example'));
 	}
 
 	/**
 	 * @depends testBootApp
 	 */
 	public function testExampleServiceNotYetBooted(App $app) {
-		$this->assertFalse($app->hasBootedService('example'));
+		$this->assertFalse($app->hasInstantiated('example'));
 	}
 
 	/**
@@ -89,10 +89,10 @@ class AppTest extends TestCase {
 		$value = $app->example->test();
 
 		$this->assertEquals(5, $value);
-		$this->assertEquals(5, $app->getService('example')->test());
+		$this->assertEquals(5, $app->get('example')->test());
 		$this->assertEquals(5, App::get()->example->test());
-		$this->assertEquals(5, App::get()->getService('example')->test());
-		$this->assertTrue($app->hasBootedService('example'));
+		$this->assertEquals(5, App::get()->get('example')->test());
+		$this->assertTrue($app->hasInstantiated('example'));
 	}
 
 	/**
@@ -102,7 +102,7 @@ class AppTest extends TestCase {
 		$this->expectException(Exception::class);
 		$this->expectExceptionMessage('Service "nope" does not exist.');
 
-		$app->getService('nope');
+		$app->get('nope');
 	}
 
 }

@@ -3,6 +3,7 @@
 use Exception;
 use Tempest\Services\Service;
 use Tempest\Events\ServiceEvent;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -11,154 +12,103 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  *
  * @author Ascension Web Development.
  */
-abstract class Container extends EventDispatcher {
+class Container extends EventDispatcher implements ContainerInterface {
 
 	/** @var string[] */
-	private $_services = [];
+	private $services = [];
 
 	/** @var Service[] */
-	private $_serviceInstances = [];
-
-	protected function __construct() {
-		$this->_services = array_merge(
-			$this->_services,
-			$this->services()
-		);
-	}
-
-	public function __get($prop) {
-		if ($this->hasService($prop)) {
-			return $this->getService($prop);
-		}
-
-		return null;
-	}
-
-	public function __isset($prop) {
-		return $this->hasService($prop);
-	}
+	private $instantiated = [];
 
 	/**
 	 * Add a service to this container.
 	 *
-	 * @param string $name The name used to reference the service within the container.
-	 * @param string $service The class name of the service to add.
+	 * @param string $service The fully qualified class name of the service to
+	 * add to the container. This becomes its ID within the container.
 	 *
 	 * @throws Exception If a service with the same name already exists.
 	 */
-	protected function addService($name, $service) {
-		if ($this->hasService($name)) {
+	public function add(string $service): void {
+		if ($this->has($service)) {
 			throw new Exception('Service "' . $service . '" has already been added to this container.');
 		}
 
-		$this->_services[$name] = $service;
+		$this->services[] = $service;
 	}
 
 	/**
-	 * Bulk add services to this container.
+	 * Convenience method to add multiple services as once.
 	 *
-	 * @param string[] $services The list of services to add.
+	 * @param string[] $services An array of services to add.
 	 */
-	public function addServices(array $services) {
-		foreach ($services as $name => $service) {
-			$this->addService($name, $service);
+	public function addMany(array $services): void {
+		foreach ($services as $service) {
+			$this->add($service);
 		}
 	}
 
 	/**
-	 * Force boot a service, instantiating it for future usage.
+	 * Instantiate a service, making it available for future usage. This takes
+	 * the fully qualified service class name {@link Container::add() that was provided}
+	 * and creates a new instance of it.
 	 *
-	 * @param string $name The name of the service to boot.
+	 * @param string $id The name of the service to instantiate.
 	 *
 	 * @throws Exception If an input service has already been booted.
 	 */
-	public function bootService($name) {
-		if ($this->hasBootedService($name)) {
-			throw new Exception('Service "' . $name . '" has already been booted.');
+	public function instantiate(string $id): void {
+		if ($this->hasInstantiated($id)) {
+			throw new Exception('Service "' . $id . '" has already been instantiated.');
 		}
 
-		$instance = new $this->_services[$name]();
+		$instance = new $id();
 
-		$this->dispatch(ServiceEvent::BOOTED, new ServiceEvent($name, $instance));
-		$this->_serviceInstances[$name] = $instance;
+		$this->dispatch(ServiceEvent::BOOTED, new ServiceEvent($id, $instance));
+		$this->instantiated[$id] = $instance;
 	}
 
 	/**
-	 * Force boot multiple services, instantiating them for future usage.
+	 * Determine whether the container has a service with the specified ID.
 	 *
-	 * @param string[] $names The names of the services to boot.
-	 *
-	 * @throws Exception If an input service has already been booted.
-	 */
-	protected function bootServices(array $names) {
-		if (!is_array($names)) $names = [$names];
-
-		foreach ($names as $name) {
-			$this->bootService($name);
-		}
-	}
-
-	/**
-	 * Determine whether the container has a service with the specified name.
-	 *
-	 * @param string $name The service name.
+	 * @param string $id The service ID.
 	 *
 	 * @return bool
 	 */
-	public function hasService($name) {
-		return array_key_exists($name, $this->_services);
+	public function has($id): bool {
+		return in_array($id, $this->services);
 	}
 
 	/**
 	 * Determine whether the container has booted a service with the specified name.
 	 *
-	 * @param string $name The service name.
+	 * @param string $id The service name.
 	 *
 	 * @return bool
 	 */
-	public function hasBootedService($name) {
-		return array_key_exists($name, $this->_serviceInstances);
+	public function hasInstantiated(string $id): bool {
+		return array_key_exists($id, $this->instantiated);
 	}
 
 	/**
-	 * Get a service. If the service has not been booted, it will be booted first.
+	 * Get a service. If the service has not been instantiated, it will be
+	 * instantiated first.
 	 *
-	 * @param string $name The service name.
+	 * @param string $id The service ID.
 	 *
 	 * @return Service
 	 *
 	 * @throws Exception If the service does not exist.
 	 */
-	public function getService($name) {
-		if (!$this->hasService($name)) throw new Exception('Service "' . $name . '" does not exist.');
-		if (!$this->hasBootedService($name)) $this->bootService($name);
+	public function get($id) {
+		if (!$this->has($id)) {
+			throw new Exception('Service "' . $id . '" does not exist.');
+		}
 
-		return $this->_serviceInstances[$name];
-	}
+		if (!$this->hasInstantiated($id)) {
+			$this->instantiate($id);
+		}
 
-	/**
-	 * Declare all services to be bound.
-	 *
-	 * @return string[]
-	 */
-	abstract protected function services();
-
-	/**
-	 * Get a list of service classes attached to this container.
-	 *
-	 * @return string[]
-	 */
-	public function getServices() {
-		return $this->_services;
-	}
-
-	/**
-	 * Get a list of all services that have been booted.
-	 *
-	 * @return Service[]
-	 */
-	public function getBootedServices() {
-		return $this->_serviceInstances;
+		return $this->instantiated[$id];
 	}
 
 }

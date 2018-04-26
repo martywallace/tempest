@@ -16,22 +16,16 @@ use Tempest\Services\MarkdownService;
 use Tempest\Services\TwigService;
 use Tempest\Services\SessionService;
 use Tempest\Services\LogService;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * The core application class, from which your own core application class
  * extends. The App class is responsible for bootstrapping your services and
  * configuration.
  *
- * @property-read CacheService $cache The inbuilt caching service.
- * @property-read DatabaseService $db The inbuilt database service.
- * @property-read TwigService $twig The inbuilt Twig service, used to render Twig templates.
- * @property-read SessionService $session The inbuilt session handling service.
- * @property-read MarkdownService $markdown The inbuilt service for rendering markdown.
- * @property-read LogService $log The inbuilt service for logging.
- *
  * @author Ascension Web Development
  */
-abstract class App extends Container {
+abstract class App extends EventDispatcher {
 
 	/** The framework version. */
 	const VERSION = '5.0.0';
@@ -97,6 +91,9 @@ abstract class App extends Container {
 	/** @var Environment */
 	private $environment;
 
+	/** @var Container */
+	private $container;
+
 	/** @var array */
 	private $config;
 
@@ -104,16 +101,16 @@ abstract class App extends Container {
 	private $kernel;
 
 	protected function __construct() {
-		$this->addServices([
-			'cache' => CacheService::class,
-			'db' => DatabaseService::class,
-			'twig' => TwigService::class,
-			'session' => SessionService::class,
-			'markdown' => MarkdownService::class,
-			'log' => LogService::class
-		]);
+		$this->container = new Container();
 
-		parent::__construct();
+		$this->container->addMany([
+			CacheService::class,
+			DatabaseService::class,
+			TwigService::class,
+			SessionService::class,
+			MarkdownService::class,
+			LogService::class
+		]);
 	}
 
 	/**
@@ -163,38 +160,6 @@ abstract class App extends Container {
 
 		$this->dispatch(AppEvent::SETUP);
 		$this->setup();
-	}
-
-	/**
-	 * The application root directory - the result of moving on directory up
-	 * from the value provided to {@link App::boot()}. Always without a trailing
-	 * slash.
-	 *
-	 * @return string
-	 */
-	public function getRoot(): string {
-		return $this->root;
-	}
-
-	/**
-	 * The application storage directory as defined in the application
-	 * configuration. If it is not defined, NULL is returned. Always without a
-	 * trailing slash.
-	 *
-	 * @return string
-	 */
-	public function getStorageRoot(): string {
-		return $this->config(Config::STORAGE) ? $this->root . DIRECTORY_SEPARATOR . trim($this->config(Config::STORAGE), '/') : null;
-	}
-
-	/**
-	 * Whether or not the application is in development mode as defined by the
-	 * application configuration.
-	 *
-	 * @return bool
-	 */
-	public function isDevelopmentMode(): bool {
-		return $this->config(Config::DEV, false);
 	}
 
 	/**
@@ -301,6 +266,47 @@ abstract class App extends Container {
 
 		// No turning back.
 		exit($output);
+	}
+
+	/**
+	 * The application root directory - the result of moving on directory up
+	 * from the value provided to {@link App::boot()}. Always without a trailing
+	 * slash.
+	 *
+	 * @return string
+	 */
+	public function getRoot(): string {
+		return $this->root;
+	}
+
+	/**
+	 * The application storage directory as defined in the application
+	 * configuration. If it is not defined, NULL is returned. Always without a
+	 * trailing slash.
+	 *
+	 * @return string
+	 */
+	public function getStorageRoot(): string {
+		return $this->config(Config::STORAGE) ? $this->root . DIRECTORY_SEPARATOR . trim($this->config(Config::STORAGE), '/') : null;
+	}
+
+	/**
+	 * Whether or not the application is in development mode as defined by the
+	 * application configuration.
+	 *
+	 * @return bool
+	 */
+	public function isDevelopmentMode(): bool {
+		return $this->config(Config::DEV, false);
+	}
+
+	/**
+	 * Get the service container.
+	 *
+	 * @return Container
+	 */
+	public function getContainer(): Container {
+		return $this->container;
 	}
 
 }

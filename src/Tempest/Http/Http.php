@@ -1,6 +1,7 @@
 <?php namespace Tempest\Http;
 
 use Closure;
+use Tempest\Services\TwigService;
 use Throwable;
 use Tempest\App;
 use Tempest\Exceptions\HttpException;
@@ -84,9 +85,12 @@ class Http extends Kernel implements HasMiddleware {
 	public function handle(Input $request): Response {
 		$response = Response::make();
 
+		/** @var TwigService $twig */
+		$twig = App::get()->getContainer()->get(TwigService::class);
+
 		// Bind the request and response to Twig.
-		App::get()->twig->addGlobal('request', $request);
-		App::get()->twig->addGlobal('response', $response);
+		$twig->addGlobal('request', $request);
+		$twig->addGlobal('response', $response);
 
 		// If sessions are enabled, attach some information from the request to it.
 		if ($this->sessionHandler) {
