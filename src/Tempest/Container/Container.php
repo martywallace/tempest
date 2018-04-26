@@ -1,6 +1,7 @@
-<?php namespace Tempest;
+<?php
 
-use Exception;
+namespace Tempest\Container;
+
 use Tempest\Services\Service;
 use Tempest\Events\ServiceEvent;
 use Psr\Container\ContainerInterface;
@@ -26,11 +27,11 @@ class Container extends EventDispatcher implements ContainerInterface {
 	 * @param string $service The fully qualified class name of the service to
 	 * add to the container. This becomes its ID within the container.
 	 *
-	 * @throws Exception If a service with the same name already exists.
+	 * @throws ContainerException If a service with the same name already exists.
 	 */
 	public function add(string $service): void {
 		if ($this->has($service)) {
-			throw new Exception('Service "' . $service . '" has already been added to this container.');
+			throw new ContainerException(sprintf(ContainerException::SERVICE_ALREADY_EXISTS, $service));
 		}
 
 		$this->services[] = $service;
@@ -54,11 +55,11 @@ class Container extends EventDispatcher implements ContainerInterface {
 	 *
 	 * @param string $id The name of the service to instantiate.
 	 *
-	 * @throws Exception If an input service has already been booted.
+	 * @throws ContainerException If an input service has already been booted.
 	 */
 	public function instantiate(string $id): void {
 		if ($this->hasInstantiated($id)) {
-			throw new Exception('Service "' . $id . '" has already been instantiated.');
+			throw new ContainerException(sprintf(ContainerException::SERVICE_ALREADY_INSTANTIATED, $id));
 		}
 
 		$instance = new $id();
@@ -97,11 +98,11 @@ class Container extends EventDispatcher implements ContainerInterface {
 	 *
 	 * @return Service
 	 *
-	 * @throws Exception If the service does not exist.
+	 * @throws NotFoundException If the service does not exist.
 	 */
 	public function get($id) {
 		if (!$this->has($id)) {
-			throw new Exception('Service "' . $id . '" does not exist.');
+			throw new NotFoundException(sprintf(NotFoundException::SERVICE_NOT_FOUND, $id));
 		}
 
 		if (!$this->hasInstantiated($id)) {

@@ -4,6 +4,7 @@ use Closure;
 use Exception;
 use Tempest\Enums\Config;
 use Throwable;
+use Tempest\Container\Container;
 use Tempest\Events\AppEvent;
 use Tempest\Events\ExceptionEvent;
 use Tempest\Events\KernelEvent;

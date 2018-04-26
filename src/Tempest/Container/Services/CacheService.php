@@ -1,8 +1,10 @@
-<?php namespace Tempest\Services;
+<?php
 
+namespace Tempest\Container\Services;
+
+use Tempest\App;
 use Doctrine\Common\Cache\ChainCache;
 use Doctrine\Common\Cache\FilesystemCache;
-use Tempest\App;
 
 /**
  * Provides application data caching.

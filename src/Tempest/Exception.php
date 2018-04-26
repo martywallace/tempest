@@ -1,6 +1,6 @@
 <?php
 
-namespace Tempest\Exceptions;
+namespace Tempest;
 
 use Exception as BaseException;
 use ReflectionClass;
