@@ -20,7 +20,7 @@ class TwigService extends Twig_Environment implements Service {
 	public function __construct() {
 		$loader = new Twig_Loader_Filesystem();
 
-		parent::__construct($loader, ['debug' => App::get()->dev]);
+		parent::__construct($loader, ['debug' => App::get()->isDevelopmentMode()]);
 
 		foreach ($this->getTemplatePaths() as $path) {
 			$loader->prependPath($path);
@@ -36,7 +36,7 @@ class TwigService extends Twig_Environment implements Service {
 		$this->addFunction(new Twig_SimpleFunction('now', [Carbon::class, 'now']));
 		$this->addFunction(new Twig_SimpleFunction('getCsrfToken', [App::get()->session, 'getCsrfToken']));
 
-		if (App::get()->dev) {
+		if (App::get()->isDevelopmentMode()) {
 			$this->addExtension(new Twig_Extension_Debug());
 		}
 	}
@@ -55,7 +55,7 @@ class TwigService extends Twig_Environment implements Service {
 		}
 
 		return array_merge($inbuilt, array_map(function($path) {
-			return App::get()->root . '/' . ltrim($path, '/\\');
+			return App::get()->getRoot() . '/' . ltrim($path, '/\\');
 		}, $custom));
 	}
 

@@ -6,7 +6,8 @@ use Tempest\Events\ServiceEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
- * A service container, used as an instance that can provide zero or more of its own services.
+ * A service container, used as an instance that can provide zero or more of its
+ * own services.
  *
  * @author Ascension Web Development.
  */

@@ -21,7 +21,7 @@ class User extends Model {
 	 *
 	 * @return static
 	 */
-	public static function findByEmail($email) {
+	public static function findByEmail(string $email) {
 		return static::select()->where('email', strtolower($email))->first();
 	}
 
@@ -33,7 +33,7 @@ class User extends Model {
 	 *
 	 * @return static
 	 */
-	public static function findByCredentials($email, $password) {
+	public static function findByCredentials(string $email, string $password) {
 		$user = static::select()->where('email', strtolower($email))->first();
 
 		if (!empty($user)) {
@@ -53,7 +53,7 @@ class User extends Model {
 	 *
 	 * @return static
 	 */
-	public static function findByToken($token) {
+	public static function findByToken(string $token) {
 		preg_match('/^(?<email>.+?)\:(?<password>.*)$/', base64_decode($token), $credentials);
 
 		if (!empty($credentials)) {
@@ -74,11 +74,11 @@ class User extends Model {
 	 *
 	 * @return string
 	 */
-	public static function createXUserToken($email, $password) {
+	public static function createXUserToken(string $email, string $password): string {
 		return base64_encode($email . ':' . $password);
 	}
 
-	protected static function fields() {
+	protected static function fields(): array {
 		return [
 			'id' => Field::int()->setAutoIncrements(),
 			'created' => Field::dateTime()->setDefault('now'),
@@ -92,7 +92,7 @@ class User extends Model {
 	 *
 	 * @return string
 	 */
-	public function getHash() {
+	public function getHash(): string {
 		return sha1($this->email . '' . $this->password);
 	}
 

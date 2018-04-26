@@ -98,7 +98,7 @@ class Field extends SealedField {
 	 *
 	 * @param string $type
 	 */
-	protected function __construct($type) {
+	protected function __construct(string $type) {
 		$this->setType($type);
 
 		parent::__construct($this->getName(), $this);
@@ -111,7 +111,7 @@ class Field extends SealedField {
 	 *
 	 * @return $this
 	 */
-	public function setDefault($value) {
+	public function setDefault(mixed $value) {
 		return $this->setDefaultInternally($value);
 	}
 

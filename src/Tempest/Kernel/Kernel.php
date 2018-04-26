@@ -7,15 +7,15 @@ use Tempest\Utility;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
- * A kernel is responsible for capturing a specific channel of application input (e.g. over HTTP or via the console) and
- * generating an appropriate output.
+ * A kernel is responsible for capturing a specific channel of application input
+ * (e.g. over HTTP or via the console) and generating an appropriate output.
  *
  * @author Ascension Web Development
  */
 abstract class Kernel extends EventDispatcher {
 
 	/** @var mixed */
-	private $_config = null;
+	private $config = null;
 
 	/**
 	 * Kernel constructor.
@@ -30,14 +30,14 @@ abstract class Kernel extends EventDispatcher {
 		if (!empty($config)) {
 			if (is_string($config)) {
 				// Load external configuration.
-				$config = require App::get()->root . DIRECTORY_SEPARATOR . $config;
+				$config = require App::get()->getRoot() . DIRECTORY_SEPARATOR . $config;
 			}
 
 			if (!is_callable($config)) {
 				throw new Exception('Kernel configuration must resolve to a callable.');
 			}
 
-			$this->_config = $config($this);
+			$this->config = $config($this);
 		}
 	}
 
@@ -67,7 +67,7 @@ abstract class Kernel extends EventDispatcher {
 	 * @return mixed
 	 */
 	public function getConfig() {
-		return $this->_config;
+		return $this->config;
 	}
 
 	/**

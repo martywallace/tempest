@@ -12,7 +12,7 @@ use Tempest\App;
 class CacheService extends ChainCache implements Service {
 
 	public function __construct() {
-		$fs = new FilesystemCache(App::get()->storage . '/cache');
+		$fs = new FilesystemCache(App::get()->getStorageRoot() . '/cache');
 
 		parent::__construct([$fs]);
 	}

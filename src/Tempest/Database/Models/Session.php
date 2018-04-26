@@ -17,7 +17,7 @@ use Tempest\Database\Model;
  */
 class Session extends Model {
 
-	protected static function fields() {
+	protected static function fields(): array {
 		return [
 			'id' => Field::string()->setPrimary(),
 			'created' => Field::dateTime()->setDefault('now'),

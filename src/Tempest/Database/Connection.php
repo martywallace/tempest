@@ -30,50 +30,50 @@ class Connection {
 	}
 
 	/** @var string */
-	private $_host;
+	private $host;
 
 	/** @var string */
-	private $_username;
+	private $username;
 
 	/** @var string */
-	private $_password;
+	private $password;
 
 	/** @var string */
-	private $_resource;
+	private $resource;
 
-	private function __construct($host, $username, $password, $resource) {
-		$this->_host = $host;
-		$this->_username = $username;
-		$this->_password = $password;
-		$this->_resource = $resource;
+	private function __construct(string $host, string $username, string $password, string $resource) {
+		$this->host = $host;
+		$this->username = $username;
+		$this->password = $password;
+		$this->resource = $resource;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getHost() {
-		return $this->_host;
+	public function getHost(): string {
+		return $this->host;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getUsername() {
-		return $this->_username;
+	public function getUsername(): string {
+		return $this->username;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getPassword() {
-		return $this->_password;
+	public function getPassword(): string {
+		return $this->password;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getResource() {
-		return $this->_resource;
+	public function getResource(): string {
+		return $this->resource;
 	}
 
 }

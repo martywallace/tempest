@@ -15,8 +15,8 @@ class LogService extends Logger implements Service {
 	public function __construct() {
 		parent::__construct('app');
 
-		if (!empty(App::get()->storage)) {
-			$handler = new RotatingFileHandler(App::get()->storage . '/logs/app.log');
+		if (!empty(App::get()->getStorageRoot())) {
+			$handler = new RotatingFileHandler(App::get()->getStorageRoot() . '/logs/app.log');
 			$this->pushHandler($handler);
 		}
 

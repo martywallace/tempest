@@ -18,14 +18,9 @@ use Tempest\Services\SessionService;
 use Tempest\Services\LogService;
 
 /**
- * The core application class, from which your own core application class extends. The App class is responsible for
- * bootstrapping your services and configuration.
- *
- * @property-read string $root The application root directory - the result of moving on directory up from the value
- * provided to {@link App::boot()}. Always without a trailing slash.
- * @property-read string $storage The application storage directory as defined in the application configuration. If it
- * is not defined, NULL is returned. Always without a trailing slash.
- * @property-read bool $dev Whether or not the application is in development mode.
+ * The core application class, from which your own core application class
+ * extends. The App class is responsible for bootstrapping your services and
+ * configuration.
  *
  * @property-read CacheService $cache The inbuilt caching service.
  * @property-read DatabaseService $db The inbuilt database service.
@@ -51,7 +46,7 @@ abstract class App extends Container {
 	const DUMP_FORMAT_JSON = 'json';
 
 	/** @var static */
-	protected static $_instance;
+	protected static $instance;
 
 	/**
 	 * Create and boot up an application instance.
@@ -68,17 +63,17 @@ abstract class App extends Container {
 	 * @throws Exception If the application has already been booted.
 	 */
 	public static function boot($root, $config = null) {
-		if (!empty(static::$_instance)) {
+		if (!empty(static::$instance)) {
 			throw new Exception('The application has already been booted.');
 		}
 
-		static::$_instance = new static();
+		static::$instance = new static();
 
 		// We use an alternate private method call instead of the constructor so that calls to App::get() don't throw an
 		// exception (as static::$_instance would be null until after the constructor resolved).
-		static::$_instance->_setup($root, $config);
+		static::$instance->_setup($root, $config);
 
-		return static::$_instance;
+		return static::$instance;
 	}
 
 	/**
@@ -89,24 +84,24 @@ abstract class App extends Container {
 	 * @throws Exception If the application was not previously {@link App::boot() booted}.
 	 */
 	public static function get() {
-		if (empty(static::$_instance)) {
+		if (empty(static::$instance)) {
 			throw new Exception('Missing preceding call to App::boot().');
 		}
 
-		return static::$_instance;
+		return static::$instance;
 	}
 
 	/** @var string */
-	private $_root;
+	private $root;
 
 	/** @var Environment */
-	private $_environment;
+	private $environment;
 
 	/** @var array */
-	private $_config;
+	private $config;
 
 	/** @var Kernel */
-	private $_kernel;
+	private $kernel;
 
 	protected function __construct() {
 		$this->addServices([
@@ -128,8 +123,8 @@ abstract class App extends Container {
 	 * @throws Exception
 	 */
 	private function _setup($root, $config) {
-		$this->_root = rtrim($root, '/\\');
-		$this->_environment = new Environment();
+		$this->root = rtrim($root, '/\\');
+		$this->environment = new Environment();
 
 		set_exception_handler(function(Throwable $throwable) {
 			$this->terminate($throwable);
@@ -137,7 +132,7 @@ abstract class App extends Container {
 
 		if (!empty($config)) {
 			if (is_string($config)) {
-				$path = $this->_root . DIRECTORY_SEPARATOR . $config;
+				$path = $this->root . DIRECTORY_SEPARATOR . $config;
 
 				if (!file_exists($path)) {
 					throw new Exception('Configuration file "' . $path . '" does not exist.');
@@ -148,17 +143,17 @@ abstract class App extends Container {
 
 			if (is_array($config)) {
 				// Raw configuration.
-				$this->_config = $config;
+				$this->config = $config;
 			} else if (is_callable($config)) {
-				$this->_config = $config($this->_environment);
+				$this->config = $config($this->environment);
 			} else {
 				throw new Exception('Configuration was provided in an unacceptable format.');
 			}
 		} else {
-			$this->_config = [];
+			$this->config = [];
 		}
 
-		array_walk_recursive($this->_config, function($value, $key) {
+		array_walk_recursive($this->config, function($value, $key) {
 			if (strpos($key, '.') !== false) {
 				throw new Exception('Configuration fields cannot contain the "." character, as this is used for nested property querying.');
 			}
@@ -170,16 +165,36 @@ abstract class App extends Container {
 		$this->setup();
 	}
 
-	public function __get($prop) {
-		if ($prop === 'root') return $this->_root;
-		if ($prop === 'storage') return $this->config(Config::STORAGE) ? $this->_root . '/' . trim($this->config(Config::STORAGE), '/') : null;
-		if ($prop === 'dev') return $this->config(Config::DEV, false);
-
-		return parent::__get($prop);
+	/**
+	 * The application root directory - the result of moving on directory up
+	 * from the value provided to {@link App::boot()}. Always without a trailing
+	 * slash.
+	 *
+	 * @return string
+	 */
+	public function getRoot(): string {
+		return $this->root;
 	}
 
-	public function __isset($name) {
-		return $this->{$name} !== null;
+	/**
+	 * The application storage directory as defined in the application
+	 * configuration. If it is not defined, NULL is returned. Always without a
+	 * trailing slash.
+	 *
+	 * @return string
+	 */
+	public function getStorageRoot(): string {
+		return $this->config(Config::STORAGE) ? $this->root . DIRECTORY_SEPARATOR . trim($this->config(Config::STORAGE), '/') : null;
+	}
+
+	/**
+	 * Whether or not the application is in development mode as defined by the
+	 * application configuration.
+	 *
+	 * @return bool
+	 */
+	public function isDevelopmentMode(): bool {
+		return $this->config(Config::DEV, false);
 	}
 
 	/**
@@ -191,8 +206,8 @@ abstract class App extends Container {
 	 * @return mixed
 	 */
 	public function config($query = null, $fallback = null) {
-		if ($query === null) return $this->_config;
-		return Utility::evaluate($this->_config, $query, $fallback);
+		if ($query === null) return $this->config;
+		return Utility::evaluate($this->config, $query, $fallback);
 	}
 
 	/**
@@ -208,11 +223,11 @@ abstract class App extends Container {
 	 * @throws Exception If there is no active kernel to handle the dump.
 	 */
 	public function dump($data, $format = self::DUMP_FORMAT_PRINT_R) {
-		if (!$this->_kernel) {
+		if (!$this->kernel) {
 			throw new Exception('There is no attached kernel to dump to.');
 		}
 
-		$output = $this->_kernel->dump($data, $format);
+		$output = $this->kernel->dump($data, $format);
 
 		if ($output instanceof Output) $output->send();
 		else $this->terminate($output);
@@ -237,17 +252,17 @@ abstract class App extends Container {
 	 * @return Output
 	 */
 	public function handle($kernel, Input $input, $config = null) {
-		$this->_kernel = $this->makeKernel($kernel, $config);
+		$this->kernel = $this->makeKernel($kernel, $config);
 
-		$this->_kernel->addListener(ExceptionEvent::EXCEPTION, function(ExceptionEvent $event) {
+		$this->kernel->addListener(ExceptionEvent::EXCEPTION, function(ExceptionEvent $event) {
 			$this->log->critical($event->getException()->getMessage(), $event->getException()->getTrace());
 			$this->dispatch(ExceptionEvent::EXCEPTION, $event);
 		});
 
-		$this->dispatch(KernelEvent::BOOTED, new KernelEvent($this->_kernel, $input));
+		$this->dispatch(KernelEvent::BOOTED, new KernelEvent($this->kernel, $input));
 
-		$output = $this->_kernel->handle($input);
-		$this->dispatch(KernelEvent::OUTPUT_READY, new KernelEvent($this->_kernel, $input, $output));
+		$output = $this->kernel->handle($input);
+		$this->dispatch(KernelEvent::OUTPUT_READY, new KernelEvent($this->kernel, $input, $output));
 
 		return $output;
 	}
