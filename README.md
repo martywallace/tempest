@@ -16,10 +16,10 @@ and maintenance. Other core features include:
 
 Tempest can be [found on Packagist](https://packagist.org/packages/martywallace/tempest) and installed with Composer:
 
-	$ composer require ascensionwd/tempest
+	$ composer require martywallace/tempest
 
 However for new projects it is recommended to use the [`tempest-app`](https://github.com/martywallace/tempest-app)
 boilerplate project with Composer's `create-project`. This will scaffold a new project using the ideal structure for
 building an application with Tempest:
 
-    $ composer create-project ascensionwd/tempest-app my-app
+    $ composer create-project martywallace/tempest-app my-app
